@@ -245,88 +245,39 @@ function groupreg_prepare_options($groupreg, $user, $coursemodule, $allresponses
  * @param object $cm
  */
 function groupreg_user_submit_response($favorites, $blanks, $groupreg, $userid, $course, $cm) {
-    die("unimplemented");
-
+    
     global $DB, $CFG;
     require_once($CFG->libdir.'/completionlib.php');
-
-    $current = $DB->get_record('groupreg_answers', array('groupregid' => $groupreg->id, 'userid' => $userid));
     $context = get_context_instance(CONTEXT_MODULE, $cm->id);
-
-    $countanswers=0;
-    if($groupreg->limitanswers) {
-        // Find out whether groups are being used and enabled
-        if (groups_get_activity_groupmode($cm) > 0) {
-            $currentgroup = groups_get_activity_group($cm);
-        } else {
-            $currentgroup = 0;
-        }
-        if($currentgroup) {
-            // If groups are being used, retrieve responses only for users in
-            // current group
-            global $CFG;
-            $answers = $DB->get_records_sql("
-SELECT
-    ca.*
-FROM
-    {groupreg_answers} ca
-    INNER JOIN {groups_members} gm ON ca.userid=gm.userid
-WHERE
-    optionid=?
-    AND gm.groupid=?", array($formanswer, $currentgroup));
-        } else {
-            // Groups are not used, retrieve all answers for this option ID
-            $answers = $DB->get_records("groupreg_answers", array("optionid" => $formanswer));
-        }
-
-        if ($answers) {
-            foreach ($answers as $a) { //only return enrolled users.
-                if (is_enrolled($context, $a->userid, 'mod/groupreg:choose')) {
-                    $countanswers++;
-                }
-            }
-        }
-        $maxans = $groupreg->maxanswers[$formanswer];
+    
+    // remove current user answers from the database
+    $DB->delete_records('groupreg_answers', array('groupregid' => $groupreg->id, 'userid' => $userid));
+    
+    // add the new answers
+    for ($fav = 0; $fav <= $groupreg->limitfavorites; $fav++) {
+        $favorite = new stdClass();
+        $favorite->optionid = intval($favorites[$fav]);
+        if ($favorite->optionid <= 0)
+            continue;
+        $favorite->userid = $userid;
+        $favorite->groupregid = $groupreg->id;
+        $favorite->timemodified = time();
+        $favorite->preference = $fav+1;
+        
+        $DB->insert_record('groupreg_answers', $favorite);
     }
-
-    if (!($groupreg->limitanswers && ($countanswers >= $maxans) )) {
-        if ($current) {
-
-            $newanswer = $current;
-            $newanswer->optionid = $formanswer;
-            $newanswer->timemodified = time();
-            // TODO : begin
-            $old_answer = $DB->get_record("groupreg_answers", array('groupregid' => $groupreg->id, 'userid' => $userid));
-            $old_option = $DB->get_record("groupreg_options", array('id' => $old_answer->optionid));
-            groups_remove_member($old_option->text, $userid);
-            $new_option = $DB->get_record("groupreg_options", array('id' => $formanswer));
-            groups_add_member($new_option->text, $userid);
-            // TODO : end
-            $DB->update_record("groupreg_answers", $newanswer);
-            add_to_log($course->id, "groupreg", "choose again", "view.php?id=$cm->id", $groupreg->id, $cm->id);
-        } else {
-            $newanswer = NULL;
-            $newanswer->groupregid = $groupreg->id;
-            $newanswer->userid = $userid;
-            $newanswer->optionid = $formanswer;
-            $newanswer->timemodified = time();
-            $DB->insert_record("groupreg_answers", $newanswer);
-            // TODO : begin
-            $new_option = $DB->get_record("groupreg_options", array('id' => $formanswer));
-            groups_add_member($new_option->text, $userid);
-            // TODO : end
-
-            // Update completion state
-            $completion = new completion_info($course);
-            if ($completion->is_enabled($cm) && $groupreg->completionsubmit) {
-                $completion->update_state($cm, COMPLETION_COMPLETE);
-            }
-            add_to_log($course->id, "groupreg", "choose", "view.php?id=$cm->id", $groupreg->id, $cm->id);
-        }
-    } else {
-        if (!($current->optionid==$formanswer)) { //check to see if current groupreg already selected - if not display error
-            print_error('groupregfull', 'groupreg');
-        }
+    
+    for ($b = 0; $b <= $groupreg->limitblanks; $b++) {
+        $blank = new stdClass();
+        $blank->optionid = intval($blanks[$b]);
+        if ($blank->optionid <= 0)
+            continue;
+        $blank->userid = $userid;
+        $blank->groupregid = $groupreg->id;
+        $blank->timemodified = time();
+        $blank->preference = 0;
+        
+        $DB->insert_record('groupreg_answers', $blank);
     }
 }
 
