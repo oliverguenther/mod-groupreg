@@ -62,12 +62,15 @@
                 redirect("view.php?id=$cm->id");
             }
         }
-        $answer = optional_param('answer', '', PARAM_INT);
+        
+        $favorites = optional_param('favs', '', PARAM_RAW);
+        $blanks = optional_param('blanks', '', PARAM_RAW);
 
-        if (empty($answer)) {
+        // determine if at least one favorite is selected properly
+        if ($favorites[0] <= 0) {
             redirect("view.php?id=$cm->id", get_string('mustchooseone', 'groupreg'));
         } else {
-            groupreg_user_submit_response($answer, $choice, $USER->id, $course, $cm);
+            groupreg_user_submit_response($favorites, $blanks, $choice, $USER->id, $course, $cm);
         }
         echo $OUTPUT->header();
         echo $OUTPUT->notification(get_string('groupregsaved', 'groupreg'),'notifysuccess');

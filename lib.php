@@ -239,13 +239,14 @@ function groupreg_prepare_options($groupreg, $user, $coursemodule, $allresponses
 
 /**
  * @global object
- * @param int $formanswer
  * @param object $groupreg
  * @param int $userid
  * @param object $course Course object
  * @param object $cm
  */
-function groupreg_user_submit_response($formanswer, $groupreg, $userid, $course, $cm) {
+function groupreg_user_submit_response($favorites, $blanks, $groupreg, $userid, $course, $cm) {
+    die("unimplemented");
+
     global $DB, $CFG;
     require_once($CFG->libdir.'/completionlib.php');
 
