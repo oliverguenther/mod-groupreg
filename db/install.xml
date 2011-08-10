@@ -16,8 +16,10 @@
         <FIELD NAME="display" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="showresults" NEXT="allowupdate"/>
         <FIELD NAME="allowupdate" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="display" NEXT="showunanswered"/>
         <FIELD NAME="showunanswered" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="allowupdate" NEXT="limitanswers"/>
-        <FIELD NAME="limitanswers" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="showunanswered" NEXT="timeopen"/>
-        <FIELD NAME="timeopen" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="limitanswers" NEXT="timeclose"/>
+        <FIELD NAME="limitanswers" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="showunanswered" NEXT="limitfavorites"/>
+        <FIELD NAME="limitfavorites" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="1" SEQUENCE="false" COMMENT="Number of choosable favorite groups" PREVIOUS="limitanswers" NEXT="limitblanks"/>
+        <FIELD NAME="limitblanks" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="1" SEQUENCE="false" COMMENT="Limit the number of choosable blanks" PREVIOUS="limitfavorites" NEXT="timeopen"/>
+        <FIELD NAME="timeopen" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="limitblanks" NEXT="timeclose"/>
         <FIELD NAME="timeclose" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="timeopen" NEXT="timemodified"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="timeclose" NEXT="completionsubmit"/>
         <FIELD NAME="completionsubmit" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="false" DEFAULT="0" SEQUENCE="false" COMMENT="If this field is set to 1, then the activity will be automatically marked as 'complete' once the user submits their groupreg." PREVIOUS="timemodified"/>
