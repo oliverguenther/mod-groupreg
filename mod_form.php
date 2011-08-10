@@ -58,7 +58,12 @@ class mod_groupreg_mod_form extends moodleform_mod {
         $mform->addElement('select', 'limitanswers', get_string('limitanswers', 'groupreg'), $menuoptions);
         $mform->addHelpButton('limitanswers', 'limitanswers', 'groupreg');
 
-
+        $favoptions = array(1,2,3,4,5,6,7,8,9,10);
+        $mform->addElement('select', 'limitfavorites', get_string('limitfavorites', 'groupreg'), $favoptions);
+        
+        $blankoptions = array(1,2,3,4,5,6,7,8,9,10);
+        $mform->addElement('select', 'limitblanks', get_string('limitblanks', 'groupreg'), $blankoptions);
+        
         if ($this->_instance){
             $repeatno = $DB->count_records('groupreg_options', array('groupregid'=>$this->_instance));
             $repeatno += 2;
@@ -78,9 +83,6 @@ class mod_groupreg_mod_form extends moodleform_mod {
 
         $this->repeat_elements($repeatarray, $repeatno,
                     $repeateloptions, 'option_repeats', 'option_add_fields', 3);
-
-
-
 
 //-------------------------------------------------------------------------------
         $mform->addElement('header', 'timerestricthdr', get_string('timerestrict', 'groupreg'));

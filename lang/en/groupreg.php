@@ -55,7 +55,7 @@ $string['choicetext'] = 'Auswahltext';
 $string['chooseaction'] = 'Wählen Sie eine Aktion ...';
 $string['choosegroup'] = 'Wählen Sie eine Gruppe';
 $string['limit'] = 'Beschränkung';
-$string['limitanswers'] = 'Anzahl der Antworten für diese Option einschränken';
+$string['limitanswers'] = 'Gruppengröße einschränken';
 $string['modulename'] = 'Webreg-Gruppenwahl';
 $string['modulename_help'] = 'Der Gruppenwahlmodul erlaubt es, Kursteilnehmern eine Auswahl an möglichen Gruppen zur Selbsteinwahl als Aktivität zur Verfügung zu stellen.';
 $string['modulenameplural'] = 'Webreg-Gruppenwahlen';
@@ -95,3 +95,6 @@ $string['numberofuser'] = 'Nummer des Benutzers';
 
 $string['members/max'] = 'Eingewählt / Kapazität';
 $string['groupmembers'] = 'Gruppenteilnehmer';
+
+$string['limitfavorites'] = 'Anzahl der w&auml;hlbaren Favoriten';
+$string['limitblanks'] = 'Anzahl der w&auml;hlbaren Nieten';
