@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/groupreg/db" VERSION="20110728" COMMENT="XMLDB file for Moodle mod/groupreg"
+<XMLDB PATH="mod/groupreg/db" VERSION="20110810" COMMENT="XMLDB file for Moodle mod/groupreg"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -42,7 +42,7 @@
         <KEY NAME="groupregid" TYPE="foreign" FIELDS="groupregid" REFTABLE="groupreg" REFFIELDS="id" PREVIOUS="primary"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="groupreg_answers" COMMENT="groupregs performed by users" PREVIOUS="groupreg_options">
+    <TABLE NAME="groupreg_answers" COMMENT="groupregs performed by users" PREVIOUS="groupreg_options" NEXT="groupreg_assigned">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="groupregid"/>
         <FIELD NAME="groupregid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="id" NEXT="userid"/>
@@ -58,6 +58,18 @@
       <INDEXES>
         <INDEX NAME="userid" UNIQUE="false" FIELDS="userid"/>
       </INDEXES>
+    </TABLE>
+    <TABLE NAME="groupreg_assigned" COMMENT="Saves results produced by the Perl/Java assignment toolchain." PREVIOUS="groupreg_answers">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="choicegroupid"/>
+        <FIELD NAME="choicegroupid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="id" NEXT="userid"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="choicegroupid" NEXT="assigned_optionid"/>
+        <FIELD NAME="assigned_optionid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="userid" NEXT="timeassigned"/>
+        <FIELD NAME="timeassigned" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="assigned_optionid"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="id" TYPE="primary" FIELDS="id"/>
+      </KEYS>
     </TABLE>
   </TABLES>
 </XMLDB>
