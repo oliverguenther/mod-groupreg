@@ -98,3 +98,7 @@ $string['groupmembers'] = 'Gruppenteilnehmer';
 
 $string['limitfavorites'] = 'Anzahl der w&auml;hlbaren Favoriten';
 $string['limitblanks'] = 'Anzahl der w&auml;hlbaren Nieten';
+
+$string['favorite_n'] = '{$a}. Favorit';
+$string['blank_n'] = '{$a}. Niete';
+$string['no_choice'] = 'Keine Auswahl';

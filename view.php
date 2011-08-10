@@ -125,7 +125,7 @@
 
         $options = groupreg_prepare_options($choice, $USER, $cm, $allresponses);
         $renderer = $PAGE->get_renderer('mod_groupreg');
-        echo $renderer->display_options($options, $cm->id, $choice->display);
+        echo $renderer->display_options($course, $choice, $options, $cm->id, $choice->display);
         $groupregformshown = true;
     } else {
         $groupregformshown = false;

@@ -34,73 +34,84 @@ class mod_groupreg_renderer extends plugin_renderer_base {
      * @param bool $vertical
      * @return string
      */
-    public function display_options($options, $coursemoduleid, $vertical = true) {
+    public function display_options($course, $groupreg, $options, $coursemoduleid, $vertical = true) {
         global $DB;
         $layoutclass = 'vertical';
         $target = new moodle_url('/mod/groupreg/view.php');
         $attributes = array('method'=>'POST', 'target'=>$target, 'class'=> $layoutclass);
 
         $html = html_writer::start_tag('form', $attributes);
-        $html .= html_writer::start_tag('table', array('class'=>'groupregs' ));
         
-        $html .= html_writer::start_tag('tr');
-        $html .= html_writer::tag('th', get_string('choice', 'groupreg'));
-        $html .= html_writer::tag('th', get_string('group'));
-        $html .= html_writer::tag('th', get_string('members/max', 'groupreg'));
-        $membersdisplay_html = '<div style="width:12px; height:12px; line-height:12px; cursor:pointer; text-align:center; display:block; border:1px #999 solid; margin:0px auto;" onclick="var groupregs = YAHOO.util.Dom.getElementsByClassName(\'groupregs_membersnames\'); if (this.innerHTML == \'+\') { this.innerHTML = \'-\'; for (var i=0; i < groupregs.length; i++) { groupregs[i].style.display=\'block\'; } } else { this.innerHTML = \'+\'; for (var i=0; i < groupregs.length; i++) { groupregs[i].style.display=\'none\'; } } return false;">+</div>';
-        $html .= html_writer::tag('th', get_string('groupmembers', 'groupreg') . $membersdisplay_html);
-        $html .= html_writer::end_tag('tr');
-
-        $availableoption = count($options['options']);
-        foreach ($options['options'] as $option) {
+        // get all group names
+        $groups = array();
+        $db_groups = $DB->get_records('groups', array('courseid' => $course->id));
+        foreach ($db_groups as $group) {
+            $groups[$group->id] = $group->name;
+        }
+        
+        // favorite choices
+        $html .= html_writer::start_tag('table', array('class'=>'groupregs' ));
+        for ($i = 0; $i <= $groupreg->limitfavorites; $i++) {
             $html .= html_writer::start_tag('tr', array('class'=>'option'));
+            
+            $html .= html_writer::tag('td', get_string('favorite_n', 'groupreg', $i+1).':', array());
+            
             $html .= html_writer::start_tag('td', array());
-            $option->attributes->name = 'answer';
-            $option->attributes->type = 'radio';
-
-            $group = $DB->get_record('groups', array('id' => $option->text));
-            $labeltext = $group->name;
-            $group_members = $DB->get_records('groups_members', array('groupid' => $group->id));
-            $group_members_names = array();
-            foreach ($group_members as $group_member) {
-                $group_user = $DB->get_record('user', array('id' => $group_member->userid));
-                $group_members_names[] = $group_user->lastname . ', ' . $group_user->firstname;
+            $html .= html_writer::start_tag('select', array('name' => "favs[$i]"));
+            $html .= html_writer::tag('option', get_string('no_choice', 'groupreg'), array('value' => 0));
+            foreach ($options['options'] as $option) {
+                $groupname = $groups[$option->attributes->value];
+                if ($option->maxanswers > 0) $max = $option->maxanswers;
+                else $max = "&#8734;";
+                $html .= html_writer::tag('option', $groupname.' ('.$max.')', array('value' => $option->attributes->value));
             }
-            sort($group_members_names);
-            if (!empty($option->attributes->disabled)) {
-                $labeltext .= ' ' . get_string('full', 'groupreg');
-                $availableoption--;
-            }
-
-            $html .= html_writer::empty_tag('input', (array)$option->attributes);
-            $html .= html_writer::tag('td', $labeltext, array('for'=>$option->attributes->name));
-            $html .= html_writer::tag('td', sizeof($group_members_names).' / '.$option->maxanswers, array('class' => 'center'));
-            $group_members_html = '<!--<div style="width:12px; height:12px; line-height:12px; cursor:pointer; text-align:center; display:block; border:1px #999 solid; margin:0px auto;" onclick="if (this.innerHTML == \'+\') { this.innerHTML = \'-\'; document.getElementById(\'groupreg_'.$option->attributes->value.'\').style.display=\'block\'; } else { this.innerHTML = \'+\'; document.getElementById(\'groupreg_'.$option->attributes->value.'\').style.display=\'none\'; } return false;">+</div>--><div class="groupregs_membersnames" id="groupreg_'.$option->attributes->value.'" style="display:none;">'.implode('<br />', $group_members_names).'</div>';
-            $html .= html_writer::tag('td', $group_members_html, array('class' => 'center'));
+            $html .= html_writer::end_tag('select');
             $html .= html_writer::end_tag('td');
+            
             $html .= html_writer::end_tag('tr');
         }
         $html .= html_writer::end_tag('table');
+        
+        // blank choices
+        $html .= html_writer::start_tag('table', array('class'=>'groupregs' ));
+        for ($i = 0; $i <= $groupreg->limitblanks; $i++) {
+            $html .= html_writer::start_tag('tr', array('class'=>'option'));
+            
+            $html .= html_writer::tag('td', get_string('blank_n', 'groupreg', $i+1).':', array());
+            
+            $html .= html_writer::start_tag('td', array());
+            $html .= html_writer::start_tag('select', array('name' => "blanks[$i]"));
+            $html .= html_writer::tag('option', get_string('no_choice', 'groupreg'), array('value' => 0));
+            foreach ($options['options'] as $option) {
+                $groupname = $groups[$option->attributes->value];
+                if ($option->maxanswers > 0) $max = $option->maxanswers;
+                else $max = "&#8734;";
+                $html .= html_writer::tag('option', $groupname.' ('.$max.')', array('value' => $option->attributes->value));
+            }
+            $html .= html_writer::end_tag('select');
+            $html .= html_writer::end_tag('td');
+            
+            $html .= html_writer::end_tag('tr');
+        }
+        
+        $html .= html_writer::end_tag('table');
+        
+        // form footer
         $html .= html_writer::tag('div', '', array('class'=>'clearfloat'));
         $html .= html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'sesskey', 'value'=>sesskey()));
         $html .= html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'id', 'value'=>$coursemoduleid));
 
         if (!empty($options['hascapability']) && ($options['hascapability'])) {
-            if ($availableoption < 1) {
-               $html .= html_writer::tag('td', get_string('groupregfull', 'groupreg'));
-            } else {
-                $html .= html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('savemygroupreg','groupreg'), 'class'=>'button'));
-            }
-
+            $html .= html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('savemygroupreg','groupreg'), 'class'=>'button'));
+           
             if (!empty($options['allowupdate']) && ($options['allowupdate'])) {
                 $url = new moodle_url('view.php', array('id'=>$coursemoduleid, 'action'=>'delgroupreg', 'sesskey'=>sesskey()));
                 $html .= html_writer::link($url, get_string('removemygroupreg','groupreg'));
             }
         } else {
-            $html .= html_writer::tag('td', get_string('havetologin', 'groupreg'));
+            $html .= html_writer::tag('div', get_string('havetologin', 'groupreg'));
         }
 
-        $html .= html_writer::end_tag('table');
         $html .= html_writer::end_tag('form');
 
         return $html;
