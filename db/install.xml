@@ -65,9 +65,9 @@
     <TABLE NAME="groupreg_assigned" COMMENT="Saves results produced by the Perl/Java assignment toolchain." PREVIOUS="groupreg_answers">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="choicegroupid"/>
-        <FIELD NAME="choicegroupid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="id" NEXT="userid"/>
+        <FIELD NAME="groupregid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="id" NEXT="userid"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="choicegroupid" NEXT="assigned_optionid"/>
-        <FIELD NAME="assigned_optionid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="userid" NEXT="timeassigned"/>
+        <FIELD NAME="optionid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="userid" NEXT="timeassigned"/>
         <FIELD NAME="timeassigned" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="assigned_optionid"/>
       </FIELDS>
       <KEYS>
