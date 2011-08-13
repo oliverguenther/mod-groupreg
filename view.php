@@ -110,10 +110,14 @@
     }
 
     $current = false;  // Initialise for later
-    //if user has already made a selection, and they are not allowed to update it, show their selected answer.
-    if (isloggedin() && ($current = $DB->get_record('groupreg_answers', array('groupregid' => $choice->id, 'userid' => $USER->id))) &&
+    $renderer = $PAGE->get_renderer('mod_groupreg');
+	
+	// if user has already made a selection, and they are not allowed to update it, show their selected answers.
+	// TODO: properly show the selected answers
+    if (isloggedin() && ($current = $DB->get_records('groupreg_answers', array('groupregid' => $choice->id, 'userid' => $USER->id))) &&
         empty($choice->allowupdate) ) {
-        echo $OUTPUT->box(get_string("yourselection", "groupreg", userdate($choice->timeopen)).": ".format_string(groupreg_get_option_text($choice, $current->optionid)), 'generalbox', 'yourselection');
+		echo $renderer->display_current_choice($course, $choice, $current);
+        //echo $OUTPUT->box(get_string("yourselection", "groupreg", userdate($choice->timeopen)).": ".format_string(groupreg_get_option_text($choice, $current->optionid)), 'generalbox', 'yourselection');
     }
 
 /// Print the form
@@ -131,9 +135,9 @@
     }
 
     if ( (!$current or $choice->allowupdate) and $groupregopen and is_enrolled($context, NULL, 'mod/groupreg:choose')) {
-    // They haven't made their groupreg yet or updates allowed and groupreg is open
+    // They haven't made their choice yet or updates allowed and groupreg is open
         $options = groupreg_prepare_options($choice, $USER, $cm, $allresponses);
-        $renderer = $PAGE->get_renderer('mod_groupreg');
+        
         echo $renderer->display_options($course, $choice, $options, $cm->id, $choice->display);
         $groupregformshown = true;
     } else {

@@ -66,6 +66,7 @@
     }
     $users = groupreg_get_response_data($choice, $cm, $groupmode);
 
+	/*
     if ($download == "ods" && has_capability('mod/groupreg:downloadresponses', $context)) {
         require_once("$CFG->libdir/odslib.class.php");
 
@@ -214,14 +215,14 @@
             }
         }
         exit;
-    }
+    }*/
 
     $results = prepare_groupreg_show_results($choice, $course, $cm, $users);
     $renderer = $PAGE->get_renderer('mod_groupreg');
     echo $renderer->display_result($results, has_capability('mod/groupreg:readresponses', $context));
     
    //now give links for downloading spreadsheets.
-    if (!empty($users) && has_capability('mod/groupreg:downloadresponses',$context)) {
+    /*if (!empty($users) && has_capability('mod/groupreg:downloadresponses',$context)) {
         $downloadoptions = array();
         $options = array();
         $options["id"] = "$cm->id";
@@ -240,6 +241,6 @@
         $downloadlist = html_writer::tag('ul', implode('', $downloadoptions));
         $downloadlist .= html_writer::tag('div', '', array('class'=>'clearfloat'));
         echo html_writer::tag('div',$downloadlist, array('class'=>'downloadreport'));
-    }
+    }*/
     echo $OUTPUT->footer();
 

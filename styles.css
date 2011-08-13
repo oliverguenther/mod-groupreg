@@ -58,12 +58,10 @@
 #page-mod-choice-report.dir-rtl .downloadreport ul li{float:right;}
 #page-mod-choice-view.dir-rtl .reportlink {text-align: left;}
 
-
-
-
-
-
 .path-mod-groupreg table { border: 1px #666 solid; }
 .path-mod-groupreg td { border-top: 1px #666 solid; }
 .path-mod-groupreg th, .path-mod-groupreg td { padding:10px 15px; }
 .path-mod-groupreg td.center { text-align:center; }
+
+span.groupreg-favorite { font-weight: bold; color: darkgreen; }
+span.groupreg-blank { font-weight: bold; color: darkred; }

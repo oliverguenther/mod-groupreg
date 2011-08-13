@@ -27,8 +27,66 @@ define ('DISPLAY_VERTICAL_LAYOUT', 1);
 
 class mod_groupreg_renderer extends plugin_renderer_base {
 
+	/**
+	 * Returns HTML to display the choice results for a single user
+	 * @global type $DB
+	 * @global type $OUTPUT
+	 * @param type $course
+	 * @param type $groupreg
+	 * @param type $current DB records from groupreg_answers to display
+	 */
+	public function display_current_choice($course, $groupreg, $current) {
+		global $DB, $OUTPUT;
+		$html = '';
+		
+		// fetch all group names from this course
+		$groupnames = array();
+        $db_groups = $DB->get_records('groups', array('courseid' => $course->id));
+        foreach ($db_groups as $group)
+            $groupnames[$group->id] = $group->name;
+		
+		// fetch options and map option IDs to group IDs
+		$groupids = array();
+		$db_options = $DB->get_records('groupreg_options', array('groupregid' => $groupreg->id));
+		foreach($db_options as $option)
+			$groupids[$option->id] = intval($option->text);
+		
+		// map group names to every given answer
+		$favorites = array();
+		$blanks = array();
+		foreach ($current as $answer) {
+			if ($answer->preference > 0)
+				$favorites[$answer->preference] = $groupnames[$groupids[$answer->optionid]];
+			else
+				$blanks[] = $groupnames[$groupids[$answer->optionid]];
+		}
+		
+		// display header
+		$html .= "<b>".get_string("yourselection", "groupreg")."</b>:<ul>";
+		
+		// display favorites
+		for ($i = 0; $i <= $groupreg->limitfavorites; $i++) {
+			if (isset($favorites[$i+1])) {
+				$html .= "<li>".get_string('favorite_n', 'groupreg', $i+1).": <span class='groupreg-favorite'>".$favorites[$i+1]."</span></li>";
+			} else {
+				$html .= "<li>".get_string('favorite_n', 'groupreg', $i+1).": <i>".get_string('no_choice', 'groupreg')."</i></li>";
+			}
+		}
+		
+		// display blanks
+		for ($i = 0; $i <= $groupreg->limitblanks; $i++) {
+			if (isset($blanks[$i])) {
+				$html .= "<li>".get_string('blank_n', 'groupreg', $i+1).": <span class='groupreg-blank'>".$blanks[$i]."</span></li>";
+			}
+		}
+		
+		$html .= "</ul>";
+		
+		return $OUTPUT->box($html, 'generalbox', 'yourselection');
+	}
+	
     /**
-     * Returns HTML to display groupregs of option
+     * Returns HTML to display the choice form with all available options for the user
      * @param object $options
      * @param int  $coursemoduleid
      * @param bool $vertical
