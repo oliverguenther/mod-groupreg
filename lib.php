@@ -247,6 +247,8 @@ function groupreg_prepare_options($groupreg, $user, $coursemodule, $allresponses
 }
 
 /**
+ * Submit a response by a user, save it to the database. All old entries by the same user are deleted.
+ * 
  * @global object
  * @param object $groupreg
  * @param int $userid
@@ -493,6 +495,8 @@ function prepare_groupreg_show_results($groupreg, $course, $cm, $allresponses, $
 }
 
 /**
+ * Deletes all responses by users listed in $attemptids
+ * 
  * @global object
  * @param array $attemptids
  * @param object $groupreg Choice main table row
@@ -516,12 +520,7 @@ function groupreg_delete_responses($attemptids, $groupreg, $cm, $course) {
 
     $completion = new completion_info($course);
     foreach($attemptids as $attemptid) {
-        if ($todelete = $DB->get_record('groupreg_answers', array('groupregid' => $groupreg->id, 'userid' => $attemptid))) {
-            // TODO : begin
-            $old_answer = $DB->get_record("groupreg_answers", array('groupregid' => $groupreg->id, 'userid' => $attemptid));
-            $old_option = $DB->get_record("groupreg_options", array('id' => $old_answer->optionid));
-            groups_remove_member($old_option->text, $attemptid);
-            // TODO : end
+        if ($DB->count_records('groupreg_answers', array('groupregid' => $groupreg->id, 'userid' => $attemptid)) > 0) {
             $DB->delete_records('groupreg_answers', array('groupregid' => $groupreg->id, 'userid' => $attemptid));
             // Update completion state
             if ($completion->is_enabled($cm) && $groupreg->completionsubmit) {
@@ -682,7 +681,7 @@ function groupreg_reset_userdata($data) {
                        FROM {groupreg} ch
                        WHERE ch.course=?";
 
-        $DB->delete_records_select('groupreg_answers', "groupregid IN ($groupregssql)", array($data->courseid)); // TODO (à voir...)
+        $DB->delete_records_select('groupreg_answers', "groupregid IN ($groupregssql)", array($data->courseid));
         $status[] = array('component'=>$componentstr, 'item'=>get_string('removeresponses', 'groupreg'), 'error'=>false);
     }
 

@@ -2,7 +2,7 @@
 
     require_once("../../config.php");
     require_once("lib.php");
-    require_once($CFG->dirroot.'/group/lib.php');
+	require_once($CFG->dirroot.'/group/lib.php'); 
     require_once($CFG->libdir . '/completionlib.php');
 
     $id         = required_param('id', PARAM_INT);                 // Course Module ID
@@ -13,8 +13,12 @@
     if ($action !== '') {
         $url->param('action', $action);
     }
+	
     $PAGE->set_url($url);
-
+	
+	/*
+	 * Handling errors of misconfiguration and course access
+	 */
     if (! $cm = get_coursemodule_from_id('groupreg', $id)) {
         print_error('invalidcoursemodule');
     }
@@ -28,18 +32,21 @@
     if (!$choice = groupreg_get_groupreg($cm->instance)) {
         print_error('invalidcoursemodule');
     }
-
-    $strchoice = get_string('modulename', 'groupreg');
-    $strchoices = get_string('modulenameplural', 'groupreg');
-
+    
     if (!$context = get_context_instance(CONTEXT_MODULE, $cm->id)) {
         print_error('badcontext');
     }
-
+	
+	$PAGE->set_title(format_string($choice->name));
+    $PAGE->set_heading($course->fullname);
+		
+	/*
+	 * TODO: fix delgroupreg (removing all participation by a user)
+	 */
     if ($action == 'delgroupreg' and confirm_sesskey() and is_enrolled($context, NULL, 'mod/groupreg:choose') and $choice->allowupdate) {
         if ($answer = $DB->get_record('groupreg_answers', array('groupregid' => $choice->id, 'userid' => $USER->id))) {
             $old_option = $DB->get_record('groupreg_options', array('id' => $answer->optionid));
-            groups_remove_member($old_option->text, $USER->id);
+            //groups_remove_member($old_option->text, $USER->id);
             $DB->delete_records('groupreg_answers', array('id' => $answer->id));
 
             // Update completion state
@@ -50,12 +57,11 @@
         }
     }
 
-    $PAGE->set_title(format_string($choice->name));
-    $PAGE->set_heading($course->fullname);
-
-/// Submit any new data if there is any
+    
+	/*
+	 * data submitted, check and save to DB
+	 */
     if (data_submitted() && is_enrolled($context, NULL, 'mod/groupreg:choose') && confirm_sesskey()) {
-        $timenow = time();
         if (has_capability('mod/groupreg:deleteresponses', $context)) {
             if ($action == 'delete') { //some responses need to be deleted
                 groupreg_delete_responses($attemptids, $choice, $cm, $course); //delete responses.
@@ -66,6 +72,7 @@
         $favorites = optional_param('favs', '', PARAM_RAW);
         $blanks = optional_param('blanks', '', PARAM_RAW);
 
+		// TODO: implement a proper check if input values, no same group twice, etc.
         // determine if at least one favorite is selected properly
         if ($favorites[0] <= 0) {
             redirect("view.php?id=$cm->id", get_string('mustchooseone', 'groupreg'));
@@ -79,7 +86,7 @@
     }
 
 
-/// Display the groupreg and possibly results
+	/// Display the groupreg and possibly results
     add_to_log($course->id, "groupreg", "view", "view.php?id=$cm->id", $choice->id, $cm->id);
 
     /// Check to see if groups are being used in this groupreg
