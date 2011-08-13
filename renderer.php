@@ -60,10 +60,10 @@ class mod_groupreg_renderer extends plugin_renderer_base {
             $html .= html_writer::start_tag('select', array('name' => "favs[$i]"));
             $html .= html_writer::tag('option', get_string('no_choice', 'groupreg'), array('value' => 0));
             foreach ($options['options'] as $option) {
-                $groupname = $groups[$option->attributes->value];
+                $groupname = $groups[$option->groupid];
                 if ($option->maxanswers > 0) $max = $option->maxanswers;
                 else $max = "&#8734;";
-                $html .= html_writer::tag('option', $groupname.' ('.$max.')', array('value' => $option->attributes->value));
+                $html .= html_writer::tag('option', $groupname.' ('.$max.')', array('value' => $option->optionid));
             }
             $html .= html_writer::end_tag('select');
             $html .= html_writer::end_tag('td');
@@ -83,10 +83,10 @@ class mod_groupreg_renderer extends plugin_renderer_base {
             $html .= html_writer::start_tag('select', array('name' => "blanks[$i]"));
             $html .= html_writer::tag('option', get_string('no_choice', 'groupreg'), array('value' => 0));
             foreach ($options['options'] as $option) {
-                $groupname = $groups[$option->attributes->value];
+                $groupname = $groups[$option->groupid];
                 if ($option->maxanswers > 0) $max = $option->maxanswers;
                 else $max = "&#8734;";
-                $html .= html_writer::tag('option', $groupname.' ('.$max.')', array('value' => $option->attributes->value));
+                $html .= html_writer::tag('option', $groupname.' ('.$max.')', array('value' => $option->optionid));
             }
             $html .= html_writer::end_tag('select');
             $html .= html_writer::end_tag('td');

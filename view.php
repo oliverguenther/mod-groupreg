@@ -125,7 +125,6 @@
 
     if ( (!$current or $choice->allowupdate) and $groupregopen and is_enrolled($context, NULL, 'mod/groupreg:choose')) {
     // They haven't made their groupreg yet or updates allowed and groupreg is open
-
         $options = groupreg_prepare_options($choice, $USER, $cm, $allresponses);
         $renderer = $PAGE->get_renderer('mod_groupreg');
         echo $renderer->display_options($course, $choice, $options, $cm->id, $choice->display);

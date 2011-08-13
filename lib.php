@@ -204,11 +204,18 @@ function groupreg_prepare_options($groupreg, $user, $coursemodule, $allresponses
     $cdisplay['limitanswers'] = true;
     $context = get_context_instance(CONTEXT_MODULE, $coursemodule->id);
 
+    // prefetch answers given by this user
+    $dbAnswers = $DB->get_records('groupreg_answers', array('groupregid' => $groupreg->id, 'userid' => $user->id));
+    $optionPreferences = array();
+    foreach($dbAnswers as $answer) {
+        $optionPreferences[$answer->optionid] = $answer->preference;
+    }
+    
     foreach ($groupreg->option as $optionid => $text) {
         if (isset($text)) { //make sure there are no dud entries in the db with blank text values.
             $option = new stdClass;
-            $option->attributes = new stdClass;
-            $option->attributes->value = $optionid;
+            $option->optionid = $optionid;
+            $option->groupid = intval($text);
             $option->text = $text;
             $option->maxanswers = $groupreg->maxanswers[$optionid];
             $option->displaylayout = $groupreg->display;
@@ -218,12 +225,14 @@ function groupreg_prepare_options($groupreg, $user, $coursemodule, $allresponses
             } else {
                 $option->countanswers = 0;
             }
-            if ($DB->record_exists('groupreg_answers', array('groupregid' => $groupreg->id, 'userid' => $user->id, 'optionid' => $optionid))) {
-                $option->attributes->checked = true;
+            //if ($DB->record_exists('groupreg_answers', array('groupregid' => $groupreg->id, 'userid' => $user->id, 'optionid' => $optionid))) {
+            if (isset($optionPreferences[$optionid])) {
+                $option->checked = true;
+                $option->preference = $optionPreferences[$optionid];
             }
-            if ( $groupreg->limitanswers && ($option->countanswers >= $option->maxanswers) && empty($option->attributes->checked)) {
-                $option->attributes->disabled = true;
-            }
+            /*if ( $groupreg->limitanswers && ($option->countanswers >= $option->maxanswers) && empty($option->checked)) {
+                $option->disabled = true;
+            }*/
             $cdisplay['options'][] = $option;
         }
     }
