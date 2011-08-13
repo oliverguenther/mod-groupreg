@@ -229,10 +229,10 @@ function groupreg_prepare_options($groupreg, $user, $coursemodule, $allresponses
             if (isset($optionPreferences[$optionid])) {
                 $option->checked = true;
                 $option->preference = $optionPreferences[$optionid];
-            }
-            /*if ( $groupreg->limitanswers && ($option->countanswers >= $option->maxanswers) && empty($option->checked)) {
-                $option->disabled = true;
-            }*/
+				$option->displayed = false;
+            } else {
+				$option->checked = false;
+			}
             $cdisplay['options'][] = $option;
         }
     }

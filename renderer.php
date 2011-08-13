@@ -110,18 +110,25 @@ class mod_groupreg_renderer extends plugin_renderer_base {
         // favorite choices
         $html .= html_writer::start_tag('table', array('class'=>'groupregs' ));
         for ($i = 0; $i <= $groupreg->limitfavorites; $i++) {
+			$preference = $i+1;
             $html .= html_writer::start_tag('tr', array('class'=>'option'));
             
-            $html .= html_writer::tag('td', get_string('favorite_n', 'groupreg', $i+1).':', array());
+            $html .= html_writer::tag('td', get_string('favorite_n', 'groupreg', $preference).':', array());
             
             $html .= html_writer::start_tag('td', array());
             $html .= html_writer::start_tag('select', array('name' => "favs[$i]"));
             $html .= html_writer::tag('option', get_string('no_choice', 'groupreg'), array('value' => 0));
             foreach ($options['options'] as $option) {
                 $groupname = $groups[$option->groupid];
-                if ($option->maxanswers > 0) $max = $option->maxanswers;
+                
+				if ($option->maxanswers > 0) $max = $option->maxanswers;
                 else $max = "&#8734;";
-                $html .= html_writer::tag('option', $groupname.' ('.$max.')', array('value' => $option->optionid));
+				
+				$attributes = array('value' => $option->optionid);
+				if ($option->checked && $preference == $option->preference)
+					$attributes['selected'] = true;
+				
+                $html .= html_writer::tag('option', $groupname.' ('.$max.')', $attributes);
             }
             $html .= html_writer::end_tag('select');
             $html .= html_writer::end_tag('td');
@@ -133,7 +140,9 @@ class mod_groupreg_renderer extends plugin_renderer_base {
         // blank choices
         $html .= html_writer::start_tag('table', array('class'=>'groupregs' ));
         for ($i = 0; $i <= $groupreg->limitblanks; $i++) {
-            $html .= html_writer::start_tag('tr', array('class'=>'option'));
+			$blank_shown = false; // whether this blank field already displays one chosen blank option
+            
+			$html .= html_writer::start_tag('tr', array('class'=>'option'));
             
             $html .= html_writer::tag('td', get_string('blank_n', 'groupreg', $i+1).':', array());
             
@@ -142,9 +151,18 @@ class mod_groupreg_renderer extends plugin_renderer_base {
             $html .= html_writer::tag('option', get_string('no_choice', 'groupreg'), array('value' => 0));
             foreach ($options['options'] as $option) {
                 $groupname = $groups[$option->groupid];
+				
                 if ($option->maxanswers > 0) $max = $option->maxanswers;
                 else $max = "&#8734;";
-                $html .= html_writer::tag('option', $groupname.' ('.$max.')', array('value' => $option->optionid));
+				
+				$attributes = array('value' => $option->optionid);
+				if (!$blank_shown && $option->checked && $option->preference == 0 && !$option->displayed) {
+					$option->displayed = true; // dont display this blank option in following fields
+					$blank_shown = true; // dont display any other blank option in this field
+					$attributes['selected'] = true;
+				}
+				
+                $html .= html_writer::tag('option', $groupname.' ('.$max.')', $attributes);
             }
             $html .= html_writer::end_tag('select');
             $html .= html_writer::end_tag('td');
