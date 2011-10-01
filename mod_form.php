@@ -41,16 +41,7 @@ class mod_groupreg_mod_form extends moodleform_mod {
 //-------------------------------------------------------------------------------
         $mform->addElement('header', 'miscellaneoussettingshdr', get_string('miscellaneoussettings', 'form'));
 
-//         $mform->addElement('select', 'display', get_string("displaymode","groupreg"), $groupreg_DISPLAY);
-
-//         $mform->addElement('select', 'showresults', get_string("publish", "groupreg"), $groupreg_SHOWRESULTS);
-
-//         $mform->addElement('select', 'publish', get_string("privacy", "groupreg"), $groupreg_PUBLISH);
-//         $mform->disabledIf('publish', 'showresults', 'eq', 0);
-
         $mform->addElement('selectyesno', 'allowupdate', get_string("allowupdate", "groupreg"));
-
-//         $mform->addElement('selectyesno', 'showunanswered', get_string("showunanswered", "groupreg"));
 
         $menuoptions = array();
         $menuoptions[1] = get_string('enable');

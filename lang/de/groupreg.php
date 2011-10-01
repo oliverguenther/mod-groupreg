@@ -102,3 +102,13 @@ $string['limitblanks'] = 'Anzahl der w&auml;hlbaren Nieten';
 $string['favorite_n'] = '{$a}. Favorit';
 $string['blank_n'] = '{$a}. Niete';
 $string['no_choice'] = 'Keine Auswahl';
+
+$string['performassignment'] = 'Zuweisung ausführen';
+$string['performassignmentnote'] = 'Achtung! Die Zuweisung kann nur einmal ausgeführt werden. Dabei wird die Auswahl geschlossen und kann nicht mehr geöffnet werden. Wollen Sie die Zuweisung wirklich ausführen?';
+
+$string['performingassignment'] = 'Zuweisung wird ausgeführt...';
+$string['assignmentok'] = 'Zuweisung wurde erfolgreich beendet';
+$string['assignmentproblem'] = 'Zuweisung wurde mit einem Fehler beendet. Keine Ergebnisse wurden in die Datenbank eingetragen.';
+
+$string['settings_perlscript'] = 'Perl-Script';
+$string['settings_perlscript_desc'] = 'Voller Pfad zum Script, der die Zuweisung ausführt';

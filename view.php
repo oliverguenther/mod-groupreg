@@ -56,8 +56,35 @@
             }
         }
     }
-
     
+    echo $OUTPUT->header();
+    
+    /*
+     * Action: perform assignment.
+     * Closes the activity, performs a syscall to the perl script, and places a lock on this activity assignment to prevent double assignments.
+     */
+    if ($choice->assigned == 0 and $action == 'assign' and confirm_sesskey() and has_capability('mod/groupreg:performassignment', $PAGE->cm->context)) {
+        echo $OUTPUT->notification(get_string('performingassignment', 'groupreg'), 'notifyproblem');
+        
+        $script = $CFG->groupreg_perlscript;
+        if ($script == '' || !file_exists($script)) {
+            // script file setting is not correct, cancel
+            echo $OUTPUT->notification(get_string('assignmentproblem', 'groupreg').'<br>Script file not found or no rights to execute.', 'notifyproblem');
+        } else {
+            // script file ok, run it, set lock, wait to finish
+            $command = "perl $script $CFG->prefix $choice->id";
+            echo $OUTPUT->notification("Running command: '$command'...", 'notifysuccess');
+            
+            exec($command);
+            
+            // TODO: process data from assignment table and empty the table
+            
+        
+            echo $OUTPUT->notification(get_string('assignmentok', 'groupreg'), 'notifysuccess');
+        }
+        
+    }
+
 	/*
 	 * data submitted, check and save to DB
 	 */
@@ -79,12 +106,8 @@
         } else {
             groupreg_user_submit_response($favorites, $blanks, $choice, $USER->id, $course, $cm);
         }
-        echo $OUTPUT->header();
         echo $OUTPUT->notification(get_string('groupregsaved', 'groupreg'),'notifysuccess');
-    } else {
-        echo $OUTPUT->header();
     }
-
 
 	/// Display the groupreg and possibly results
     add_to_log($course->id, "groupreg", "view", "view.php?id=$cm->id", $choice->id, $cm->id);

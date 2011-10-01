@@ -804,6 +804,10 @@ function groupreg_extend_settings_navigation(settings_navigation $settings, navi
         }
         $groupregnode->add(get_string("viewallresponses", "groupreg", $responsecount), new moodle_url('/mod/groupreg/report.php', array('id'=>$PAGE->cm->id)));
     }
+    
+    if (has_capability('mod/groupreg:performassignment', $PAGE->cm->context)) {
+        $groupregnode->add(get_string("performassignment", "groupreg"), new moodle_url('/mod/groupreg/view.php', array('id'=>$PAGE->cm->id, 'action'=>'assign', 'sesskey'=>sesskey())));
+    }
 }
 
 /**
