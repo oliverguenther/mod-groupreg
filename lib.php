@@ -540,31 +540,21 @@ function prepare_groupreg_show_results($groupreg, $course, $cm, $allresponses, $
  * @param object $course Course object
  * @return bool
  */
-function groupreg_delete_responses($attemptids, $groupreg, $cm, $course) {
+function groupreg_delete_responses($userid, $groupreg, $cm, $course) {
     global $DB, $CFG;
     require_once($CFG->libdir.'/completionlib.php');
 
-    if(!is_array($attemptids) || empty($attemptids)) {
-        return false;
-    }
-
-    foreach($attemptids as $num => $attemptid) {
-        if(empty($attemptid)) {
-            unset($attemptids[$num]);
-        }
-    }
-
     $completion = new completion_info($course);
-    foreach($attemptids as $attemptid) {
-        if ($DB->count_records('groupreg_answers', array('groupregid' => $groupreg->id, 'userid' => $attemptid)) > 0) {
-            $DB->delete_records('groupreg_answers', array('groupregid' => $groupreg->id, 'userid' => $attemptid));
-            // Update completion state
-            if ($completion->is_enabled($cm) && $groupreg->completionsubmit) {
-                $completion->update_state($cm, COMPLETION_INCOMPLETE, $attemptid);
-            }
+    if ($DB->count_records('groupreg_answers', array('groupregid' => $groupreg->id, 'userid' => $userid)) > 0) {
+        $DB->delete_records('groupreg_answers', array('groupregid' => $groupreg->id, 'userid' => $userid));
+        // Update completion state
+        if ($completion->is_enabled($cm) && $groupreg->completionsubmit) {
+            $completion->update_state($cm, COMPLETION_INCOMPLETE, $userid);
         }
+        return true;
     }
-    return true;
+    
+    return false;
 }
 
 

@@ -37,53 +37,25 @@
         print_error('badcontext');
     }
 	
-	$PAGE->set_title(format_string($choice->name));
+    $PAGE->set_title(format_string($choice->name));
     $PAGE->set_heading($course->fullname);
 		
-	/*
-	 * TODO: fix delgroupreg (removing all participation by a user)
+    /*
+	 * Action: delgroupreg (removing all participation by a user)
 	 */
-    if ($action == 'delgroupreg' and confirm_sesskey() and is_enrolled($context, NULL, 'mod/groupreg:choose') and $choice->allowupdate) {
-        if ($answer = $DB->get_record('groupreg_answers', array('groupregid' => $choice->id, 'userid' => $USER->id))) {
-            $old_option = $DB->get_record('groupreg_options', array('id' => $answer->optionid));
-            //groups_remove_member($old_option->text, $USER->id);
-            $DB->delete_records('groupreg_answers', array('id' => $answer->id));
-
-            // Update completion state
-            $completion = new completion_info($course);
-            if ($completion->is_enabled($cm) && $choice->completionsubmit) {
-                $completion->update_state($cm, COMPLETION_INCOMPLETE);
-            }
+    if ($choice->assigned == 0 and $action == 'delgroupreg' 
+            and confirm_sesskey() and is_enrolled($context, NULL, 'mod/groupreg:choose') 
+            and $choice->allowupdate) {
+        if (groupreg_delete_responses($USER->id, $choice, $cm, $course)) {
+            redirect("view.php?id=$cm->id", get_string('deleteok', 'groupreg'));
         }
     }
-    
-    echo $OUTPUT->header();
     
     /*
-     * Action: perform assignment.
-     * Closes the activity, performs a syscall to the perl script, and places a lock on this activity assignment to prevent double assignments.
-     */
-    if ($choice->assigned == 0 and $action == 'assign' and confirm_sesskey() and has_capability('mod/groupreg:performassignment', $PAGE->cm->context)) {
-        echo $OUTPUT->notification(get_string('performingassignment', 'groupreg'), 'notifyproblem');
-        
-        if (groupreg_perform_assignment($choice))
-            echo $OUTPUT->notification(get_string('assignmentok', 'groupreg'), 'notifysuccess');
-        else
-            echo $OUTPUT->notification(get_string('assignmentproblem', 'groupreg'), 'notifyproblem');
-        
-    }
-
-	/*
-	 * data submitted, check and save to DB
+	 * Action: data submitted, check and save to DB
 	 */
     if ($choice->assigned == 0 and data_submitted() && is_enrolled($context, NULL, 'mod/groupreg:choose') && confirm_sesskey()) {
-        if (has_capability('mod/groupreg:deleteresponses', $context)) {
-            if ($action == 'delete') { //some responses need to be deleted
-                groupreg_delete_responses($attemptids, $choice, $cm, $course); //delete responses.
-                redirect("view.php?id=$cm->id");
-            }
-        }
-        
+                
         $favorites = optional_param('favs', '', PARAM_RAW);
         $blanks = optional_param('blanks', '', PARAM_RAW);
 
@@ -94,7 +66,26 @@
         } else {
             groupreg_user_submit_response($favorites, $blanks, $choice, $USER->id, $course, $cm);
         }
-        echo $OUTPUT->notification(get_string('groupregsaved', 'groupreg'),'notifysuccess');
+        redirect("view.php?id=$cm->id", get_string('groupregsaved', 'groupreg'));
+    }
+        
+    echo $OUTPUT->header();
+   
+     
+    /*
+     * Action: perform assignment.
+     * Closes the activity, performs a syscall to the perl script, and places a lock on this activity assignment to prevent double assignments.
+     */
+    if ($choice->assigned == 0 and $action == 'assign' 
+            and confirm_sesskey() 
+            and has_capability('mod/groupreg:performassignment', $PAGE->cm->context)) {
+        echo $OUTPUT->notification(get_string('performingassignment', 'groupreg'), 'notifyproblem');
+        
+        if (groupreg_perform_assignment($choice))
+            echo $OUTPUT->notification(get_string('assignmentok', 'groupreg'), 'notifysuccess');
+        else
+            echo $OUTPUT->notification(get_string('assignmentproblem', 'groupreg'), 'notifyproblem');
+        
     }
 
 	/// Display the groupreg and possibly results

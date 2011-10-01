@@ -113,3 +113,6 @@ $string['assignment_result'] = 'Sie wurden der Gruppe <b>{$a}</b> zugewiesen.';
 
 $string['settings_perlscript'] = 'Perl-Script';
 $string['settings_perlscript_desc'] = 'Voller Pfad zum Script, der die Zuweisung ausführt';
+
+$string['deleteok'] = 'Einträge wurden erfolgreich gelöscht';
+$string['deleteproblem'] = 'Keine Einträge wurden gelöscht';
