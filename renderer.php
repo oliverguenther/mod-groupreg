@@ -109,7 +109,7 @@ class mod_groupreg_renderer extends plugin_renderer_base {
             }
         }
         
-        $html .= "<h3>".get_string("groupmembers", "groupreg")."</h3><ul>";
+        $html .= "<h3>".get_string("groupmembers2", "groupreg")."</h3><ul>";
         foreach($full_usernames as $name) {
             $html .= "<li>$name</li>";
         }
@@ -142,14 +142,16 @@ class mod_groupreg_renderer extends plugin_renderer_base {
         
         // get all users who registered together with the user
         $usernames = array();
-        $dbanswers = $DB->get_records('groupreg_answers', array('usergroup' => $options['usergroup']));
-        if ($dbanswers) foreach($dbanswers as $answer) {
-            if ($answer->userid == $USER->id)
-                continue;
-                
-            $otheruser = $DB->get_record('user', array('id' => $answer->userid));
-            if ($otheruser && !in_array($otheruser->username, $usernames))
-                $usernames[] = $otheruser->username;
+        if ($options['usergroup']) {
+            $dbanswers = $DB->get_records('groupreg_answers', array('usergroup' => $options['usergroup']));
+            if ($dbanswers) foreach($dbanswers as $answer) {
+                if ($answer->userid == $USER->id)
+                    continue;
+                    
+                $otheruser = $DB->get_record('user', array('id' => $answer->userid));
+                if ($otheruser && !in_array($otheruser->username, $usernames))
+                    $usernames[] = $otheruser->username;
+            }
         }
         
         // favorite choices
@@ -222,8 +224,8 @@ class mod_groupreg_renderer extends plugin_renderer_base {
         $html .= html_writer::end_tag('table');
         
         // group members
-        $html .= html_writer::tag('h3', get_string('groupmembers', 'groupreg'), array());
-        $html .= html_writer::tag('p', get_string('groupmembers_desc', 'groupreg'), array());
+        $html .= html_writer::tag('h3', get_string('groupmembers2', 'groupreg'), array());
+        $html .= html_writer::tag('p', get_string('groupmembers2_desc', 'groupreg'), array());
         $groupmemberno = 4; // change to be dynamic, if required
         $html .= html_writer::start_tag('table', array('class'=>'groupregs' ));
         for ($i = 0; $i < $groupmemberno; $i++) {

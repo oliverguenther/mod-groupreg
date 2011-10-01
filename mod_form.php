@@ -58,10 +58,12 @@ class mod_groupreg_mod_form extends moodleform_mod {
         $mform->addElement('select', 'limitfavorites', get_string('limitfavorites', 'groupreg'), $favoptions);
         $mform->disabledIf('limitfavorites', 'assigned', 'eq', '1');
         
-        
         $blankoptions = array(1,2,3,4,5,6,7,8,9,10);
         $mform->addElement('select', 'limitblanks', get_string('limitblanks', 'groupreg'), $blankoptions);
         $mform->disabledIf('limitblanks', 'assigned', 'eq', '1');
+        
+        $mform->addElement('text', 'groupmembers', get_string('groupmembers2', 'groupreg'));
+        $mform->addHelpButton('groupmembers', 'groupmembers2', 'groupreg');
         
         if ($this->_instance){
             $repeatno = $DB->count_records('groupreg_options', array('groupregid'=>$this->_instance)) + 2;
@@ -117,6 +119,8 @@ class mod_groupreg_mod_form extends moodleform_mod {
                 $default_values['grouping['.$key.']'] = $options3[$key];
                 $default_values['optionid['.$key.']'] = $groupregids[$key];
             }
+            
+            $default_values['groupmembers'] = 4;
 
         }
         if (empty($default_values['timeopen'])) {
