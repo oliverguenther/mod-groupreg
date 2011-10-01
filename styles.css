@@ -63,5 +63,5 @@
 .path-mod-groupreg th, .path-mod-groupreg td { padding:10px 15px; }
 .path-mod-groupreg td.center { text-align:center; }
 
-span.groupreg-favorite { font-weight: bold; color: darkgreen; }
-span.groupreg-blank { font-weight: bold; color: darkred; }
+.groupreg-favorite { font-weight: bold; color: darkgreen; }
+.groupreg-blank { font-weight: bold; color: darkred; }

@@ -63,9 +63,12 @@ class mod_groupreg_renderer extends plugin_renderer_base {
 		
         // display final results, if available
         if ($groupreg->assigned == 1) {
-            $result = $DB->get_record('groupreg_assigned', array('groupregid' => $groupreg->id, 'userid' => $USER->id));        
-            $groupname = $groupnames[$groupids[$result->optionid]];
-            $html .= get_string("assignment_result", "groupreg", $groupname)."<br><br>";
+            if ($result = $DB->get_record('groupreg_assigned', array('groupregid' => $groupreg->id, 'userid' => $USER->id))) {
+                $groupname = $groupnames[$groupids[$result->optionid]];
+                $html .= get_string("assignment_result", "groupreg", $groupname)."<br><br>";
+            } else {
+                
+            }
         } 
         
 		// display header
@@ -254,9 +257,9 @@ class mod_groupreg_renderer extends plugin_renderer_base {
         $html .= html_writer::start_tag('tr');
         $html .= html_writer::tag('th', get_string('option', 'groupreg'));
         for ($i = 0; $i <= $groupreg->limitfavorites; $i++) {
-            $html .= html_writer::tag('th', get_string('favorite_n', 'groupreg', $i+1));
+            $html .= html_writer::tag('th', get_string('favorite_n', 'groupreg', $i+1), array('class' => 'groupreg-favorite'));
         }
-        $html .= html_writer::tag('th', get_string('blanks', 'groupreg'));
+        $html .= html_writer::tag('th', get_string('blanks', 'groupreg'), array('class' => 'groupreg-blank'));
         $html .= html_writer::end_tag('tr');
         
         // data
@@ -265,10 +268,10 @@ class mod_groupreg_renderer extends plugin_renderer_base {
             $html .= html_writer::tag('td', $groupnames[$option_id]);
             for ($i = 0; $i <= $groupreg->limitfavorites; $i++) {
                 $number = isset($option_data[$i+1]) ? $option_data[$i+1] : 0;
-                $html .= html_writer::tag('td', $number, array('style' => 'text-align: center;'));
+                $html .= html_writer::tag('td', $number, array('style' => 'text-align: center;', 'class' => 'groupreg-favorite'));
             }
             $number = isset($option_data[0]) ? $option_data[0] : 0;
-            $html .= html_writer::tag('td', $number, array('style' => 'text-align: center;'));
+            $html .= html_writer::tag('td', $number, array('style' => 'text-align: center;', 'class' => 'groupreg-blank'));
             $html .= html_writer::end_tag('tr');
         }
         

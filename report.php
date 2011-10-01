@@ -40,7 +40,6 @@
 
     add_to_log($course->id, "groupreg", "report", "report.php?id=$cm->id", "$choice->id",$cm->id);
 
-    $PAGE->navbar->add($strresponses);
     $PAGE->set_title(format_string($choice->name).": $strresponses");
     $PAGE->set_heading($course->fullname);
     echo $OUTPUT->header();
