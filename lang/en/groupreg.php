@@ -99,9 +99,16 @@ $string['groupmembers'] = 'Gruppenteilnehmer';
 $string['limitfavorites'] = 'Anzahl der w&auml;hlbaren Favoriten';
 $string['limitblanks'] = 'Anzahl der w&auml;hlbaren Nieten';
 
+$string['favorites'] = 'Favoriten';
+$string['favorites_desc'] = 'Wählen Sie hier Gruppen aus, zu den Sie zugeteilt werden möchten. Der erste Favorit hat die höchste Zuteilungspriorität. Sie müssen mindestens einen Favoriten wählen.';
+$string['blanks'] = 'Nieten';
+$string['blanks_desc'] = 'Wählen Sie hier Gruppen aus, zu den Sie auf keinen Fall zugeteilt werden möchten, zum Beispiel aufgrund von Terminüberschneidungen mit anderen Veranstaltungen. Sie müssen nicht alle verfügbaren Nieten wählen.';
+$string['groupmembers'] = 'Gruppenmitglieder';
+$string['groupmembers_desc'] = 'Falls Sie sich in einer Gruppe mit anderen Teilnehmern anmelden möchten, tragen Sie hier die entsprechenden Benutzernamen ein. Alle Teilnehmer werden dann nach Möglichkeit gemeinsam einer Gruppe zugeordnet.';
 $string['favorite_n'] = '{$a}. Favorit';
 $string['blank_n'] = '{$a}. Niete';
 $string['no_choice'] = 'Keine Auswahl';
+$string['groupmember_n'] = '{$a}. Gruppenmitglied';
 
 $string['performassignment'] = 'Zuweisung ausführen';
 $string['performassignmentnote'] = 'Achtung! Die Zuweisung kann nur einmal ausgeführt werden. Dabei wird die Auswahl geschlossen und kann nicht mehr geöffnet werden. Wollen Sie die Zuweisung wirklich ausführen?';

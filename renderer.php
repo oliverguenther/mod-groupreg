@@ -100,7 +100,7 @@ class mod_groupreg_renderer extends plugin_renderer_base {
      * @return string
      */
     public function display_options($course, $groupreg, $options, $coursemoduleid, $vertical = true) {
-        global $DB;
+        global $DB, $USER;
         $layoutclass = 'vertical';
         $target = new moodle_url('/mod/groupreg/view.php');
         $attributes = array('method'=>'POST', 'target'=>$target, 'class'=> $layoutclass);
@@ -115,6 +115,8 @@ class mod_groupreg_renderer extends plugin_renderer_base {
         }
         
         // favorite choices
+        $html .= html_writer::tag('h3', get_string('favorites', 'groupreg'), array());
+        $html .= html_writer::tag('p', get_string('favorites_desc', 'groupreg'), array());
         $html .= html_writer::start_tag('table', array('class'=>'groupregs' ));
         for ($i = 0; $i <= $groupreg->limitfavorites; $i++) {
 			$preference = $i+1;
@@ -145,6 +147,8 @@ class mod_groupreg_renderer extends plugin_renderer_base {
         $html .= html_writer::end_tag('table');
         
         // blank choices
+        $html .= html_writer::tag('h3', get_string('blanks', 'groupreg'), array());
+        $html .= html_writer::tag('p', get_string('blanks_desc', 'groupreg'), array());
         $html .= html_writer::start_tag('table', array('class'=>'groupregs' ));
         for ($i = 0; $i <= $groupreg->limitblanks; $i++) {
 			$blank_shown = false; // whether this blank field already displays one chosen blank option
@@ -179,6 +183,28 @@ class mod_groupreg_renderer extends plugin_renderer_base {
         
         $html .= html_writer::end_tag('table');
         
+        // group members
+        $html .= html_writer::tag('h3', get_string('groupmembers', 'groupreg'), array());
+        $html .= html_writer::tag('p', get_string('groupmembers_desc', 'groupreg'), array());
+        $groupmemberno = 4; // change to be dynamic, if required
+        $html .= html_writer::start_tag('table', array('class'=>'groupregs' ));
+        for ($i = 0; $i < $groupmemberno; $i++) {
+            $html .= html_writer::start_tag('tr', array('class'=>'option'));
+            
+            $html .= html_writer::tag('td', get_string('groupmember_n', 'groupreg', $i+1).':', array());
+            $html .= html_writer::start_tag('td', array());
+            $attributes = array('type' => 'text', 'name' => "groupmembers[$i]");
+            if ($i == 0) {
+                $attributes['disabled'] = 'disabled';
+                $attributes['value'] = $USER->username;
+            }
+            $html .= html_writer::empty_tag('input', $attributes);            
+            $html .= html_writer::end_tag('td');
+            $html .= html_writer::end_tag('tr');
+        }
+        $html .= html_writer::end_tag('table');
+                
+        
         // form footer
         $html .= html_writer::tag('div', '', array('class'=>'clearfloat'));
         $html .= html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'sesskey', 'value'=>sesskey()));
@@ -194,7 +220,7 @@ class mod_groupreg_renderer extends plugin_renderer_base {
         } else {
             $html .= html_writer::tag('div', get_string('havetologin', 'groupreg'));
         }
-
+        
         $html .= html_writer::end_tag('form');
 
         return $html;
