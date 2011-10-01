@@ -227,227 +227,54 @@ class mod_groupreg_renderer extends plugin_renderer_base {
 
     /**
      * Returns HTML to display groupregs result
-     * @param object $groupregs
+     * @param object $response_data matrix: $response_data[optionid][preference] = array(userids)
      * @param bool $forcepublish
      * @return string
      */
-    public function display_result($groupregs, $forcepublish = false) {
-        if (empty($forcepublish)) { //allow the publish setting to be overridden
-            $forcepublish = $groupregs->publish;
+    public function display_result($course, $groupreg, $response_data) {
+        global $DB;
+        
+        // fetch all group names from this course
+		$groups = array();
+        $db_groups = $DB->get_records('groups', array('courseid' => $course->id));
+        foreach ($db_groups as $group)
+            $groups[$group->id] = $group->name;
+		
+		// fetch options and map option IDs to group names
+		$groupnames = array();
+		$db_options = $DB->get_records('groupreg_options', array('groupregid' => $groupreg->id));
+		foreach($db_options as $option)
+			$groupnames[$option->id] = $groups[intval($option->text)];
+        
+        $html = html_writer::tag('h3', get_string('responses', 'groupreg'));
+        
+        $html .= html_writer::start_tag('table');
+        
+        // header row
+        $html .= html_writer::start_tag('tr');
+        $html .= html_writer::tag('th', get_string('option', 'groupreg'));
+        for ($i = 0; $i <= $groupreg->limitfavorites; $i++) {
+            $html .= html_writer::tag('th', get_string('favorite_n', 'groupreg', $i+1));
         }
-
-        $displaylayout = $groupregs->display;
-
-        if ($forcepublish) {  //groupreg_PUBLISH_NAMES
-            return $this->display_publish_name_vertical($groupregs);
-        } else { //groupreg_PUBLISH_ANONYMOUS';
-            return $this->display_publish_anonymous_vertical($groupregs);
-        }
-    }
-
-    /**
-     * Returns HTML to display groupregs result
-     * @param object $groupregs
-     * @param bool $forcepublish
-     * @return string
-     */
-    public function display_publish_name_vertical($groupregs) {
-        global $PAGE;
-        $html ='';
-        $html .= html_writer::tag('h2',format_string(get_string("responses", "groupreg")), array('class'=>'main'));
-
-        $attributes = array('method'=>'POST');
-        $attributes['action'] = new moodle_url($PAGE->url);
-        $attributes['id'] = 'attemptsform';
-
-        if ($groupregs->viewresponsecapability) {
-            $html .= html_writer::start_tag('form', $attributes);
-            $html .= html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'id', 'value'=> $groupregs->coursemoduleid));
-            $html .= html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'sesskey', 'value'=> sesskey()));
-            $html .= html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'mode', 'value'=>'overview'));
-        }
-
-        $table = new html_table();
-        $table->cellpadding = 0;
-        $table->cellspacing = 0;
-        $table->attributes['class'] = 'results names ';
-        $table->tablealign = 'center';
-        $table->data = array();
-
-        $count = 0;
-        ksort($groupregs->options);
-
-        $columns = array();
-        foreach ($groupregs->options as $optionid => $options) {
-            $coldata = '';
-            if ($groupregs->showunanswered && $optionid == 0) {
-                $coldata .= html_writer::tag('div', format_string(get_string('notanswered', 'groupreg')), array('class'=>'option'));
-            } else if ($optionid > 0) {
-                $coldata .= html_writer::tag('div', format_string($groupregs->options[$optionid]->text), array('class'=>'option'));
+        $html .= html_writer::tag('th', get_string('blanks', 'groupreg'));
+        $html .= html_writer::end_tag('tr');
+        
+        // data
+        foreach ($response_data as $option_id => $option_data) {
+            $html .= html_writer::start_tag('tr');
+            $html .= html_writer::tag('td', $groupnames[$option_id]);
+            for ($i = 0; $i <= $groupreg->limitfavorites; $i++) {
+                $number = isset($option_data[$i+1]) ? $option_data[$i+1] : 0;
+                $html .= html_writer::tag('td', $number, array('style' => 'text-align: center;'));
             }
-            $numberofuser = 0;
-            if (!empty($options->user) && count($options->user) > 0) {
-                $numberofuser = count($options->user);
-            }
-
-            $coldata .= html_writer::tag('div', ' ('.$numberofuser. ')', array('class'=>'numberofuser', 'title' => get_string('numberofuser', 'groupreg')));
-            $columns[] = $coldata;
+            $number = isset($option_data[0]) ? $option_data[0] : 0;
+            $html .= html_writer::tag('td', $number, array('style' => 'text-align: center;'));
+            $html .= html_writer::end_tag('tr');
         }
-
-        $table->head = $columns;
-
-        $coldata = '';
-        $columns = array();
-        foreach ($groupregs->options as $optionid => $options) {
-            $coldata = '';
-            if ($groupregs->showunanswered || $optionid > 0) {
-                if (!empty($options->user)) {
-                    foreach ($options->user as $user) {
-                        $data = '';
-                        if (empty($user->imagealt)){
-                            $user->imagealt = '';
-                        }
-
-                        if ($groupregs->viewresponsecapability && $groupregs->deleterepsonsecapability  && $optionid > 0) {
-                            $attemptaction = html_writer::checkbox('attemptid[]', $user->id,'');
-                            $data .= html_writer::tag('div', $attemptaction, array('class'=>'attemptaction'));
-                        }
-                        $userimage = $this->output->user_picture($user, array('courseid'=>$groupregs->courseid));
-                        $data .= html_writer::tag('div', $userimage, array('class'=>'image'));
-
-                        $userlink = new moodle_url('/user/view.php', array('id'=>$user->id,'course'=>$groupregs->courseid));
-                        $name = html_writer::tag('a', fullname($user, $groupregs->fullnamecapability), array('href'=>$userlink, 'class'=>'username'));
-                        $data .= html_writer::tag('div', $name, array('class'=>'fullname'));
-                        $data .= html_writer::tag('div','', array('class'=>'clearfloat'));
-                        $coldata .= html_writer::tag('div', $data, array('class'=>'user'));
-                    }
-                }
-            }
-
-            $columns[] = $coldata;
-            $count++;
-        }
-
-        $table->data[] = $columns;
-        foreach ($columns as $d) {
-            $table->colclasses[] = 'data';
-        }
-        $html .= html_writer::tag('div', html_writer::table($table), array('class'=>'response'));
-
-        $actiondata = '';
-        if ($groupregs->viewresponsecapability && $groupregs->deleterepsonsecapability) {
-            $selecturl = new moodle_url('#');
-
-            $selectallactions = new component_action('click',"select_all_in", array('div',null,'tablecontainer'));
-            $selectall = new action_link($selecturl, get_string('selectall', 'quiz'), $selectallactions);
-            $actiondata .= $this->output->render($selectall) . ' / ';
-
-            $deselectallactions = new component_action('click',"deselect_all_in", array('div',null,'tablecontainer'));
-            $deselectall = new action_link($selecturl, get_string('selectnone', 'quiz'), $deselectallactions);
-            $actiondata .= $this->output->render($deselectall);
-
-            $actiondata .= html_writer::tag('label', ' ' . get_string('withselected', 'groupreg') . ' ', array('for'=>'menuaction'));
-
-            $actionurl = new moodle_url($PAGE->url, array('sesskey'=>sesskey(), 'action'=>'delete_confirmation()'));
-            $select = new single_select($actionurl, 'action', array('delete'=>get_string('delete')), null, array(''=>get_string('chooseaction', 'groupreg')), 'attemptsform');
-
-            $actiondata .= $this->output->render($select);
-        }
-        $html .= html_writer::tag('div', $actiondata, array('class'=>'responseaction'));
-
-        if ($groupregs->viewresponsecapability) {
-            $html .= html_writer::end_tag('form');
-        }
-
-        return $html;
-    }
-
-
-    /**
-     * Returns HTML to display groupregs result
-     * @param object $groupregs
-     * @return string
-     */
-    public function display_publish_anonymous_vertical($groupregs) {
-        global $groupreg_COLUMN_HEIGHT;
-
-        $html = '';
-        $table = new html_table();
-        $table->cellpadding = 5;
-        $table->cellspacing = 0;
-        $table->attributes['class'] = 'results anonymous ';
-        $table->data = array();
-        $count = 0;
-        ksort($groupregs->options);
-        $columns = array();
-        $rows = array();
-
-        foreach ($groupregs->options as $optionid => $options) {
-            $numberofuser = 0;
-            if (!empty($options->user)) {
-               $numberofuser = count($options->user);
-            }
-            $height = 0;
-            $percentageamount = 0;
-            if($groupregs->numberofuser > 0) {
-               $height = ($groupreg_COLUMN_HEIGHT * ((float)$numberofuser / (float)$groupregs->numberofuser));
-               $percentageamount = ((float)$numberofuser/(float)$groupregs->numberofuser)*100.0;
-            }
-
-            $displaydiagram = html_writer::tag('img','', array('style'=>'height:'.$height.'px;width:49px;', 'alt'=>'', 'src'=>$this->output->pix_url('column', 'groupreg')));
-
-            $cell = new html_table_cell();
-            $cell->text = $displaydiagram;
-            $cell->attributes = array('class'=>'graph vertical data');
-            $columns[] = $cell;
-        }
-        $rowgraph = new html_table_row();
-        $rowgraph->cells = $columns;
-        $rows[] = $rowgraph;
-
-        $columns = array();
-        $printskiplink = true;
-        foreach ($groupregs->options as $optionid => $options) {
-            $columndata = '';
-            $numberofuser = 0;
-            if (!empty($options->user)) {
-               $numberofuser = count($options->user);
-            }
-
-            if ($printskiplink) {
-                $columndata .= html_writer::tag('div', '', array('class'=>'skip-block-to', 'id'=>'skipresultgraph'));
-                $printskiplink = false;
-            }
-
-            if ($groupregs->showunanswered && $optionid == 0) {
-                $columndata .= html_writer::tag('div', format_string(get_string('notanswered', 'groupreg')), array('class'=>'option'));
-            } else if ($optionid > 0) {
-                $columndata .= html_writer::tag('div', format_string($groupregs->options[$optionid]->text), array('class'=>'option'));
-            }
-            $columndata .= html_writer::tag('div', ' ('.$numberofuser.')', array('class'=>'numberofuser', 'title'=> get_string('numberofuser', 'groupreg')));
-
-            if($groupregs->numberofuser > 0) {
-               $percentageamount = ((float)$numberofuser/(float)$groupregs->numberofuser)*100.0;
-            }
-            $columndata .= html_writer::tag('div', format_float($percentageamount,1). '%', array('class'=>'percentage'));
-
-            $cell = new html_table_cell();
-            $cell->text = $columndata;
-            $cell->attributes = array('class'=>'data header');
-            $columns[] = $cell;
-        }
-        $rowdata = new html_table_row();
-        $rowdata->cells = $columns;
-        $rows[] = $rowdata;
-
-        $table->data = $rows;
-
-        $header = html_writer::tag('h2',format_string(get_string("responses", "groupreg")));
-        $html .= html_writer::tag('div', $header, array('class'=>'responseheader'));
-        $html .= html_writer::tag('a', get_string('skipresultgraph', 'groupreg'), array('href'=>'#skipresultgraph', 'class'=>'skip-block'));
-        $html .= html_writer::tag('div', html_writer::table($table), array('class'=>'response'));
-
-        return $html;
+        
+        $html .= html_writer::end_tag('table');
+        
+        return $html;        
     }
 
 }

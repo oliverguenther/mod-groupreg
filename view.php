@@ -102,11 +102,9 @@
         groups_get_activity_group($cm, true);
         groups_print_activity_menu($cm, $CFG->wwwroot . '/mod/groupreg/view.php?id='.$id);
     }
-    $allresponses = groupreg_get_response_data($choice, $cm, $groupmode);   // Big function, approx 6 SQL calls per user
-
-
+    
     if (has_capability('mod/groupreg:readresponses', $context)) {
-        groupreg_show_reportlink($allresponses, $cm);
+        groupreg_show_reportlink($cm);
     }
 
     echo '<div class="clearer"></div>';
@@ -140,7 +138,7 @@
 
     if ( (!$current or $choice->allowupdate) and $groupregopen and is_enrolled($context, NULL, 'mod/groupreg:choose')) {
     // They haven't made their choice yet or updates allowed and groupreg is open
-        $options = groupreg_prepare_options($choice, $USER, $cm, $allresponses);
+        $options = groupreg_prepare_options($choice, $USER, $cm);
         
         echo $renderer->display_options($course, $choice, $options, $cm->id, $choice->display);
         $groupregformshown = true;
@@ -169,20 +167,6 @@
 
         }
     }
-
-    // print the results at the bottom of the screen
-    if ( $choice->showresults == groupreg_SHOWRESULTS_ALWAYS or
-        ($choice->showresults == groupreg_SHOWRESULTS_AFTER_ANSWER and $current) or
-        ($choice->showresults == groupreg_SHOWRESULTS_AFTER_CLOSE and !$groupregopen)) {
-
-        if (!empty($choice->showunanswered)) {
-            $choice->option[0] = get_string('notanswered', 'groupreg');
-            $choice->maxanswers[0] = 0;
-        }
-        $results = prepare_groupreg_show_results($choice, $course, $cm, $allresponses);
-        $renderer = $PAGE->get_renderer('mod_groupreg');
-        echo $renderer->display_result($results);
-    } 
 
     echo $OUTPUT->footer();
 

@@ -229,10 +229,9 @@ function groupreg_perform_assignment($groupreg) {
  * @param object $groupreg
  * @param object $user
  * @param object $coursemodule
- * @param array $allresponses
  * @return array
  */
-function groupreg_prepare_options($groupreg, $user, $coursemodule, $allresponses) {
+function groupreg_prepare_options($groupreg, $user, $coursemodule) {
     global $DB;
 
     $cdisplay = array('options'=>array());
@@ -256,11 +255,6 @@ function groupreg_prepare_options($groupreg, $user, $coursemodule, $allresponses
             $option->maxanswers = $groupreg->maxanswers[$optionid];
             $option->displaylayout = $groupreg->display;
 
-            if (isset($allresponses[$optionid])) {
-                $option->countanswers = count($allresponses[$optionid]);
-            } else {
-                $option->countanswers = 0;
-            }
             //if ($DB->record_exists('groupreg_answers', array('groupregid' => $groupreg->id, 'userid' => $user->id, 'optionid' => $optionid))) {
             if (isset($optionPreferences[$optionid])) {
                 $option->checked = true;
@@ -374,16 +368,9 @@ function groupreg_user_submit_response($favorites, $blanks, $groupreg, $userid, 
  * @param object $cm
  * @return void Output is echo'd
  */
-function groupreg_show_reportlink($user, $cm) {
-    $responsecount =0;
-    foreach($user as $optionid => $userlist) {
-        if ($optionid) {
-            $responsecount += count($userlist);
-        }
-    }
-
+function groupreg_show_reportlink($cm) {
     echo '<div class="reportlink">';
-    echo "<a href=\"report.php?id=$cm->id\">".get_string("viewallresponses", "groupreg", $responsecount)."</a>";
+    echo "<a href=\"report.php?id=$cm->id\">".get_string("viewallresponses", "groupreg")."</a>";
     echo '</div>';
 }
 
@@ -788,13 +775,13 @@ function groupreg_get_response_data($groupreg, $cm, $groupmode) {
         $currentgroup = 0;
     }
 
-/// Initialise the returned array, which is a matrix:  $allresponses[responseid][userid] = responseobject
+/// Initialise the returned array, which is a matrix:  $allresponses[optionid][preference] = number
     $allresponses = array();
 
 /// First get all the users who have access here
 /// To start with we assume they are all "unanswered" then move them later
-    $allresponses[0] = get_enrolled_users($context, 'mod/groupreg:choose', $currentgroup, user_picture::fields('u', array('idnumber')), 'u.lastname ASC,u.firstname ASC');
-
+    $users = get_enrolled_users($context, 'mod/groupreg:choose', $currentgroup, user_picture::fields('u', array('idnumber')), 'u.lastname ASC,u.firstname ASC');
+        
 /// Get all the recorded responses for this groupreg
     $rawresponses = $DB->get_records('groupreg_answers', array('groupregid' => $groupreg->id));
 
@@ -802,13 +789,20 @@ function groupreg_get_response_data($groupreg, $cm, $groupmode) {
 
     if ($rawresponses) {
         foreach ($rawresponses as $response) {
-            if (isset($allresponses[0][$response->userid])) {   // This person is enrolled and in correct group
-                $allresponses[0][$response->userid]->timemodified = $response->timemodified;
-                $allresponses[$response->optionid][$response->userid] = clone($allresponses[0][$response->userid]);
-                unset($allresponses[0][$response->userid]);   // Remove from unanswered column
+            if (isset($users[$response->userid])) {   // This person is enrolled and in correct group
+                if (!isset($allresponses[$response->optionid]))
+                    $allresponses[$response->optionid] = array();
+                    
+                if (!isset($allresponses[$response->optionid][$response->preference]))
+                    $allresponses[$response->optionid][$response->preference] = 0;
+                
+                $allresponses[$response->optionid][$response->preference]++;
             }
         }
     }
+    /*echo('<pre>');
+    print_r($allresponses);
+    echo('</pre>');*/
     return $allresponses;
 }
 
@@ -858,23 +852,7 @@ function groupreg_extend_settings_navigation(settings_navigation $settings, navi
     global $PAGE;
 
     if (has_capability('mod/groupreg:readresponses', $PAGE->cm->context)) {
-
-        $groupmode = groups_get_activity_groupmode($PAGE->cm);
-        if ($groupmode) {
-            groups_get_activity_group($PAGE->cm, true);
-        }
-        // We only actually need the groupreg id here
-        $groupreg = new stdClass;
-        $groupreg->id = $PAGE->cm->instance;
-        $allresponses = groupreg_get_response_data($groupreg, $PAGE->cm, $groupmode);   // Big function, approx 6 SQL calls per user
-
-        $responsecount =0;
-        foreach($allresponses as $optionid => $userlist) {
-            if ($optionid) {
-                $responsecount += count($userlist);
-            }
-        }
-        $groupregnode->add(get_string("viewallresponses", "groupreg", $responsecount), new moodle_url('/mod/groupreg/report.php', array('id'=>$PAGE->cm->id)));
+        $groupregnode->add(get_string("viewallresponses", "groupreg"), new moodle_url('/mod/groupreg/report.php', array('id'=>$PAGE->cm->id)));
     }
     
     if (has_capability('mod/groupreg:performassignment', $PAGE->cm->context)) {
