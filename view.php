@@ -66,29 +66,17 @@
     if ($choice->assigned == 0 and $action == 'assign' and confirm_sesskey() and has_capability('mod/groupreg:performassignment', $PAGE->cm->context)) {
         echo $OUTPUT->notification(get_string('performingassignment', 'groupreg'), 'notifyproblem');
         
-        $script = $CFG->groupreg_perlscript;
-        if ($script == '' || !file_exists($script)) {
-            // script file setting is not correct, cancel
-            echo $OUTPUT->notification(get_string('assignmentproblem', 'groupreg').'<br>Script file not found or no rights to execute.', 'notifyproblem');
-        } else {
-            // script file ok, run it, set lock, wait to finish
-            $command = "perl $script $CFG->prefix $choice->id";
-            echo $OUTPUT->notification("Running command: '$command'...", 'notifysuccess');
-            
-            exec($command);
-            
-            // TODO: process data from assignment table and empty the table
-            
-        
+        if (groupreg_perform_assignment($choice))
             echo $OUTPUT->notification(get_string('assignmentok', 'groupreg'), 'notifysuccess');
-        }
+        else
+            echo $OUTPUT->notification(get_string('assignmentproblem', 'groupreg'), 'notifyproblem');
         
     }
 
 	/*
 	 * data submitted, check and save to DB
 	 */
-    if (data_submitted() && is_enrolled($context, NULL, 'mod/groupreg:choose') && confirm_sesskey()) {
+    if ($choice->assigned == 0 and data_submitted() && is_enrolled($context, NULL, 'mod/groupreg:choose') && confirm_sesskey()) {
         if (has_capability('mod/groupreg:deleteresponses', $context)) {
             if ($action == 'delete') { //some responses need to be deleted
                 groupreg_delete_responses($attemptids, $choice, $cm, $course); //delete responses.

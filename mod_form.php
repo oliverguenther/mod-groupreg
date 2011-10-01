@@ -25,6 +25,8 @@ class mod_groupreg_mod_form extends moodleform_mod {
 
         $this->add_intro_editor(true, get_string('chatintro', 'chat'));
 
+        $mform->addElement('hidden', 'assigned', '', 0);
+        
 //-------------------------------------------------------------------------------
         $groups = array('' => get_string('choosegroup', 'groupreg'));
         $db_groups = $DB->get_records('groups', array('courseid' => $COURSE->id));
@@ -42,22 +44,26 @@ class mod_groupreg_mod_form extends moodleform_mod {
         $mform->addElement('header', 'miscellaneoussettingshdr', get_string('miscellaneoussettings', 'form'));
 
         $mform->addElement('selectyesno', 'allowupdate', get_string("allowupdate", "groupreg"));
-
+        $mform->disabledIf('allowupdate', 'assigned');
+        
         $menuoptions = array();
         $menuoptions[1] = get_string('enable');
         $menuoptions[0] = get_string('disable');
         $mform->addElement('select', 'limitanswers', get_string('limitanswers', 'groupreg'), $menuoptions);
+        $mform->disabledIf('limitanswers', 'assigned');
         $mform->addHelpButton('limitanswers', 'limitanswers', 'groupreg');
 
         $favoptions = array(1,2,3,4,5,6,7,8,9,10);
         $mform->addElement('select', 'limitfavorites', get_string('limitfavorites', 'groupreg'), $favoptions);
+        $mform->disabledIf('limitfavorites', 'assigned');
+        
         
         $blankoptions = array(1,2,3,4,5,6,7,8,9,10);
         $mform->addElement('select', 'limitblanks', get_string('limitblanks', 'groupreg'), $blankoptions);
+        $mform->disabledIf('limitblanks', 'assigned');
         
         if ($this->_instance){
-            $repeatno = $DB->count_records('groupreg_options', array('groupregid'=>$this->_instance));
-            $repeatno += 2;
+            $repeatno = $DB->count_records('groupreg_options', array('groupregid'=>$this->_instance)) + 2;
         } else {
             $repeatno = 5;
         }
@@ -84,6 +90,7 @@ class mod_groupreg_mod_form extends moodleform_mod {
 
         $mform->addElement('date_time_selector', 'timeclose', get_string("groupregclose", "groupreg"));
         $mform->disabledIf('timeclose', 'timerestrict');
+        $mform->disabledIf('timeclose', 'assigned');
 
 //-------------------------------------------------------------------------------
         $this->standard_coursemodule_elements();

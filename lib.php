@@ -188,6 +188,42 @@ function groupreg_update_instance($groupreg) {
 
 }
 
+function groupreg_perform_assignment($groupreg) {
+    global $CFG, $DB;
+    
+    $script = $CFG->groupreg_perlscript;
+    if ($script == '' || !file_exists($script)) {
+        return false;
+    }
+    
+    // preparations
+    $groupreg->timeclose = time();
+    $groupreg->timemodified = time();
+    $groupreg->allowupdate = 0;
+    $groupreg->assigned = 1;
+    
+    exec("perl $script $CFG->prefix $groupreg->id");
+    
+    // fetch options and map option IDs to group IDs
+    $groupids = array();
+    $db_options = $DB->get_records('groupreg_options', array('groupregid' => $groupreg->id));
+    foreach($db_options as $option)
+        $groupids[$option->id] = intval($option->text);
+    
+    // process data from assignment table
+    $option_assignments = $DB->get_records('groupreg_assigned', array('groupregid' => $groupreg->id));
+    foreach($option_assignments as $option_assignment) {
+        // assign user to the appropriate group
+        $group = $groupids[$option_assignment->optionid];
+        echo("assigning user $option_assignment->userid to group $group<br>");
+        groups_add_member($group, $option_assignment->userid);
+    }
+    
+    $DB->update_record("groupreg", $groupreg);
+    
+    return true;
+}
+
 /**
  * @global object
  * @param object $groupreg

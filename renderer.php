@@ -317,7 +317,7 @@ class mod_groupreg_renderer extends plugin_renderer_base {
             $deselectall = new action_link($selecturl, get_string('selectnone', 'quiz'), $deselectallactions);
             $actiondata .= $this->output->render($deselectall);
 
-            $actiondata .= html_writer::tag('label', ' ' . get_string('withselected', 'quiz') . ' ', array('for'=>'menuaction'));
+            $actiondata .= html_writer::tag('label', ' ' . get_string('withselected', 'groupreg') . ' ', array('for'=>'menuaction'));
 
             $actionurl = new moodle_url($PAGE->url, array('sesskey'=>sesskey(), 'action'=>'delete_confirmation()'));
             $select = new single_select($actionurl, 'action', array('delete'=>get_string('delete')), null, array(''=>get_string('chooseaction', 'groupreg')), 'attemptsform');
