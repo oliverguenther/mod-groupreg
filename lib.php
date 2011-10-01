@@ -132,7 +132,7 @@ function groupreg_add_instance($groupreg) {
                 $option->maxanswers = $groupreg->limit[$key];
             }
             if (isset($groupreg->grouping[$key])) {
-                $option->grouping = $groupreg->grouping[$key];
+                $option->grouping = $groupreg->grouping[$key] != '' ? $groupreg->grouping[$key] : null;
             }
             $option->timemodified = time();
             $DB->insert_record("groupreg_options", $option);
@@ -173,7 +173,7 @@ function groupreg_update_instance($groupreg) {
             $option->maxanswers = $groupreg->limit[$key];
         }
         if (isset($groupreg->grouping[$key])) {
-            $option->grouping = $groupreg->grouping[$key];
+            $option->grouping = $groupreg->grouping[$key] != '' ? $groupreg->grouping[$key] : null;
         }
         $option->timemodified = time();
         if (isset($groupreg->optionid[$key]) && !empty($groupreg->optionid[$key])){//existing groupreg record
