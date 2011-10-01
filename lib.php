@@ -212,7 +212,7 @@ function groupreg_perform_assignment($groupreg) {
     $groupreg->assigned = 1;
     $DB->update_record("groupreg", $groupreg);
     
-    exec("perl $script $CFG->prefix $groupreg->id");
+    exec("perl $script $CFG->prefix $groupreg->id $CFG->dbname $CFG->dbuser $CFG->dbpass");
     
     return true;
 }
