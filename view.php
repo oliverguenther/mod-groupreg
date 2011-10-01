@@ -83,7 +83,6 @@
      
     /*
      * Action: perform assignment.
-     * Closes the activity, performs a syscall to the perl script, and places a lock on this activity assignment to prevent double assignments.
      */
     if ($choice->assigned == 0 and $action == 'assign' 
             and confirm_sesskey() 
@@ -95,6 +94,33 @@
         else
             echo $OUTPUT->notification(get_string('assignmentproblem', 'groupreg'), 'notifyproblem');
         
+    }
+    
+    /*
+     * Action: reset assignment.
+     */
+    if ($action == 'resetassign' 
+            and confirm_sesskey() 
+            and has_capability('mod/groupreg:performassignment', $PAGE->cm->context)) {
+        if ($choice->assigned == 1) {
+            groupreg_reset_assignment($choice);
+            echo $OUTPUT->notification(get_string('resetassignmentok', 'groupreg'), 'notifysuccess');
+        } else
+            echo $OUTPUT->notification(get_string('assignmentnotdone', 'groupreg'), 'notifyproblem');
+    }
+    
+    /*
+     * Action: finalize assignment.
+     * Closes the activity, and assigns the users into corresponding moodle groups.
+     */
+    if ($action == 'finalize' 
+            and confirm_sesskey() 
+            and has_capability('mod/groupreg:performassignment', $PAGE->cm->context)) {
+        if ($choice->assigned == 1) {
+            groupreg_finalize_assignment($choice);
+            echo $OUTPUT->notification(get_string('finalizeassignmentok', 'groupreg'), 'notifysuccess');
+        } else
+            echo $OUTPUT->notification(get_string('assignmentnotdone', 'groupreg'), 'notifyproblem');
     }
 
 	/// Display the groupreg and possibly results

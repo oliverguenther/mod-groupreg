@@ -202,13 +202,34 @@ function groupreg_perform_assignment($groupreg) {
         return false;
     }
     
+    if (isset($CFG->groupreg_perltime) && $CFG->groupreg_perltime > 30)
+        set_time_limit($CFG->groupreg_perltime);
+    
     // preparations
     $groupreg->timeclose = time();
     $groupreg->timemodified = time();
     $groupreg->allowupdate = 0;
     $groupreg->assigned = 1;
+    $DB->update_record("groupreg", $groupreg);
     
     exec("perl $script $CFG->prefix $groupreg->id");
+    
+    return true;
+}
+
+function groupreg_reset_assignment($groupreg) {
+    global $DB;
+    
+    $groupreg->timeclose = 0;
+    $groupreg->timemodified = time();
+    $groupreg->assigned = 0;
+    $DB->update_record("groupreg", $groupreg);
+    
+    $DB->delete_records('groupreg_assigned', array('groupregid' => $groupreg->id));
+}
+
+function groupreg_finalize_assignment($groupreg) {
+    global $CFG, $DB;
     
     // fetch options and map option IDs to group IDs
     $groupids = array();
@@ -225,9 +246,6 @@ function groupreg_perform_assignment($groupreg) {
         groups_add_member($group, $option_assignment->userid);
     }
     
-    $DB->update_record("groupreg", $groupreg);
-    
-    return true;
 }
 
 /**
@@ -723,13 +741,15 @@ function groupreg_supports($feature) {
  */
 function groupreg_extend_settings_navigation(settings_navigation $settings, navigation_node $groupregnode) {
     global $PAGE;
-
+    
     if (has_capability('mod/groupreg:readresponses', $PAGE->cm->context)) {
         $groupregnode->add(get_string("viewallresponses", "groupreg"), new moodle_url('/mod/groupreg/report.php', array('id'=>$PAGE->cm->id)));
     }
     
     if (has_capability('mod/groupreg:performassignment', $PAGE->cm->context)) {
         $groupregnode->add(get_string("performassignment", "groupreg"), new moodle_url('/mod/groupreg/view.php', array('id'=>$PAGE->cm->id, 'action'=>'assign', 'sesskey'=>sesskey())));
+        $groupregnode->add(get_string("resetassignment", "groupreg"), new moodle_url('/mod/groupreg/view.php', array('id'=>$PAGE->cm->id, 'action'=>'resetassign', 'sesskey'=>sesskey())));
+        $groupregnode->add(get_string("finalizeassignment", "groupreg"), new moodle_url('/mod/groupreg/view.php', array('id'=>$PAGE->cm->id, 'action'=>'finalize', 'sesskey'=>sesskey())));
     }
 }
 

@@ -115,15 +115,20 @@ $string['no_choice'] = 'Keine Auswahl';
 $string['groupmember_n'] = '{$a}. Gruppenmitglied';
 
 $string['performassignment'] = 'Zuweisung ausführen';
-$string['performassignmentnote'] = 'Achtung! Die Zuweisung kann nur einmal ausgeführt werden. Dabei wird die Auswahl geschlossen und kann nicht mehr geöffnet werden. Wollen Sie die Zuweisung wirklich ausführen?';
-
-$string['performingassignment'] = 'Zuweisung wird ausgeführt...';
+$string['resetassignment'] = 'Zuweisung zurücksetzen';
+$string['resetassignmentok'] = 'Zuweisung erfolgreich zurückgesetzt';
+$string['finalizeassignment'] = 'Gruppeneintragung durchführen';
+$string['finalizeassignmentok'] = 'Gruppeneintragung erfolgreich durchgeführt';
+$string['performingassignment'] = 'Zuweisung wird ausgeführt, bitte warten. Seite nicht schließen!';
 $string['assignmentok'] = 'Zuweisung wurde erfolgreich beendet';
-$string['assignmentproblem'] = 'Zuweisung wurde mit einem Fehler beendet. Keine Ergebnisse wurden in die Datenbank eingetragen.';
+$string['assignmentnotdone'] = 'Zuweisung wurde noch nicht ausgeführt, die Aktion kann nicht ausgeführt werden';
+$string['assignmentproblem'] = 'Zuweisung wurde mit einem Fehler beendet. Setzen Sie die Zuweisung zurück und probieren Sie nochmal.';
 $string['assignment_result'] = 'Sie wurden der Gruppe <b>{$a}</b> zugewiesen.';
 
 $string['settings_perlscript'] = 'Perl-Script';
 $string['settings_perlscript_desc'] = 'Voller Pfad zum Script, der die Zuweisung ausführt';
+$string['settings_perltime'] = 'Perl Laufzeit';
+$string['settings_perltime_desc'] = 'Maximale PHP-Laufzeit auf diese Anzahl Sekunden verlängern, wenn die Zuweisung mit dem Perl-Script ausgeführt wird';
 
 $string['deleteok'] = 'Einträge wurden erfolgreich gelöscht';
 $string['deleteproblem'] = 'Keine Einträge wurden gelöscht';
