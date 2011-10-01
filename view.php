@@ -58,13 +58,18 @@
                 
         $favorites = optional_param('favs', '', PARAM_RAW);
         $blanks = optional_param('blanks', '', PARAM_RAW);
+        $groupmembers = optional_param('groupmembers', '', PARAM_RAW);
 
 		// TODO: implement a proper check if input values, no same group twice, etc.
         // determine if at least one favorite is selected properly
         if (!groupreg_user_validate_response($favorites, $blanks, $choice)) {
             redirect("view.php?id=$cm->id", get_string('mustchooseone', 'groupreg'));
         } else {
-            groupreg_user_submit_response($favorites, $blanks, $choice, $USER->id, $course, $cm);
+            $errors = groupreg_user_submit_response($favorites, $blanks, $groupmembers, $choice, $course, $cm, $USER->id);
+            if ($errors) {
+                foreach($errors as $error)
+                    echo $OUTPUT->notification($error, 'notifyproblem');
+            }
         }
         redirect("view.php?id=$cm->id", get_string('groupregsaved', 'groupreg'));
     }

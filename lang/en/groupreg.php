@@ -107,7 +107,7 @@ $string['favorites'] = 'Favoriten';
 $string['favorites_desc'] = 'Wählen Sie hier Gruppen aus, zu den Sie zugeteilt werden möchten. Der erste Favorit hat die höchste Zuteilungspriorität. Sie müssen mindestens einen Favoriten wählen.';
 $string['blanks'] = 'Nieten';
 $string['blanks_desc'] = 'Wählen Sie hier Gruppen aus, zu den Sie auf keinen Fall zugeteilt werden möchten, zum Beispiel aufgrund von Terminüberschneidungen mit anderen Veranstaltungen. Sie müssen nicht alle verfügbaren Nieten wählen.';
-$string['groupmembers'] = 'Gruppenmitglieder';
+$string['groupmembers'] = 'Gemeinsame Anmeldung';
 $string['groupmembers_desc'] = 'Falls Sie sich in einer Gruppe mit anderen Teilnehmern anmelden möchten, tragen Sie hier die entsprechenden Benutzernamen ein. Alle Teilnehmer werden dann nach Möglichkeit gemeinsam einer Gruppe zugeordnet.';
 $string['favorite_n'] = '{$a}. Favorit';
 $string['blank_n'] = '{$a}. Niete';
@@ -127,3 +127,7 @@ $string['settings_perlscript_desc'] = 'Voller Pfad zum Script, der die Zuweisung
 
 $string['deleteok'] = 'Einträge wurden erfolgreich gelöscht';
 $string['deleteproblem'] = 'Keine Einträge wurden gelöscht';
+
+$string['user_not_found'] = 'Benutzer \'{$a}\' wurde nicht gefunden.';
+$string['user_not_enrolled'] = 'Benutzer \'{$a}\' ist nicht in dem Kurs oder in der korrekten Gruppe eingeschrieben.';
+$string['user_already_answered'] = 'Benutzer \'{$a}\' hat seine Wahl bereits getroffen und muss sie erst löschen, damit er in der Gruppe mit eingeschrieben werden kann.';

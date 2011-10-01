@@ -250,6 +250,7 @@ function groupreg_prepare_options($groupreg, $user, $coursemodule) {
     $optionPreferences = array();
     foreach($dbAnswers as $answer) {
         $optionPreferences[$answer->optionid] = $answer->preference;
+        $cdisplay['usergroup'] = $answer->usergroup;
     }
     
     foreach ($groupreg->option as $optionid => $text) {
@@ -332,41 +333,90 @@ function groupreg_user_validate_response($favorites, $blanks, $groupreg) {
  * @param object $course Course object
  * @param object $cm
  */
-function groupreg_user_submit_response($favorites, $blanks, $groupreg, $userid, $course, $cm) {
+function groupreg_user_submit_response($favorites, $blanks, $groupmembers, $groupreg, $course, $cm, $user_id) {
     
     global $DB, $CFG;
     require_once($CFG->libdir.'/completionlib.php');
     $context = get_context_instance(CONTEXT_MODULE, $cm->id);
     
+    /// Get the current group and users enrolled
+    $groupmode = groups_get_activity_groupmode($cm);
+    if ($groupmode > 0) {
+        $currentgroup = groups_get_activity_group($cm);
+    } else {
+        $currentgroup = 0;
+    }
+    $users = get_enrolled_users($context, 'mod/groupreg:choose', $currentgroup, user_picture::fields('u', array('idnumber')), 'u.lastname ASC,u.firstname ASC');
+        
+    $errors = array();
+    
+    // check all entered usernames and generate an array of userIDs to enter the data for
+    $userids = array($user_id);
+    foreach($groupmembers as $username) {
+        if ($username == '') continue;
+        
+        $username = mysql_escape_string($username); // sql injection security, since moodle can't sanitize array variables
+        $us = $DB->get_record('user', array('username' => $username));
+        if ($us) {
+            // check the user is enrolled in this course
+            if (isset($users[$us->id])) {
+                if ($DB->count_records('groupreg_answers', array('groupregid' => $groupreg->id, 'userid' => $us->id)) == 0) {
+                    $userids[] = $us->id;
+                } else {
+                    $errors[] = get_string('user_already_answered', 'groupreg', $username);
+                }
+            } else {
+                $errors[] = get_string('user_not_enrolled', 'groupreg', $username);
+            }
+        } else {
+            $errors[] = get_string('user_not_found', 'groupreg', $username);
+        }
+    }
+    
+    // find a new random usergroup id not yet in use
+    $usergroup = time();
+    while (true) {
+        if ($DB->count_records('groupreg_answers', array('usergroup' => $usergroup)) > 0)
+            $usergroup = rand(10000000);
+        else
+            break;
+    }
+    
     // remove current user answers from the database
-    $DB->delete_records('groupreg_answers', array('groupregid' => $groupreg->id, 'userid' => $userid));
+    foreach ($userids as $userid) {
+        $DB->delete_records('groupreg_answers', array('groupregid' => $groupreg->id, 'userid' => $userid));
     
-    // add the new answers
-    for ($fav = 0; $fav <= $groupreg->limitfavorites; $fav++) {
-        $favorite = new stdClass();
-        $favorite->optionid = intval($favorites[$fav]);
-        if ($favorite->optionid <= 0)
-            continue;
-        $favorite->userid = $userid;
-        $favorite->groupregid = $groupreg->id;
-        $favorite->timemodified = time();
-        $favorite->preference = $fav+1;
+        // add the new answers
+        for ($fav = 0; $fav <= $groupreg->limitfavorites; $fav++) {
+            $favorite = new stdClass();
+            $favorite->optionid = intval($favorites[$fav]);
+            if ($favorite->optionid <= 0)
+                continue;
+            $favorite->userid = $userid;
+            $favorite->usergroup = $usergroup;
+            $favorite->groupregid = $groupreg->id;
+            $favorite->timemodified = time();
+            $favorite->preference = $fav+1;
+            
+            $DB->insert_record('groupreg_answers', $favorite);
+        }
         
-        $DB->insert_record('groupreg_answers', $favorite);
+        for ($b = 0; $b <= $groupreg->limitblanks; $b++) {
+            $blank = new stdClass();
+            $blank->optionid = intval($blanks[$b]);
+            if ($blank->optionid <= 0)
+                continue;
+            $blank->userid = $userid;
+            $blank->usergroup = $usergroup;
+            $blank->groupregid = $groupreg->id;
+            $blank->timemodified = time();
+            $blank->preference = 0;
+            
+            $DB->insert_record('groupreg_answers', $blank);
+        }
     }
     
-    for ($b = 0; $b <= $groupreg->limitblanks; $b++) {
-        $blank = new stdClass();
-        $blank->optionid = intval($blanks[$b]);
-        if ($blank->optionid <= 0)
-            continue;
-        $blank->userid = $userid;
-        $blank->groupregid = $groupreg->id;
-        $blank->timemodified = time();
-        $blank->preference = 0;
-        
-        $DB->insert_record('groupreg_answers', $blank);
-    }
+    return $errors;
 }
 
 /**

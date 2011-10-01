@@ -52,7 +52,9 @@ class mod_groupreg_renderer extends plugin_renderer_base {
 		// map group names to every given answer
 		$favorites = array();
 		$blanks = array();
+        $usergroup = 0;
 		foreach ($current as $answer) {
+            $usergroup = $answer->usergroup;
 			if ($answer->preference > 0)
 				$favorites[$answer->preference] = $groupnames[$groupids[$answer->optionid]];
 			else
@@ -87,8 +89,32 @@ class mod_groupreg_renderer extends plugin_renderer_base {
 				$html .= "<li>".get_string('blank_n', 'groupreg', $i+1).": <span class='groupreg-blank'>".$blanks[$i]."</span></li>";
 			}
 		}
+        
+        $html .= "</ul>";
 		
+        // display group names
+        
+        // get all users who registered together with the user
+        $usernames = array();
+        $full_usernames = array($USER->firstname.' '.$USER->lastname);
+        $dbanswers = $DB->get_records('groupreg_answers', array('usergroup' => $usergroup));
+        if ($dbanswers) foreach($dbanswers as $answer) {
+            if ($answer->userid == $USER->id)
+                continue;
+                
+            $otheruser = $DB->get_record('user', array('id' => $answer->userid));
+            if ($otheruser && !in_array($otheruser->username, $usernames)) {
+                $usernames[] = $otheruser->username;
+                $full_usernames[] = $otheruser->firstname.' '.$otheruser->lastname;
+            }
+        }
+        
+        $html .= "<h3>".get_string("groupmembers", "groupreg")."</h3><ul>";
+        foreach($full_usernames as $name) {
+            $html .= "<li>$name</li>";
+        }
 		$html .= "</ul>";
+		
 		
 		return '<div>'.$html.'</div>';
 	}
@@ -112,6 +138,18 @@ class mod_groupreg_renderer extends plugin_renderer_base {
         $db_groups = $DB->get_records('groups', array('courseid' => $course->id));
         foreach ($db_groups as $group) {
             $groups[$group->id] = $group->name;
+        }
+        
+        // get all users who registered together with the user
+        $usernames = array();
+        $dbanswers = $DB->get_records('groupreg_answers', array('usergroup' => $options['usergroup']));
+        if ($dbanswers) foreach($dbanswers as $answer) {
+            if ($answer->userid == $USER->id)
+                continue;
+                
+            $otheruser = $DB->get_record('user', array('id' => $answer->userid));
+            if ($otheruser && !in_array($otheruser->username, $usernames))
+                $usernames[] = $otheruser->username;
         }
         
         // favorite choices
@@ -197,6 +235,8 @@ class mod_groupreg_renderer extends plugin_renderer_base {
             if ($i == 0) {
                 $attributes['disabled'] = 'disabled';
                 $attributes['value'] = $USER->username;
+            } else if (sizeof($usernames) > 0) {
+                $attributes['value'] = array_pop($usernames);
             }
             $html .= html_writer::empty_tag('input', $attributes);            
             $html .= html_writer::end_tag('td');
