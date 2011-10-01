@@ -189,10 +189,7 @@
         $results = prepare_groupreg_show_results($choice, $course, $cm, $allresponses);
         $renderer = $PAGE->get_renderer('mod_groupreg');
         echo $renderer->display_result($results);
-
-    } else if (!$groupregformshown) {
-        echo $OUTPUT->box(get_string('noresultsviewable', 'groupreg'));
-    }
+    } 
 
     echo $OUTPUT->footer();
 

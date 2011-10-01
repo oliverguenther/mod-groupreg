@@ -65,7 +65,7 @@ class mod_groupreg_renderer extends plugin_renderer_base {
         if ($groupreg->assigned == 1) {
             $result = $DB->get_record('groupreg_assigned', array('groupregid' => $groupreg->id, 'userid' => $USER->id));        
             $groupname = $groupnames[$groupids[$result->optionid]];
-            $html .= "<b>".get_string("assignment_result", "groupreg")."</b>: $groupname<br><br>";
+            $html .= get_string("assignment_result", "groupreg", $groupname)."<br><br>";
         }
         
 		// display header
@@ -216,9 +216,6 @@ class mod_groupreg_renderer extends plugin_renderer_base {
         if ($forcepublish) {  //groupreg_PUBLISH_NAMES
             return $this->display_publish_name_vertical($groupregs);
         } else { //groupreg_PUBLISH_ANONYMOUS';
-            if ($displaylayout == DISPLAY_HORIZONTAL_LAYOUT) {
-                return $this->display_publish_anonymous_horizontal($groupregs);
-            }
             return $this->display_publish_anonymous_vertical($groupregs);
         }
     }

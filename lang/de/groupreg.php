@@ -109,7 +109,7 @@ $string['performassignmentnote'] = 'Achtung! Die Zuweisung kann nur einmal ausge
 $string['performingassignment'] = 'Zuweisung wird ausgeführt...';
 $string['assignmentok'] = 'Zuweisung wurde erfolgreich beendet';
 $string['assignmentproblem'] = 'Zuweisung wurde mit einem Fehler beendet. Keine Ergebnisse wurden in die Datenbank eingetragen.';
-$string['assignment_result'] = 'Erfolgte Zuweisung';
+$string['assignment_result'] = 'Sie wurden der Gruppe <b>{$a}</b> zugewiesen.';
 
 $string['settings_perlscript'] = 'Perl-Script';
 $string['settings_perlscript_desc'] = 'Voller Pfad zum Script, der die Zuweisung ausführt';
