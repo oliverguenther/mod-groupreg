@@ -36,7 +36,7 @@ class mod_groupreg_renderer extends plugin_renderer_base {
 	 * @param type $current DB records from groupreg_answers to display
 	 */
 	public function display_current_choice($course, $groupreg, $current) {
-		global $DB, $OUTPUT;
+		global $DB, $OUTPUT, $USER;
 		$html = '';
 		
 		// fetch all group names from this course
@@ -61,6 +61,13 @@ class mod_groupreg_renderer extends plugin_renderer_base {
 				$blanks[] = $groupnames[$groupids[$answer->optionid]];
 		}
 		
+        // display final results, if available
+        if ($groupreg->assigned == 1) {
+            $result = $DB->get_record('groupreg_assigned', array('groupregid' => $groupreg->id, 'userid' => $USER->id));        
+            $groupname = $groupnames[$groupids[$result->optionid]];
+            $html .= "<b>".get_string("assignment_result", "groupreg")."</b>: $groupname<br><br>";
+        }
+        
 		// display header
 		$html .= "<b>".get_string("yourselection", "groupreg")."</b>:<ul>";
 		
