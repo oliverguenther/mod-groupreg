@@ -66,10 +66,10 @@ class mod_groupreg_renderer extends plugin_renderer_base {
             $result = $DB->get_record('groupreg_assigned', array('groupregid' => $groupreg->id, 'userid' => $USER->id));        
             $groupname = $groupnames[$groupids[$result->optionid]];
             $html .= get_string("assignment_result", "groupreg", $groupname)."<br><br>";
-        }
+        } 
         
 		// display header
-		$html .= "<b>".get_string("yourselection", "groupreg")."</b>:<ul>";
+		$html .= "<h3>".get_string("yourselection", "groupreg")."</h3><ul>";
 		
 		// display favorites
 		for ($i = 0; $i <= $groupreg->limitfavorites; $i++) {
@@ -89,7 +89,7 @@ class mod_groupreg_renderer extends plugin_renderer_base {
 		
 		$html .= "</ul>";
 		
-		return $OUTPUT->box($html, 'generalbox', 'yourselection');
+		return '<div>'.$html.'</div>';
 	}
 	
     /**
@@ -101,9 +101,8 @@ class mod_groupreg_renderer extends plugin_renderer_base {
      */
     public function display_options($course, $groupreg, $options, $coursemoduleid, $vertical = true) {
         global $DB, $USER;
-        $layoutclass = 'vertical';
         $target = new moodle_url('/mod/groupreg/view.php');
-        $attributes = array('method'=>'POST', 'target'=>$target, 'class'=> $layoutclass);
+        $attributes = array('method'=>'POST', 'target'=>$target);
 
         $html = html_writer::start_tag('form', $attributes);
         

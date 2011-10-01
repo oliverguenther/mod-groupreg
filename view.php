@@ -68,6 +68,10 @@
         }
         redirect("view.php?id=$cm->id", get_string('groupregsaved', 'groupreg'));
     }
+    
+    /// Mark as viewed
+    $completion=new completion_info($course);
+    $completion->set_module_viewed($cm);
         
     echo $OUTPUT->header();
    
@@ -115,11 +119,9 @@
     $renderer = $PAGE->get_renderer('mod_groupreg');
 	
 	// if user has already made a selection, and they are not allowed to update it, show their selected answers.
-	// TODO: properly show the selected answers
-    if (isloggedin() && ($current = $DB->get_records('groupreg_answers', array('groupregid' => $choice->id, 'userid' => $USER->id))) &&
-        empty($choice->allowupdate) ) {
+	if (isloggedin() && ($current = $DB->get_records('groupreg_answers', array('groupregid' => $choice->id, 'userid' => $USER->id))) 
+            && empty($choice->allowupdate) ) {
 		echo $renderer->display_current_choice($course, $choice, $current);
-        //echo $OUTPUT->box(get_string("yourselection", "groupreg", userdate($choice->timeopen)).": ".format_string(groupreg_get_option_text($choice, $current->optionid)), 'generalbox', 'yourselection');
     }
 
 /// Print the form
@@ -183,8 +185,4 @@
     } 
 
     echo $OUTPUT->footer();
-
-/// Mark as viewed
-    $completion=new completion_info($course);
-    $completion->set_module_viewed($cm);
 
