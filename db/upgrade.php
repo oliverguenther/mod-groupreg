@@ -22,7 +22,19 @@
 
 function xmldb_groupreg_upgrade($oldversion) {
     global $CFG, $DB;
+    
+    $dbman = $DB->get_manager(); // loads ddl manager and xmldb classes
 
+    if ($oldversion < 2011100201) {
+        $table = new xmldb_table('groupreg');
+        $field = new xmldb_field('groupmembers');
+        $field->set_attributes(XMLDB_TYPE_INTEGER, '5', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '4', 'assigned');
+
+        if(!$dbman->field_exists($table,$field)) {
+            $dbman->add_field($table, $field);
+        }
+    }
+    
     return true;
 }
 

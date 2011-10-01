@@ -119,6 +119,10 @@ function groupreg_add_instance($groupreg) {
         $groupreg->timeopen = 0;
         $groupreg->timeclose = 0;
     }
+    
+    $groupreg->groupmembers = intval($groupreg->groupmembers);
+    if ($groupreg->groupmembers <= 0)
+        $groupreg->groupmembers = 1;
 
     //insert answers
     $groupreg->id = $DB->insert_record("groupreg", $groupreg);
@@ -162,6 +166,10 @@ function groupreg_update_instance($groupreg) {
         $groupreg->timeopen = 0;
         $groupreg->timeclose = 0;
     }
+
+    $groupreg->groupmembers = intval($groupreg->groupmembers);
+    if ($groupreg->groupmembers <= 0)
+        $groupreg->groupmembers = 1;
 
     //update, delete or insert answers
     foreach ($groupreg->option as $key => $value) {

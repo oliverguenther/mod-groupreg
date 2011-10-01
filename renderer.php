@@ -224,27 +224,31 @@ class mod_groupreg_renderer extends plugin_renderer_base {
         $html .= html_writer::end_tag('table');
         
         // group members
-        $html .= html_writer::tag('h3', get_string('groupmembers2', 'groupreg'), array());
-        $html .= html_writer::tag('p', get_string('groupmembers2_desc', 'groupreg'), array());
-        $groupmemberno = 4; // change to be dynamic, if required
-        $html .= html_writer::start_tag('table', array('class'=>'groupregs' ));
-        for ($i = 0; $i < $groupmemberno; $i++) {
-            $html .= html_writer::start_tag('tr', array('class'=>'option'));
-            
-            $html .= html_writer::tag('td', get_string('groupmember_n', 'groupreg', $i+1).':', array());
-            $html .= html_writer::start_tag('td', array());
-            $attributes = array('type' => 'text', 'name' => "groupmembers[$i]");
-            if ($i == 0) {
-                $attributes['disabled'] = 'disabled';
-                $attributes['value'] = $USER->username;
-            } else if (sizeof($usernames) > 0) {
-                $attributes['value'] = array_pop($usernames);
+        $groupmemberno = $groupreg->groupmembers; // change to be dynamic, if required
+        if ($groupmemberno > 1) {
+            $html .= html_writer::tag('h3', get_string('groupmembers2', 'groupreg'), array());
+            $html .= html_writer::tag('p', get_string('groupmembers2_desc', 'groupreg'), array());
+            $html .= html_writer::start_tag('table', array('class'=>'groupregs' ));
+            for ($i = 0; $i < $groupmemberno; $i++) {
+                $html .= html_writer::start_tag('tr', array('class'=>'option'));
+                
+                $html .= html_writer::tag('td', get_string('groupmember_n', 'groupreg', $i+1).':', array());
+                $html .= html_writer::start_tag('td', array());
+                $attributes = array('type' => 'text', 'name' => "groupmembers[$i]");
+                if ($i == 0) {
+                    $attributes['disabled'] = 'disabled';
+                    $attributes['value'] = $USER->username;
+                } else if (sizeof($usernames) > 0) {
+                    $attributes['value'] = array_pop($usernames);
+                }
+                $html .= html_writer::empty_tag('input', $attributes);            
+                $html .= html_writer::end_tag('td');
+                $html .= html_writer::end_tag('tr');
             }
-            $html .= html_writer::empty_tag('input', $attributes);            
-            $html .= html_writer::end_tag('td');
-            $html .= html_writer::end_tag('tr');
+            $html .= html_writer::end_tag('table');
+        } else {
+            $html .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'groupmembers[0]', 'value' => $USER->username, 'disabled' => 'disabled'));       
         }
-        $html .= html_writer::end_tag('table');
                 
         
         // form footer

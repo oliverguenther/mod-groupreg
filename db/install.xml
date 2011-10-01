@@ -23,7 +23,8 @@
         <FIELD NAME="timeclose" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="timeopen" NEXT="timemodified"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="timeclose" NEXT="completionsubmit"/>
         <FIELD NAME="completionsubmit" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="false" DEFAULT="0" SEQUENCE="false" COMMENT="If this field is set to 1, then the activity will be automatically marked as 'complete' once the user submits their groupreg." PREVIOUS="timemodified" NEXT="assigned"/>
-        <FIELD NAME="assigned" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="If this is set to 1, group assignment was already performed and cannot be done again in this activity instance." PREVIOUS="completionsubmit"/>
+        <FIELD NAME="assigned" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="If this is set to 1, group assignment was already performed and cannot be done again in this activity instance." PREVIOUS="completionsubmit" NEXT="groupmembers"/>
+        <FIELD NAME="groupmembers" TYPE="int" LENGTH="5" NOTNULL="true" UNSIGNED="true" DEFAULT="4" SEQUENCE="false" PREVIOUS="assigned"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

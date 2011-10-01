@@ -62,7 +62,7 @@ class mod_groupreg_mod_form extends moodleform_mod {
         $mform->addElement('select', 'limitblanks', get_string('limitblanks', 'groupreg'), $blankoptions);
         $mform->disabledIf('limitblanks', 'assigned', 'eq', '1');
         
-        $mform->addElement('text', 'groupmembers', get_string('groupmembers2', 'groupreg'));
+        $mform->addElement('text', 'groupmembers', get_string('groupmembers2', 'groupreg'), 4);
         $mform->addHelpButton('groupmembers', 'groupmembers2', 'groupreg');
         
         if ($this->_instance){
@@ -119,8 +119,6 @@ class mod_groupreg_mod_form extends moodleform_mod {
                 $default_values['grouping['.$key.']'] = $options3[$key];
                 $default_values['optionid['.$key.']'] = $groupregids[$key];
             }
-            
-            $default_values['groupmembers'] = 4;
 
         }
         if (empty($default_values['timeopen'])) {
