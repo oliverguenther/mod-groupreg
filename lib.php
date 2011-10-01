@@ -282,6 +282,47 @@ function groupreg_prepare_options($groupreg, $user, $coursemodule, $allresponses
     return $cdisplay;
 }
 
+function groupreg_user_validate_response($favorites, $blanks, $groupreg) {
+    global $DB;
+
+    // check that at least one favorite is chosen
+    if ($favorites[0] <= 0)
+        return false;
+        
+    // check that no entries repeat
+    foreach ($favorites as $no => $fav) {
+        if ($fav == 0) continue;
+        foreach ($favorites as $no2 => $fav2)
+            if ($no != $no2 && $fav == $fav2)
+                return false;
+        foreach ($blanks as $blank)
+            if ($fav == $blank)
+                return false;
+    }   
+    foreach ($blanks as $no => $blank) {
+        if ($blank == 0) continue;
+        foreach ($blanks as $no2 => $blank2)
+            if ($no != $no2 && $blank == $blank2)
+                return false;
+    }
+    
+    // check that all option IDs are valid
+    foreach($favorites as $fav) {
+        if ($fav == 0) continue;
+        $optid = intval($fav);
+        if ($optid == 0 || $DB->count_records('groupreg_options', array('id' => $optid, 'groupregid' => $groupreg->id)) == 0)
+            return false;
+    }
+    foreach($blanks as $blank) {
+        if ($blank == 0) continue;
+        $optid = intval($blank);
+        if ($optid == 0 || $DB->count_records('groupreg_options', array('id' => $optid, 'groupregid' => $groupreg->id)) == 0)
+            return false;
+    }
+        
+    return true;
+}
+
 /**
  * Submit a response by a user, save it to the database. All old entries by the same user are deleted.
  * 
@@ -579,6 +620,10 @@ function groupreg_delete_instance($id) {
     if (! $DB->delete_records("groupreg_answers", array("groupregid"=>"$groupreg->id"))) {
         $result = false;
     }
+    
+    if (! $DB->delete_records("groupreg_assigned", array("groupregid"=>"$groupreg->id"))) {
+        $result = false;
+    }
 
     if (! $DB->delete_records("groupreg_options", array("groupregid"=>"$groupreg->id"))) {
         $result = false;
@@ -708,6 +753,7 @@ function groupreg_reset_userdata($data) {
                        WHERE ch.course=?";
 
         $DB->delete_records_select('groupreg_answers', "groupregid IN ($groupregssql)", array($data->courseid));
+        $DB->delete_records_select('groupreg_assigned', "groupregid IN ($groupregssql)", array($data->courseid));
         $status[] = array('component'=>$componentstr, 'item'=>get_string('removeresponses', 'groupreg'), 'error'=>false);
     }
 

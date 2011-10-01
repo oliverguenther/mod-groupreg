@@ -61,7 +61,7 @@
 
 		// TODO: implement a proper check if input values, no same group twice, etc.
         // determine if at least one favorite is selected properly
-        if ($favorites[0] <= 0) {
+        if (!groupreg_user_validate_response($favorites, $blanks, $choice)) {
             redirect("view.php?id=$cm->id", get_string('mustchooseone', 'groupreg'));
         } else {
             groupreg_user_submit_response($favorites, $blanks, $choice, $USER->id, $course, $cm);
