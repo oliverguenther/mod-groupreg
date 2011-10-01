@@ -45,7 +45,10 @@ $string['groupregopen'] = 'Offen';
 $string['groupregoptions'] = 'Auswahloptionen';
 $string['groupregoptions_help'] = 'Hier geben Sie die Optionen an, die von Teilnehmern angewählt werden können.
 
-Sie können so viele wie Sie brauchen davon ausfüllen. Die nicht ausgefüllten Felder werden nicht als Optionen in der Auswahl übernommen. Falls Sie mehr als 8 Optionen brauchen, benutzen Sie den "3 Felder hinzufügen"-Button.';
+Sie können so viele wie Sie brauchen davon ausfüllen. Die nicht ausgefüllten Felder werden nicht als Optionen in der Auswahl übernommen. Falls Sie mehr als 8 Optionen brauchen, benutzen Sie den "3 Felder hinzufügen"-Button.
+
+Beim Feld \'Äquivalenzgruppierung\' handelt es sich um eine optionale Angabe. Gruppen, die hier den gleichen Wert eingetragen bekommen, werden bei der Angabe einer davon als Niete alle zusammen als Nieten betrachtet. 
+Hier sollte primär die Uhrzeit des Gruppentermins eingetragen werden, sodass die Studenten keine Nieten mit Terminüberschneidungen zugewiesen bekommen.';
 $string['limitanswers_help'] = 'Diese Option erlaubt es Ihnen, die Gruppengröße einzuschränken. Sobald das Limit erreicht ist, können sich keine weiteren Teilnehmer für diese Gruppe entscheiden.
 
 Falls die Einschränkung aus oder auf 0 eingestellt ist, können beliebig viele Teilnehmer sich in eine Gruppe eintragen.';
@@ -66,6 +69,7 @@ $string['notanswered'] = 'Noch nicht beantwortet';
 $string['notenrolledchoose'] = 'Nur eingeschriebene Benutzer können sich in Gruppen einwählen.';
 $string['notopenyet'] = 'Diese Aktivität ist bis {$a} nicht verfügbar.';
 $string['option'] = 'Gruppe';
+$string['grouping'] = 'Äquivalenzgruppierung';
 $string['pluginadministration'] = 'Steuerung der Gruppenwahl';
 $string['pluginname'] = 'Webreg-Gruppenwahl';
 $string['privacy'] = 'Privatsphäre';

@@ -38,6 +38,7 @@ class mod_groupreg_mod_form extends moodleform_mod {
         $repeatarray[] = &MoodleQuickForm::createElement('header', '', get_string('option','groupreg').' {no}');
         $repeatarray[] = &MoodleQuickForm::createElement('select', 'option', get_string('option','groupreg'), $groups);
         $repeatarray[] = &MoodleQuickForm::createElement('text', 'limit', get_string('limit','groupreg'));
+        $repeatarray[] = &MoodleQuickForm::createElement('text', 'grouping', get_string('grouping','groupreg'));
         $repeatarray[] = &MoodleQuickForm::createElement('hidden', 'optionid', 0);
 
 //-------------------------------------------------------------------------------
@@ -75,6 +76,7 @@ class mod_groupreg_mod_form extends moodleform_mod {
 
         $repeateloptions['option']['helpbutton'] = array('groupregoptions', 'groupreg');
         $mform->setType('option', PARAM_CLEAN);
+        $mform->setType('grouping', PARAM_CLEAN);
 
         $mform->setType('optionid', PARAM_INT);
 
@@ -100,15 +102,19 @@ class mod_groupreg_mod_form extends moodleform_mod {
 
     function data_preprocessing(&$default_values){
         global $DB;
-        if (!empty($this->_instance) && ($options = $DB->get_records_menu('groupreg_options',array('groupregid'=>$this->_instance), 'id', 'id,text'))
-               && ($options2 = $DB->get_records_menu('groupreg_options', array('groupregid'=>$this->_instance), 'id', 'id,maxanswers')) ) {
+        if (!empty($this->_instance) 
+                && ($options = $DB->get_records_menu('groupreg_options',array('groupregid'=>$this->_instance), 'id', 'id,text'))
+                && ($options3 = $DB->get_records_menu('groupreg_options',array('groupregid'=>$this->_instance), 'id', 'id,grouping'))
+                && ($options2 = $DB->get_records_menu('groupreg_options', array('groupregid'=>$this->_instance), 'id', 'id,maxanswers')) ) {
             $groupregids=array_keys($options);
             $options=array_values($options);
             $options2=array_values($options2);
-
+            $options3=array_values($options3);
+            
             foreach (array_keys($options) as $key){
                 $default_values['option['.$key.']'] = $options[$key];
                 $default_values['limit['.$key.']'] = $options2[$key];
+                $default_values['grouping['.$key.']'] = $options3[$key];
                 $default_values['optionid['.$key.']'] = $groupregids[$key];
             }
 

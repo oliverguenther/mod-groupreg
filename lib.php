@@ -131,6 +131,9 @@ function groupreg_add_instance($groupreg) {
             if (isset($groupreg->limit[$key])) {
                 $option->maxanswers = $groupreg->limit[$key];
             }
+            if (isset($groupreg->grouping[$key])) {
+                $option->grouping = $groupreg->grouping[$key];
+            }
             $option->timemodified = time();
             $DB->insert_record("groupreg_options", $option);
         }
@@ -168,6 +171,9 @@ function groupreg_update_instance($groupreg) {
         $option->groupregid = $groupreg->id;
         if (isset($groupreg->limit[$key])) {
             $option->maxanswers = $groupreg->limit[$key];
+        }
+        if (isset($groupreg->grouping[$key])) {
+            $option->grouping = $groupreg->grouping[$key];
         }
         $option->timemodified = time();
         if (isset($groupreg->optionid[$key]) && !empty($groupreg->optionid[$key])){//existing groupreg record
@@ -375,190 +381,6 @@ function groupreg_show_reportlink($cm) {
 }
 
 /**
- * @global object
- * @param object $groupreg
- * @param object $course
- * @param object $coursemodule
- * @param array $allresponses
-
- *  * @param bool $allresponses
- * @return object
- */
-function prepare_groupreg_show_results($groupreg, $course, $cm, $allresponses, $forcepublish=false) {
-    global $CFG, $groupreg_COLUMN_HEIGHT, $FULLSCRIPT, $PAGE, $OUTPUT, $DB;
-
-    $display = clone($groupreg);
-    $display->coursemoduleid = $cm->id;
-    $display->courseid = $course->id;
-
-    //overwrite options value;
-    $display->options = array();
-    $totaluser = 0;
-    foreach ($groupreg->option as $optionid => $optiontext) {
-        $display->options[$optionid] = new stdClass;
-        $display->options[$optionid]->text = $optiontext;
-        $display->options[$optionid]->maxanswer = $groupreg->maxanswers[$optionid];
-
-        if (array_key_exists($optionid, $allresponses)) {
-            $display->options[$optionid]->user = $allresponses[$optionid];
-            $totaluser += count($allresponses[$optionid]);
-        }
-    }
-    unset($display->option);
-    unset($display->maxanswers);
-
-    $display->numberofuser = $totaluser;
-    $context = get_context_instance(CONTEXT_MODULE, $cm->id);
-    $display->viewresponsecapability = has_capability('mod/groupreg:readresponses', $context);
-    $display->deleterepsonsecapability = has_capability('mod/groupreg:deleteresponses',$context);
-    $display->fullnamecapability = has_capability('moodle/site:viewfullnames', $context);
-
-    if (empty($allresponses)) {
-        echo $OUTPUT->heading(get_string("nousersyet"));
-        return false;
-    }
-
-
-    $totalresponsecount = 0;
-    foreach ($allresponses as $optionid => $userlist) {
-        if ($groupreg->showunanswered || $optionid) {
-            $totalresponsecount += count($userlist);
-        }
-    }
-
-    $context = get_context_instance(CONTEXT_MODULE, $cm->id);
-
-    $hascapfullnames = has_capability('moodle/site:viewfullnames', $context);
-
-    $viewresponses = has_capability('mod/groupreg:readresponses', $context);
-    switch ($forcepublish) {
-        case groupreg_PUBLISH_NAMES:
-            echo '<div id="tablecontainer">';
-            if ($viewresponses) {
-                echo '<form id="attemptsform" method="post" action="'.$FULLSCRIPT.'" onsubmit="var menu = document.getElementById(\'menuaction\'); return (menu.options[menu.selectedIndex].value == \'delete\' ? \''.addslashes_js(get_string('deleteattemptcheck','quiz')).'\' : true);">';
-                echo '<div>';
-                echo '<input type="hidden" name="id" value="'.$cm->id.'" />';
-                echo '<input type="hidden" name="sesskey" value="'.sesskey().'" />';
-                echo '<input type="hidden" name="mode" value="overview" />';
-            }
-
-            echo "<table cellpadding=\"5\" cellspacing=\"10\" class=\"results names\">";
-            echo "<tr>";
-
-            $columncount = array(); // number of votes in each column
-            if ($groupreg->showunanswered) {
-                $columncount[0] = 0;
-                echo "<th class=\"col0 header\" scope=\"col\">";
-                print_string('notanswered', 'groupreg');
-                echo "</th>";
-            }
-            $count = 1;
-            foreach ($groupreg->option as $optionid => $optiontext) {
-                $columncount[$optionid] = 0; // init counters
-                echo "<th class=\"col$count header\" scope=\"col\">";
-                echo format_string($optiontext);
-                echo "</th>";
-                $count++;
-            }
-            echo "</tr><tr>";
-
-            if ($groupreg->showunanswered) {
-                echo "<td class=\"col$count data\" >";
-                // added empty row so that when the next iteration is empty,
-                // we do not get <table></table> error from w3c validator
-                // MDL-7861
-                echo "<table class=\"groupregresponse\"><tr><td></td></tr>";
-                if (!empty($allresponses[0])) {
-                    foreach ($allresponses[0] as $user) {
-                        echo "<tr>";
-                        echo "<td class=\"picture\">";
-                        echo $OUTPUT->user_picture($user, array('courseid'=>$course->id));
-                        echo "</td><td class=\"fullname\">";
-                        echo "<a href=\"$CFG->wwwroot/user/view.php?id=$user->id&amp;course=$course->id\">";
-                        echo fullname($user, $hascapfullnames);
-                        echo "</a>";
-                        echo "</td></tr>";
-                    }
-                }
-                echo "</table></td>";
-            }
-            $count = 1;
-            foreach ($groupreg->option as $optionid => $optiontext) {
-                    echo '<td class="col'.$count.' data" >';
-
-                    // added empty row so that when the next iteration is empty,
-                    // we do not get <table></table> error from w3c validator
-                    // MDL-7861
-                    echo '<table class="groupregresponse"><tr><td></td></tr>';
-                    if (isset($allresponses[$optionid])) {
-                        foreach ($allresponses[$optionid] as $user) {
-                            $columncount[$optionid] += 1;
-                            echo '<tr><td class="attemptcell">';
-                            if ($viewresponses and has_capability('mod/groupreg:deleteresponses',$context)) {
-                                echo '<input type="checkbox" name="attemptid[]" value="'. $user->id. '" />';
-                            }
-                            echo '</td><td class="picture">';
-                            echo $OUTPUT->user_picture($user, array('courseid'=>$course->id));
-                            echo '</td><td class="fullname">';
-                            echo "<a href=\"$CFG->wwwroot/user/view.php?id=$user->id&amp;course=$course->id\">";
-                            echo fullname($user, $hascapfullnames);
-                            echo '</a>';
-                            echo '</td></tr>';
-                       }
-                    }
-                    $count++;
-                    echo '</table></td>';
-            }
-            echo "</tr><tr>";
-            $count = 1;
-
-            if ($groupreg->showunanswered) {
-                echo "<td></td>";
-            }
-
-            foreach ($groupreg->option as $optionid => $optiontext) {
-                echo "<td align=\"center\" class=\"col$count count\">";
-                if ($groupreg->limitanswers) {
-                    echo get_string("taken", "groupreg").":";
-                    echo $columncount[$optionid];
-                    echo "<br/>";
-                    echo get_string("limit", "groupreg").":";
-                    echo $groupreg->maxanswers[$optionid];
-                } else {
-                    if (isset($columncount[$optionid])) {
-                        echo $columncount[$optionid];
-                    }
-                }
-                echo "</td>";
-                $count++;
-            }
-            echo "</tr>";
-
-            /// Print "Select all" etc.
-            if ($viewresponses and has_capability('mod/groupreg:deleteresponses',$context)) {
-                echo '<tr><td></td><td>';
-                echo '<a href="javascript:select_all_in(\'DIV\',null,\'tablecontainer\');">'.get_string('selectall').'</a> / ';
-                echo '<a href="javascript:deselect_all_in(\'DIV\',null,\'tablecontainer\');">'.get_string('deselectall').'</a> ';
-                echo '&nbsp;&nbsp;';
-                echo html_writer::label(get_string('withselected', 'groupreg'), 'menuaction');
-                echo html_writer::select(array('delete' => get_string('delete')), 'action', '', array(''=>get_string('withselectedusers')), array('id'=>'menuaction'));
-                $PAGE->requires->js_init_call('M.util.init_select_autosubmit', array('attemptsform', 'menuaction', ''));
-                echo '<noscript id="noscriptmenuaction" style="display:inline">';
-                echo '<div>';
-                echo '<input type="submit" value="'.get_string('go').'" /></div></noscript>';
-                echo '</td><td></td></tr>';
-            }
-
-            echo "</table></div>";
-            if ($viewresponses) {
-                echo "</form></div>";
-            }
-            break;
-    }
-    return $display;
-}
-
-/**
  * Deletes all responses by users listed in $attemptids
  * 
  * @global object
@@ -676,6 +498,7 @@ function groupreg_get_groupreg($groupregid) {
         if ($options = $DB->get_records("groupreg_options", array("groupregid" => $groupregid), "id")) {
             foreach ($options as $option) {
                 $groupreg->option[$option->id] = $option->text;
+                $groupreg->optiongrouping[$option->id] = $option->grouping;
                 $groupreg->maxanswers[$option->id] = $option->maxanswers;
             }
             return $groupreg;
