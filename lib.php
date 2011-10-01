@@ -16,8 +16,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   mod-groupreg
- * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
+ * @package   groupreg
+ * @copyright 2011 onwards Olexandr Savchuk
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

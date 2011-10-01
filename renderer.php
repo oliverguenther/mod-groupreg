@@ -18,12 +18,10 @@
 /**
  * Moodle renderer used to display special elements of the lesson module
  *
- * @package   Choice
- * @copyright 2010 Rossiani Wijaya
+ * @package   groupreg
+ * @copyright 2011 onwards Olexandr Savchuk
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  **/
-define ('DISPLAY_HORIZONTAL_LAYOUT', 0);
-define ('DISPLAY_VERTICAL_LAYOUT', 1);
 
 class mod_groupreg_renderer extends plugin_renderer_base {
 
