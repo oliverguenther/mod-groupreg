@@ -67,7 +67,8 @@ class mod_groupreg_renderer extends plugin_renderer_base {
                 $groupname = $groupnames[$groupids[$result->optionid]];
                 $html .= get_string("assignment_result", "groupreg", $groupname)."<br><br>";
             } else {
-                
+                // assignment complete, but no result available
+                $html .= get_string("assignment_no_result", "groupreg")."<br><br>";
             }
         } 
         

@@ -125,6 +125,7 @@ $string['assignmentok'] = 'Zuweisung wurde erfolgreich beendet';
 $string['assignmentnotdone'] = 'Zuweisung wurde noch nicht ausgeführt, die Aktion kann nicht ausgeführt werden';
 $string['assignmentproblem'] = 'Zuweisung wurde mit einem Fehler beendet. Setzen Sie die Zuweisung zurück und probieren Sie nochmal.';
 $string['assignment_result'] = 'Sie wurden der Gruppe <b>{$a}</b> zugewiesen.';
+$string['assignment_no_result'] = 'Sie wurden keiner Gruppe zugewiesen. Bitte wenden Sie sich an einen Kursadministrator.';
 
 $string['settings_perlscript'] = 'Perl-Script';
 $string['settings_perlscript_desc'] = 'Voller Pfad zum Script, der die Zuweisung ausführt';
