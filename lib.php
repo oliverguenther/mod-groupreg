@@ -209,7 +209,6 @@ function groupreg_perform_assignment($groupreg) {
     if ($script == '' || !file_exists($script)) {
         return false;
     }
-    
     if (isset($CFG->groupreg_perltime) && $CFG->groupreg_perltime > 30)
         set_time_limit($CFG->groupreg_perltime);
     
@@ -220,7 +219,8 @@ function groupreg_perform_assignment($groupreg) {
     $groupreg->assigned = 1;
     $DB->update_record("groupreg", $groupreg);
     
-    exec("perl $script $CFG->prefix $groupreg->id $CFG->dbname $CFG->dbuser $CFG->dbpass");
+    exec("/usr/bin/perl $script $CFG->prefix $groupreg->id $CFG->dbname $CFG->dbuser $CFG->dbpass 2>&1", $output);
+	echo "<p>Ausgabe:<br/>" . implode("<br/>", $output) . "</p>";
     
     return true;
 }
