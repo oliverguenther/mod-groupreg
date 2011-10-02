@@ -130,7 +130,7 @@ class mod_groupreg_renderer extends plugin_renderer_base {
     public function display_options($course, $groupreg, $options, $coursemoduleid, $vertical = true) {
         global $DB, $USER;
         $target = new moodle_url('/mod/groupreg/view.php');
-        $attributes = array('method'=>'POST', 'target'=>$target);
+        $attributes = array('method'=>'POST', 'action'=>$target);
 
         $html = html_writer::start_tag('form', $attributes);
         
