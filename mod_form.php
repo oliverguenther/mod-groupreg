@@ -113,7 +113,7 @@ class mod_groupreg_mod_form extends moodleform_mod {
             
             foreach (array_keys($options) as $key){
                 $default_values['option['.$key.']'] = $options[$key];
-                if ($options2[$key]) <= 0)
+                if ($options2[$key] <= 0)
                     $options2[$key] = 1;
                 $default_values['limit['.$key.']'] = $options2[$key];
                 $default_values['grouping['.$key.']'] = $options3[$key];
