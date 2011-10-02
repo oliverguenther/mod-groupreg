@@ -143,7 +143,7 @@ class mod_groupreg_renderer extends plugin_renderer_base {
         
         // get all users who registered together with the user
         $usernames = array();
-        if ($options['usergroup']) {
+        if (isset($options['usergroup'])) {
             $dbanswers = $DB->get_records('groupreg_answers', array('usergroup' => $options['usergroup']));
             if ($dbanswers) foreach($dbanswers as $answer) {
                 if ($answer->userid == $USER->id)
