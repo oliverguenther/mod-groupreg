@@ -47,12 +47,10 @@ class mod_groupreg_mod_form extends moodleform_mod {
         $mform->addElement('selectyesno', 'allowupdate', get_string("allowupdate", "groupreg"));
         $mform->disabledIf('allowupdate', 'assigned', 'eq', '1');
         
-        $menuoptions = array();
-        $menuoptions[1] = get_string('enable');
-        $menuoptions[0] = get_string('disable');
-        $mform->addElement('select', 'limitanswers', get_string('limitanswers', 'groupreg'), $menuoptions);
-        $mform->disabledIf('limitanswers', 'assigned', 'eq', '1');
-        $mform->addHelpButton('limitanswers', 'limitanswers', 'groupreg');
+        //$mform->addElement('select', 'limitanswers', get_string('limitanswers', 'groupreg'), $menuoptions);
+        //$mform->disabledIf('limitanswers', 'assigned', 'eq', '1');
+        //$mform->addHelpButton('limitanswers', 'limitanswers', 'groupreg');
+        $mform->addElement('hidden', 'limitanswers', 1);
 
         $favoptions = array(1,2,3,4,5,6,7,8,9,10);
         $mform->addElement('select', 'limitfavorites', get_string('limitfavorites', 'groupreg'), $favoptions);
@@ -72,7 +70,7 @@ class mod_groupreg_mod_form extends moodleform_mod {
         }
 
         $repeateloptions = array();
-        $repeateloptions['limit']['default'] = 0;
+        $repeateloptions['limit']['default'] = 1;
         $repeateloptions['limit']['disabledif'] = array('limitanswers', 'eq', 0);
         $mform->setType('limit', PARAM_INT);
 
@@ -115,6 +113,8 @@ class mod_groupreg_mod_form extends moodleform_mod {
             
             foreach (array_keys($options) as $key){
                 $default_values['option['.$key.']'] = $options[$key];
+                if ($options2[$key]) <= 0)
+                    $options2[$key] = 1;
                 $default_values['limit['.$key.']'] = $options2[$key];
                 $default_values['grouping['.$key.']'] = $options3[$key];
                 $default_values['optionid['.$key.']'] = $groupregids[$key];

@@ -205,7 +205,7 @@ function groupreg_update_instance($groupreg) {
 function groupreg_perform_assignment($groupreg) {
     global $CFG, $DB;
     
-    $script = $CFG->groupreg_perlscript;
+    $script = 'assign_groups.pl';
     if ($script == '' || !file_exists($script)) {
         return false;
     }
