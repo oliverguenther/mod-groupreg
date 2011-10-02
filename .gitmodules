@@ -1,0 +1,3 @@
+[submodule "group-assign"]
+	path = group-assign
+	url = /var/gitosis/repositories/group-assign.git/
