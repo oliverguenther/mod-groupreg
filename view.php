@@ -89,9 +89,10 @@
             and has_capability('mod/groupreg:performassignment', $PAGE->cm->context)) {
         echo $OUTPUT->notification(get_string('performingassignment', 'groupreg'), 'notifyproblem');
         
-        if (groupreg_perform_assignment($choice))
+        if (groupreg_perform_assignment($choice)) {
             echo $OUTPUT->notification(get_string('assignmentok', 'groupreg'), 'notifysuccess');
-        else
+            add_to_log($course->id, "groupreg", "assign", "view.php?id=$cm->id", $choice->id, $cm->id);
+        } else
             echo $OUTPUT->notification(get_string('assignmentproblem', 'groupreg'), 'notifyproblem');
         
     }
@@ -104,6 +105,7 @@
             and has_capability('mod/groupreg:performassignment', $PAGE->cm->context)) {
         if ($choice->assigned == 1) {
             groupreg_reset_assignment($choice);
+            add_to_log($course->id, "groupreg", "resetassign", "view.php?id=$cm->id", $choice->id, $cm->id);
             echo $OUTPUT->notification(get_string('resetassignmentok', 'groupreg'), 'notifysuccess');
         } else
             echo $OUTPUT->notification(get_string('assignmentnotdone', 'groupreg'), 'notifyproblem');
@@ -118,6 +120,7 @@
             and has_capability('mod/groupreg:performassignment', $PAGE->cm->context)) {
         if ($choice->assigned == 1) {
             groupreg_finalize_assignment($choice);
+            add_to_log($course->id, "groupreg", "finalize", "view.php?id=$cm->id", $choice->id, $cm->id);
             echo $OUTPUT->notification(get_string('finalizeassignmentok', 'groupreg'), 'notifysuccess');
         } else
             echo $OUTPUT->notification(get_string('assignmentnotdone', 'groupreg'), 'notifyproblem');

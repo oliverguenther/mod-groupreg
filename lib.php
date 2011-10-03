@@ -594,7 +594,7 @@ function groupreg_get_view_actions() {
  * @return array
  */
 function groupreg_get_post_actions() {
-    return array('choose','choose again');
+    return array('choose','choose again','assign','resetassign','finalize');
 }
 
 
