@@ -66,7 +66,7 @@
             redirect("view.php?id=$cm->id", get_string('mustchooseone', 'groupreg'));
         } else {
             $errors = groupreg_user_submit_response($favorites, $blanks, $groupmembers, $choice, $course, $cm, $USER->id);
-            add_to_log($course->id, "groupreg", "add", "view.php?id=$cm->id", $choice->id, $cm->id);
+            add_to_log($course->id, "groupreg", "choose", "view.php?id=$cm->id", $choice->id, $cm->id);
             if ($errors) {
                 foreach($errors as $error)
                     echo $OUTPUT->notification($error, 'notifyproblem');
