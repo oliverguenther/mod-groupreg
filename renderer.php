@@ -141,20 +141,6 @@ class mod_groupreg_renderer extends plugin_renderer_base {
             $groups[$group->id] = $group->name;
         }
         
-        // get all users who registered together with the user
-        $usernames = array();
-        if (isset($options['usergroup'])) {
-            $dbanswers = $DB->get_records('groupreg_answers', array('usergroup' => $options['usergroup']));
-            if ($dbanswers) foreach($dbanswers as $answer) {
-                if ($answer->userid == $USER->id)
-                    continue;
-                    
-                $otheruser = $DB->get_record('user', array('id' => $answer->userid));
-                if ($otheruser && !in_array($otheruser->username, $usernames))
-                    $usernames[] = $otheruser->username;
-            }
-        }
-        
         // favorite choices
         $html .= html_writer::tag('h3', get_string('favorites', 'groupreg'), array());
         $html .= html_writer::tag('p', get_string('favorites_desc', 'groupreg'), array());
@@ -225,7 +211,7 @@ class mod_groupreg_renderer extends plugin_renderer_base {
         $html .= html_writer::end_tag('table');
         
         // group members
-        $groupmemberno = $groupreg->groupmembers; // change to be dynamic, if required
+        $groupmemberno = $groupreg->groupmembers;
         if ($groupmemberno > 1) {
             $html .= html_writer::tag('h3', get_string('groupmembers2', 'groupreg'), array());
             $html .= html_writer::tag('p', get_string('groupmembers2_desc', 'groupreg'), array());
@@ -239,8 +225,8 @@ class mod_groupreg_renderer extends plugin_renderer_base {
                 if ($i == 0) {
                     $attributes['disabled'] = 'disabled';
                     $attributes['value'] = $USER->username;
-                } else if (sizeof($usernames) > 0) {
-                    $attributes['value'] = array_pop($usernames);
+                } else if (sizeof($options['groupmembers']) > 0) {
+                    $attributes['value'] = array_pop($options['groupmembers']);
                 }
                 $html .= html_writer::empty_tag('input', $attributes);            
                 $html .= html_writer::end_tag('td');
@@ -294,7 +280,7 @@ class mod_groupreg_renderer extends plugin_renderer_base {
 		foreach($db_options as $option)
 			$groupnames[$option->id] = $groups[intval($option->text)];
         
-        $html = html_writer::tag('h3', get_string('responses', 'groupreg'));
+        $html = html_writer::tag('h2', get_string('responses', 'groupreg'));
         
         $html .= html_writer::start_tag('table');
         

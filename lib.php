@@ -263,20 +263,58 @@ function groupreg_finalize_assignment($groupreg) {
  * @param object $coursemodule
  * @return array
  */
-function groupreg_prepare_options($groupreg, $user, $coursemodule) {
+function groupreg_prepare_options($groupreg, $user, $coursemodule, $favorites, $blanks, $groupmembers) {
     global $DB;
 
     $cdisplay = array('options'=>array());
 
     $cdisplay['limitanswers'] = true;
     $context = get_context_instance(CONTEXT_MODULE, $coursemodule->id);
-
-    // prefetch answers given by this user
-    $dbAnswers = $DB->get_records('groupreg_answers', array('groupregid' => $groupreg->id, 'userid' => $user->id));
+    
+    $cdisplay['usergroup'] = 0;
+    $cdisplay['groupmembers'] = array();
+    
     $optionPreferences = array();
-    foreach($dbAnswers as $answer) {
-        $optionPreferences[$answer->optionid] = $answer->preference;
-        $cdisplay['usergroup'] = $answer->usergroup;
+    // if given, use answers chosen in form but not saved due to errors
+    if ($favorites != null) {
+        for ($i = sizeof($favorites)-1; $i >= 0; $i--) {
+            $id = intval($favorites[$i]);
+            if ($id > 0)
+                $optionPreferences[$id] = $i+1;
+        }
+    }
+    if ($blanks != null) {
+        for ($i = 0; $i < sizeof($blanks); $i++) {
+            $id = intval($blanks[$i]);
+            if ($id > 0)
+                $optionPreferences[$id] = 0;
+        }
+    }
+    // else fetch answers given by this user
+    if ($favorites == null && $blanks == null) {
+        $dbAnswers = $DB->get_records('groupreg_answers', array('groupregid' => $groupreg->id, 'userid' => $user->id));
+        foreach($dbAnswers as $answer) {
+            $optionPreferences[$answer->optionid] = $answer->preference;
+            $cdisplay['usergroup'] = $answer->usergroup;
+        }
+    }
+    
+    // add chosen group members, if any
+    if ($groupmembers == null && $cdisplay['usergroup'] != 0) {
+        // get group members from the DB
+        $dbanswers = $DB->get_records('groupreg_answers', array('usergroup' => $cdisplay['usergroup']));
+        if ($dbanswers) foreach($dbanswers as $answer) {
+            if ($answer->userid == $user->id)
+                continue;
+                
+            $otheruser = $DB->get_record('user', array('id' => $answer->userid));
+            if ($otheruser && !in_array($otheruser->username, $cdisplay['groupmembers']))
+                $cdisplay['groupmembers'][] = $otheruser->username;
+        }
+    } else {
+        foreach ($groupmembers as $member)
+            if (trim($member) != '')
+                $cdisplay['groupmembers'][] = htmlspecialchars($member); // XSS sanitation
     }
     
     foreach ($groupreg->option as $optionid => $text) {
@@ -309,28 +347,33 @@ function groupreg_prepare_options($groupreg, $user, $coursemodule) {
     return $cdisplay;
 }
 
-function groupreg_user_validate_response($favorites, $blanks, $groupreg) {
+function groupreg_user_validate_response($favorites, $blanks, $groupmembers, $groupreg, $course, $cm, $user_id) {
     global $DB;
 
+    $errors = array();
+    
     // check that at least one favorite is chosen
-    if ($favorites[0] <= 0)
-        return false;
+    if ($favorites[0] <= 0) {
+        $errors[] = get_string('error_mustchooseone', 'groupreg');
+    }
         
     // check that no entries repeat
     foreach ($favorites as $no => $fav) {
         if ($fav == 0) continue;
         foreach ($favorites as $no2 => $fav2)
             if ($no != $no2 && $fav == $fav2)
-                return false;
+                if (!in_array(get_string('error_double_favorite', 'groupreg'), $errors))
+                    $errors[] = get_string('error_double_favorite', 'groupreg');
         foreach ($blanks as $blank)
             if ($fav == $blank)
-                return false;
+                $errors[] = get_string('error_favorite_as_blank', 'groupreg');
     }   
     foreach ($blanks as $no => $blank) {
         if ($blank == 0) continue;
         foreach ($blanks as $no2 => $blank2)
             if ($no != $no2 && $blank == $blank2)
-                return false;
+                if (!in_array(get_string('error_double_blank', 'groupreg'), $errors))
+                    $errors[] = get_string('error_double_blank', 'groupreg');
     }
     
     // check that all option IDs are valid
@@ -338,14 +381,57 @@ function groupreg_user_validate_response($favorites, $blanks, $groupreg) {
         if ($fav == 0) continue;
         $optid = intval($fav);
         if ($optid == 0 || $DB->count_records('groupreg_options', array('id' => $optid, 'groupregid' => $groupreg->id)) == 0)
-            return false;
+            $errors[] = get_string('error_invalid_value', 'groupreg');
     }
     foreach($blanks as $blank) {
         if ($blank == 0) continue;
         $optid = intval($blank);
         if ($optid == 0 || $DB->count_records('groupreg_options', array('id' => $optid, 'groupregid' => $groupreg->id)) == 0)
-            return false;
+            $errors[] = get_string('error_invalid_value', 'groupreg');
     }
+    
+    $context = get_context_instance(CONTEXT_MODULE, $cm->id);
+    
+    /// Get the current group and users enrolled
+    $groupmode = groups_get_activity_groupmode($cm);
+    if ($groupmode > 0) {
+        $currentgroup = groups_get_activity_group($cm);
+    } else {
+        $currentgroup = 0;
+    }
+    // check entered usernames
+    $users = get_enrolled_users($context, 'mod/groupreg:choose', $currentgroup, user_picture::fields('u', array('idnumber')), 'u.lastname ASC,u.firstname ASC');
+        
+    // get user's current usergroup ID, if any
+    $records = $DB->get_records('groupreg_answers', array('groupregid' => $groupreg->id, 'userid' => $user_id));
+    if ($records)
+        $usergroup = array_pop($records)->usergroup;
+    else
+        $usergroup = 0;
+        
+    // check all entered usernames and generate an array of userIDs to enter the data for
+    foreach($groupmembers as $username) {
+        if ($username == '') continue;
+        
+        $username = mysql_escape_string($username); // sql injection security, since moodle can't sanitize array variables
+        $us = $DB->get_record('user', array('username' => $username));
+        if ($us) {
+            // check the user is enrolled in this course
+            if (isset($users[$us->id])) {
+                // check that user has no answers in this choice or his usergroup is same as current user's
+                $records = $DB->get_records('groupreg_answers', array('groupregid' => $groupreg->id, 'userid' => $us->id));
+                if ($records && array_pop($records)->usergroup != $usergroup) {
+                    $errors[] = get_string('error_user_already_answered', 'groupreg', $username);
+                }
+            } else {
+                $errors[] = get_string('error_user_not_enrolled', 'groupreg', $username);
+            }
+        } else {
+            $errors[] = get_string('error_user_not_found', 'groupreg', $username);
+        }
+    }
+    if (sizeof($errors) > 0)
+        return $errors;
         
     return true;
 }
@@ -363,40 +449,18 @@ function groupreg_user_submit_response($favorites, $blanks, $groupmembers, $grou
     
     global $DB, $CFG;
     require_once($CFG->libdir.'/completionlib.php');
-    $context = get_context_instance(CONTEXT_MODULE, $cm->id);
-    
-    /// Get the current group and users enrolled
-    $groupmode = groups_get_activity_groupmode($cm);
-    if ($groupmode > 0) {
-        $currentgroup = groups_get_activity_group($cm);
-    } else {
-        $currentgroup = 0;
-    }
-    $users = get_enrolled_users($context, 'mod/groupreg:choose', $currentgroup, user_picture::fields('u', array('idnumber')), 'u.lastname ASC,u.firstname ASC');
-        
+         
     $errors = array();
     
-    // check all entered usernames and generate an array of userIDs to enter the data for
+    // generate an array of userIDs to enter the data for
     $userids = array($user_id);
     foreach($groupmembers as $username) {
         if ($username == '') continue;
         
         $username = mysql_escape_string($username); // sql injection security, since moodle can't sanitize array variables
         $us = $DB->get_record('user', array('username' => $username));
-        if ($us) {
-            // check the user is enrolled in this course
-            if (isset($users[$us->id])) {
-                if ($DB->count_records('groupreg_answers', array('groupregid' => $groupreg->id, 'userid' => $us->id)) == 0) {
-                    $userids[] = $us->id;
-                } else {
-                    $errors[] = get_string('user_already_answered', 'groupreg', $username);
-                }
-            } else {
-                $errors[] = get_string('user_not_enrolled', 'groupreg', $username);
-            }
-        } else {
-            $errors[] = get_string('user_not_found', 'groupreg', $username);
-        }
+        if (!in_array($us->id, $userids)) // handle potential double entries as one
+            $userids[] = $us->id;
     }
     
     // find a new random usergroup id not yet in use

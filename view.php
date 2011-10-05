@@ -51,29 +51,9 @@
         }
     }
     
-    /*
-	 * Action: data submitted, check and save to DB
-	 */
-    if ($choice->assigned == 0 and data_submitted() && is_enrolled($context, NULL, 'mod/groupreg:choose') && confirm_sesskey()) {
-                
-        $favorites = optional_param('favs', '', PARAM_RAW);
-        $blanks = optional_param('blanks', '', PARAM_RAW);
-        $groupmembers = optional_param('groupmembers', '', PARAM_RAW);
-
-		// TODO: implement a proper check if input values, no same group twice, etc.
-        // determine if at least one favorite is selected properly
-        if (!groupreg_user_validate_response($favorites, $blanks, $choice)) {
-            redirect("view.php?id=$cm->id", get_string('mustchooseone', 'groupreg'));
-        } else {
-            $errors = groupreg_user_submit_response($favorites, $blanks, $groupmembers, $choice, $course, $cm, $USER->id);
-            add_to_log($course->id, "groupreg", "choose", "view.php?id=$cm->id", $choice->id, $cm->id);
-            if ($errors) {
-                foreach($errors as $error)
-                    echo $OUTPUT->notification($error, 'notifyproblem');
-            }
-        }
-        redirect("view.php?id=$cm->id", get_string('groupregsaved', 'groupreg'));
-    }
+    $favorites = null;
+    $blanks = null;
+    $groupmembers = null;
     
     /// Mark as viewed
     $completion=new completion_info($course);
@@ -81,7 +61,28 @@
         
     echo $OUTPUT->header();
    
-     
+    /*
+	 * Action: data submitted, check and save to DB
+	 */
+    if ($choice->assigned == 0 and data_submitted() && is_enrolled($context, NULL, 'mod/groupreg:choose') && confirm_sesskey()) {   
+        $favorites = optional_param('favs', '', PARAM_RAW);
+        $blanks = optional_param('blanks', '', PARAM_RAW);
+        $groupmembers = optional_param('groupmembers', '', PARAM_RAW);
+
+		$result = groupreg_user_validate_response($favorites, $blanks, $groupmembers, $choice, $course, $cm, $USER->id);
+        if ($result === true) { // everything really really OK, save data and redirect
+            groupreg_user_submit_response($favorites, $blanks, $groupmembers, $choice, $course, $cm, $USER->id);
+            add_to_log($course->id, "groupreg", "choose", "view.php?id=$cm->id", $choice->id, $cm->id);
+            echo $OUTPUT->notification(get_string('groupregsaved', 'groupreg'), 'notifysuccess');
+        } else if (is_array($result)) {
+            foreach($result as $error) // multiple error messages pre-formatted with data
+                echo $OUTPUT->notification($error, 'notifyproblem');
+        } else { // single error message as lang key
+            echo $OUTPUT->notification(get_string($result, 'groupreg'), 'notifyproblem');
+        }
+    }
+    
+    
     /*
      * Action: perform assignment.
      */
@@ -133,6 +134,7 @@
     /// Check to see if groups are being used in this groupreg
     $groupmode = groups_get_activity_groupmode($cm);
 
+    // check and prepare activity group mode if neccessary
     if ($groupmode) {
         groups_get_activity_group($cm, true);
         groups_print_activity_menu($cm, $CFG->wwwroot . '/mod/groupreg/view.php?id='.$id);
@@ -157,7 +159,6 @@
 		echo $renderer->display_current_choice($course, $choice, $current);
     }
 
-/// Print the form
     $groupregopen = true;
     $timenow = time();
     if ($choice->timeclose !=0) {
@@ -172,9 +173,8 @@
     }
 
     if ( (!$current or $choice->allowupdate) and $groupregopen and is_enrolled($context, NULL, 'mod/groupreg:choose')) {
-    // They haven't made their choice yet or updates allowed and groupreg is open
-        $options = groupreg_prepare_options($choice, $USER, $cm);
-        
+        // They haven't made their choice yet or updates allowed and groupreg is open
+        $options = groupreg_prepare_options($choice, $USER, $cm, $favorites, $blanks, $groupmembers);
         echo $renderer->display_options($course, $choice, $options, $cm->id, $choice->display);
         $groupregformshown = true;
     } else {
