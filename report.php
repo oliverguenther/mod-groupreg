@@ -43,6 +43,7 @@
     $PAGE->set_title(format_string($choice->name).": $strresponses");
     $PAGE->set_heading($course->fullname);
     echo $OUTPUT->header();
+    
     /// Check to see if groups are being used in this groupreg
     $groupmode = groups_get_activity_groupmode($cm);
     if ($groupmode) {
@@ -50,10 +51,47 @@
         groups_print_activity_menu($cm, $CFG->wwwroot . '/mod/groupreg/report.php?id='.$id);
     }
     
-    $responsedata = groupreg_get_response_data($choice, $cm, $groupmode);
-    
     $renderer = $PAGE->get_renderer('mod_groupreg');
-    echo $renderer->display_result($course, $choice, $responsedata);
+    
+    // standard matrix output
+    $responsedata = groupreg_get_response_data($choice, $cm, $groupmode);
+    echo $renderer->display_result($course, $choice, $responsedata, $cm);
+    
+    // check additional report actions
+    if ($action == 'groupdetails') {
+        $optionid = optional_param('optionid', 0, PARAM_INT);
+        // get group name
+        $group = $DB->get_record_sql('SELECT g.name FROM {groups} g, {groupreg_options} o WHERE o.id = ? AND g.id = o.text', array($optionid));
+        // get group answers with user data and preference
+        $groupmembers = $DB->get_records_sql('SELECT 
+                                                u.id,
+                                                u.firstname, 
+                                                u.lastname, 
+                                                u.username, 
+                                                a.preference
+                                             FROM 
+                                                {user} u,
+                                                {groupreg_answers} a
+                                             WHERE
+                                                a.optionid = ? AND
+                                                u.id = a.userid
+                                             ORDER BY a.preference, u.lastname, u.firstname', 
+                                             array($optionid));
+        echo $renderer->display_option_result($course, $choice, $cm, $group, $groupmembers);
+    }
+    
+    $userlist = $DB->get_records_sql('SELECT 
+                                            DISTINCT u.id,
+                                            u.firstname, 
+                                            u.lastname, 
+                                            u.username
+                                         FROM 
+                                            {user} u,
+                                            {groupreg_answers} a
+                                         WHERE
+                                            u.id = a.userid AND
+                                            a.groupregid = ?', 
+                                         array($choice->id));
     
     echo $OUTPUT->footer();
 

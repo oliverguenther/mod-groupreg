@@ -265,7 +265,7 @@ class mod_groupreg_renderer extends plugin_renderer_base {
      * @param bool $forcepublish
      * @return string
      */
-    public function display_result($course, $groupreg, $response_data) {
+    public function display_result($course, $groupreg, $response_data, $cm) {
         global $DB;
         
         // fetch all group names from this course
@@ -291,6 +291,7 @@ class mod_groupreg_renderer extends plugin_renderer_base {
             $html .= html_writer::tag('th', get_string('favorite_n', 'groupreg', $i+1), array('class' => 'groupreg-favorite'));
         }
         $html .= html_writer::tag('th', get_string('blanks', 'groupreg'), array('class' => 'groupreg-blank'));
+        $html .= html_writer::empty_tag('th');
         $html .= html_writer::end_tag('tr');
         
         // data
@@ -302,13 +303,50 @@ class mod_groupreg_renderer extends plugin_renderer_base {
                 $html .= html_writer::tag('td', $number, array('style' => 'text-align: center;', 'class' => 'groupreg-favorite'));
             }
             $number = isset($option_data[0]) ? $option_data[0] : 0;
+            
             $html .= html_writer::tag('td', $number, array('style' => 'text-align: center;', 'class' => 'groupreg-blank'));
+            
+            $url = new moodle_url('report.php', array('id'=>$cm->id, 'action'=>'groupdetails', 'optionid'=>$option_id));
+            $html .= html_writer::tag('td', html_writer::link($url, get_string('show_group_details', 'groupreg')));
+            
             $html .= html_writer::end_tag('tr');
         }
         
         $html .= html_writer::end_tag('table');
         
         return $html;        
+    }
+    
+    function display_option_result($course, $choice, $cm, $group, $groupmembers) {
+        global $CFG;
+        $html = html_writer::tag('h2', get_string('group_details', 'groupreg', $group->name));
+        
+        $html .= html_writer::start_tag('table');
+        
+        $html .= html_writer::start_tag('tr');
+        $html .= html_writer::tag('th', get_string('user'));
+        $html .= html_writer::tag('th', get_string('preference', 'groupreg'));
+        $html .= html_writer::end_tag('tr');
+        
+        foreach($groupmembers as $member) {
+            $html .= html_writer::start_tag('tr');
+            
+            $url = new moodle_url($CFG->wwwroot.'/user/view.php', array('id'=>$member->id, 'course'=>$course->id));
+            $html .= html_writer::tag('td', html_writer::link($url, $member->firstname.' '.$member->firstname.' ('.$member->username.')'));
+            
+            if ($member->preference > 0)
+                $html .= html_writer::tag('td', get_string('favorite_n', 'groupreg', $member->preference));
+            else
+                $html .= html_writer::tag('td', get_string('blank', 'groupreg'));
+                
+            $html .= html_writer::end_tag('tr');
+        }
+        
+        $html .= html_writer::end_tag('table');
+        
+        $html .= '<pre>'.var_export($groupmembers, TRUE).'</pre>';
+        
+        return $html;
     }
 
 }

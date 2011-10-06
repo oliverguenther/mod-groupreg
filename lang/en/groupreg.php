@@ -110,6 +110,7 @@ $string['groupmembers2_help'] = 'Tragen Sie hier die maximale Anzahl Teilnehmer 
 $string['groupmembers2_desc'] = 'Falls Sie sich in einer Gruppe mit anderen Teilnehmern anmelden möchten, tragen Sie hier die entsprechenden Benutzernamen ein. Alle Teilnehmer werden dann nach Möglichkeit gemeinsam einer Gruppe zugeordnet.';
 $string['favorite_n'] = '{$a}. Favorit';
 $string['blank_n'] = '{$a}. Niete';
+$string['blank'] = 'Niete';
 $string['no_choice'] = 'Keine Auswahl';
 $string['groupmember_n'] = '{$a}. Gruppenmitglied';
 
@@ -142,3 +143,7 @@ $string['error_favorite_as_blank'] = 'Sie dürfen keinen Favoriten gleichzeitig 
 $string['error_invalid_value'] = 'In einem der Felder findet sich eine invalide Gruppen-ID. Entweder die Umfrage wurde geändert, während Sie geantwortet haben, oder Sie machen etwas komisches.';
 $string['error_double_blank'] = 'Sie dürfen keine Niete doppelt wählen.';
 $string['noguestchoose'] = 'Gäste können sich in keine Gruppen einwählen.';
+
+$string['show_group_details'] = 'Details anzeigen';
+$string['group_details'] = 'Details zur Gruppe \'{$a}\'';
+$string['preference'] = 'Präferenz';
