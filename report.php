@@ -98,7 +98,7 @@
                                             a.groupregid = ? AND
                                             o.id = a.optionid AND
                                             g.id = o.text
-                                        ORDER BY g.name', array($userid, $choice->id));    
+                                        ORDER BY a.preference', array($userid, $choice->id));    
         echo $renderer->display_user_result($course, $cm, $user, $choices);
     }
     
