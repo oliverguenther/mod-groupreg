@@ -332,7 +332,7 @@ class mod_groupreg_renderer extends plugin_renderer_base {
             $html .= html_writer::start_tag('tr');
             
             $url = new moodle_url($CFG->wwwroot.'/user/view.php', array('id'=>$member->id, 'course'=>$course->id));
-            $html .= html_writer::tag('td', html_writer::link($url, $member->firstname.' '.$member->firstname.' ('.$member->username.')'));
+            $html .= html_writer::tag('td', html_writer::link($url, $member->firstname.' '.$member->lastname.' ('.$member->username.')'));
             
             if ($member->preference > 0)
                 $html .= html_writer::tag('td', get_string('favorite_n', 'groupreg', $member->preference));
