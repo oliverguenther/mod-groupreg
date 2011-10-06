@@ -344,8 +344,6 @@ class mod_groupreg_renderer extends plugin_renderer_base {
         
         $html .= html_writer::end_tag('table');
         
-        $html .= '<pre>'.var_export($groupmembers, TRUE).'</pre>';
-        
         return $html;
     }
 
