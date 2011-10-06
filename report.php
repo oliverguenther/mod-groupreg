@@ -77,7 +77,29 @@
                                                 u.id = a.userid
                                              ORDER BY a.preference, u.lastname, u.firstname', 
                                              array($optionid));
-        echo $renderer->display_option_result($course, $choice, $cm, $group, $groupmembers);
+        echo $renderer->display_option_result($course, $cm, $group, $groupmembers);
+    }
+    
+    if ($action == 'userdetails') {
+        $userid = optional_param('userid', 0, PARAM_INT);
+        // get general user data
+        $user = $DB->get_record('user', array('id' => $userid));
+        // get user choices + preferences
+        $choices = $DB->get_records_sql('SELECT
+                                            g.name,
+                                            o.id,
+                                            a.preference
+                                        FROM
+                                            {groups} g,
+                                            {groupreg_options} o,
+                                            {groupreg_answers} a
+                                        WHERE
+                                            a.userid = ? AND
+                                            a.groupregid = ? AND
+                                            o.id = a.optionid AND
+                                            g.id = o.text
+                                        ORDER BY g.name', array($userid, $choice->id));    
+        echo $renderer->display_user_result($course, $cm, $user, $choices);
     }
     
     $userlist = $DB->get_records_sql('SELECT 
