@@ -149,3 +149,6 @@ $string['group_details'] = 'Details zur Gruppe \'{$a}\'';
 $string['user_details'] = 'Details zum Teilnehmer \'{$a}\'';
 $string['view_profile'] = 'Benutzerprofil aufrufen...';
 $string['preference'] = 'Präferenz';
+
+$string['display_user_details'] = 'Auswahl des Teilnehmers anzeigen';
+$string['report_total_users'] = '{$a} Teilnehmer in der Umfrage:';

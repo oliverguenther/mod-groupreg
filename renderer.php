@@ -380,6 +380,27 @@ class mod_groupreg_renderer extends plugin_renderer_base {
         
         return $html;
     }
+    
+    function display_user_list($course, $cm, $userlist) {
+        global $CFG;
+        
+        $html = html_writer::start_tag('form', array('action' => 'report.php', 'method' => 'GET'));
+         
+        $html .= html_writer::tag('p', get_string('report_total_users', 'groupreg', sizeof($userlist)));
+        
+        $html .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'id', 'value' => $cm->id));
+        $html .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'action', 'value' => 'userdetails'));
+        $html .= html_writer::start_tag('select', array('name' => 'userid'));
+        foreach($userlist as $user) {
+            $html .= html_writer::tag('option', $user->firstname.' '.$user->lastname.' ('.$user->username.')', array('value' => $user->id));
+        }
+        $html .= html_writer::end_tag('select');
+        $html .= html_writer::tag('input', '', array('type' => 'submit', 'value' => get_string('display_user_details', 'groupreg')));
+        
+        $html .= html_writer::end_tag('form');
+        
+        return $html;
+    }
 
 }
 

@@ -57,6 +57,22 @@
     $responsedata = groupreg_get_response_data($choice, $cm, $groupmode);
     echo $renderer->display_result($course, $choice, $responsedata, $cm);
     
+    $userlist = $DB->get_records_sql('SELECT 
+                                            DISTINCT u.id,
+                                            u.firstname, 
+                                            u.lastname, 
+                                            u.username
+                                         FROM 
+                                            {user} u,
+                                            {groupreg_answers} a
+                                         WHERE
+                                            u.id = a.userid AND
+                                            a.groupregid = ?', 
+                                         array($choice->id));
+    if ($userlist) {
+        echo $renderer->display_user_list($course, $cm, $userlist);
+    }
+    
     // check additional report actions
     if ($action == 'groupdetails') {
         $optionid = optional_param('optionid', 0, PARAM_INT);
@@ -102,18 +118,7 @@
         echo $renderer->display_user_result($course, $cm, $user, $choices);
     }
     
-    $userlist = $DB->get_records_sql('SELECT 
-                                            DISTINCT u.id,
-                                            u.firstname, 
-                                            u.lastname, 
-                                            u.username
-                                         FROM 
-                                            {user} u,
-                                            {groupreg_answers} a
-                                         WHERE
-                                            u.id = a.userid AND
-                                            a.groupregid = ?', 
-                                         array($choice->id));
+    
     
     echo $OUTPUT->footer();
 
