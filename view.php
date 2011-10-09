@@ -155,7 +155,7 @@
 	
 	// if user has already made a selection, and they are not allowed to update it, show their selected answers.
 	if (isloggedin() && ($current = $DB->get_records('groupreg_answers', array('groupregid' => $choice->id, 'userid' => $USER->id))) 
-            && (empty($choice->allowupdate) || ($choice->timeclose > 0 && time() > $choice->timeclose) ) {
+            && (empty($choice->allowupdate) || ($choice->timeclose > 0 && time() > $choice->timeclose) )) {
 		echo $renderer->display_current_choice($course, $choice, $current);
     }
 
