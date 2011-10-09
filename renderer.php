@@ -360,9 +360,13 @@ class mod_groupreg_renderer extends plugin_renderer_base {
         return $html;
     }
     
-    function display_user_result($course, $cm, $user, $choices) {
+    function display_user_result($course, $cm, $user, $choices, $assignment) {
         global $CFG;
         $html = html_writer::tag('h2', get_string('user_details', 'groupreg', $user->firstname.' '.$user->lastname));
+        
+        if ($assignment) {
+            $html .= get_string("assignment_result", "groupreg", $assignment->name)."<br><br>";
+        }
         
         $html .= html_writer::start_tag('table');
         

@@ -127,8 +127,21 @@
                                             a.groupregid = ? AND
                                             o.id = a.optionid AND
                                             g.id = o.text
-                                        ORDER BY a.preference', array($userid, $choice->id));    
-        echo $renderer->display_user_result($course, $cm, $user, $choices);
+                                        ORDER BY a.preference', array($userid, $choice->id));   
+        $assignment = $DB->get_record_sql('SELECT 
+                                            g.name, 
+                                            g.id 
+                                        FROM 
+                                            {groups} g, 
+                                            {groupreg_assigned} a,
+                                            {groupreg_options} o
+                                        WHERE 
+                                            a.groupregid = ? AND
+                                            a.userid = ? AND
+                                            o.id = a.optionid AND
+                                            g.id = o.text',
+                                            array($choice->id, $userid));
+        echo $renderer->display_user_result($course, $cm, $user, $choices, $assignment);
     }
     
     
