@@ -73,6 +73,26 @@
         echo $renderer->display_user_list($course, $cm, $userlist);
     }
     
+    if ($choice->assigned) {
+        // check for users who have not been assigned
+        $users_without_assignment = $DB->get_records_sql('SELECT 
+                                            DISTINCT u.id,
+                                            u.firstname,
+                                            u.lastname,
+                                            u.username
+                                        FROM
+                                            {user} u
+                                        WHERE 
+                                            EXISTS 
+                                                (SELECT * FROM {groupreg_answers} WHERE groupregid = ? AND userid = u.id) AND
+                                            NOT EXISTS 
+                                                (SELECT * FROM {groupreg_assigned} WHERE groupregid = ? AND userid = u.id)',
+                                        array($choice->id, $choice->id));
+        if ($users_without_assignment) {
+            echo $renderer->display_missing_assignments($cm, $users_without_assignment);
+        }
+    }
+    
     // check additional report actions
     if ($action == 'groupdetails') {
         $optionid = optional_param('optionid', 0, PARAM_INT);

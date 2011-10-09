@@ -398,8 +398,6 @@ class mod_groupreg_renderer extends plugin_renderer_base {
     }
     
     function display_user_list($course, $cm, $userlist) {
-        global $CFG;
-        
         $html = html_writer::start_tag('form', array('action' => 'report.php', 'method' => 'GET'));
          
         $html .= html_writer::tag('p', get_string('report_total_users', 'groupreg', sizeof($userlist)));
@@ -415,6 +413,22 @@ class mod_groupreg_renderer extends plugin_renderer_base {
         
         $html .= html_writer::end_tag('form');
         
+        return $html;
+    }
+    
+    function display_missing_assignments($cm, $users_without_assignment) {
+        global $CFG;
+        
+        $html = html_writer::tag('h2', get_string('report_missing_assignments', 'groupreg'));
+        $html .= html_writer::tag('p', get_string('report_missing_assignments_text', 'groupreg', sizeof($users_without_assignment)));
+        
+        $html .= html_writer::start_tag('ul');
+        foreach($users_without_assignment as $user) {
+            $url = new moodle_url('report.php', array('id'=>$cm->id, 'action'=>'userdetails', 'userid'=>$user->id));
+            $html .= html_writer::tag('li', html_writer::link($url, $user->firstname.' '.$user->lastname.' ('.$user->username.')'));
+        }
+        $html .= html_writer::end_tag('ul');
+            
         return $html;
     }
 
