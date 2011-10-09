@@ -73,7 +73,7 @@ class mod_groupreg_renderer extends plugin_renderer_base {
         } 
         
 		// display header
-		$html .= "<h3>".get_string("yourselection", "groupreg")."</h3><ul>";
+		$html .= "<h2>".get_string("yourselection", "groupreg")."</h2><ul>";
 		
 		// display favorites
 		for ($i = 0; $i <= $groupreg->limitfavorites; $i++) {
@@ -110,7 +110,7 @@ class mod_groupreg_renderer extends plugin_renderer_base {
             }
         }
         
-        $html .= "<h3>".get_string("groupmembers2", "groupreg")."</h3><ul>";
+        $html .= "<h2>".get_string("groupmembers2", "groupreg")."</h2><ul>";
         foreach($full_usernames as $name) {
             $html .= "<li>$name</li>";
         }
