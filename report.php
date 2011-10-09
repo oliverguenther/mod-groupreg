@@ -93,7 +93,20 @@
                                                 u.id = a.userid
                                              ORDER BY a.preference, u.lastname, u.firstname', 
                                              array($optionid));
-        echo $renderer->display_option_result($course, $cm, $group, $groupmembers);
+        $groupassignments = $DB->get_records_sql('SELECT
+                                                u.id,
+                                                u.firstname, 
+                                                u.lastname, 
+                                                u.username
+                                            FROM
+                                                {user} u,
+                                                {groupreg_assigned} a
+                                            WHERE
+                                                a.optionid = ? AND
+                                                u.id = a.userid
+                                            ORDER BY u.lastname, u.firstname', 
+                                            array($optionid));
+        echo $renderer->display_option_result($course, $cm, $group, $groupmembers, $groupassignments);
     }
     
     if ($action == 'userdetails') {

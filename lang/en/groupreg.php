@@ -146,6 +146,7 @@ $string['noguestchoose'] = 'Gäste können sich in keine Gruppen einwählen.';
 
 $string['show_group_details'] = 'Details anzeigen';
 $string['group_details'] = 'Details zur Gruppe \'{$a}\'';
+$string['group_assignments'] = 'Zuweisungen in der Gruppe \'{$a}\'';
 $string['user_details'] = 'Details zum Teilnehmer \'{$a}\'';
 $string['view_profile'] = 'Benutzerprofil aufrufen...';
 $string['preference'] = 'Präferenz';

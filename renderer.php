@@ -317,9 +317,21 @@ class mod_groupreg_renderer extends plugin_renderer_base {
         return $html;        
     }
     
-    function display_option_result($course, $cm, $group, $groupmembers) {
+    function display_option_result($course, $cm, $group, $groupmembers, $groupassignments) {
         global $CFG;
-        $html = html_writer::tag('h2', get_string('group_details', 'groupreg', $group->name));
+        $html = '';
+        
+        if ($groupassignments) {
+            $html .= html_writer::tag('h2', get_string('group_assignments', 'groupreg', $group->name));
+            $html .= html_writer::start_tag('ul');
+            foreach($groupassignments as $member) {
+                $url = new moodle_url('report.php', array('id'=>$cm->id, 'action'=>'userdetails', 'userid'=>$member->id));
+                $html .= html_writer::tag('li', html_writer::link($url, $member->firstname.' '.$member->lastname.' ('.$member->username.')'));
+            }
+            $html .= html_writer::end_tag('ul');
+        }
+        
+        $html .= html_writer::tag('h2', get_string('group_details', 'groupreg', $group->name));
         
         $html .= html_writer::start_tag('table');
         
