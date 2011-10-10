@@ -13,14 +13,13 @@ use strict;
 use warnings;
 use DBI;
 
-my $mdl_prefix = shift || die "Kein Moodle-Prefix angegeben. Kann keine Zuteilung durchführen";
 my $groupregid = shift || die "Keine groupregid angegeben. Kann keine Zuteilung durchführen";
 my $dbname = shift || die "Moodle-Datenbank nicht angegeben.";
 my $dbuser = shift || die "Moodle-Usernamen nicht angegeben.";
 my $dbpass = shift || die "Moodle-Passwort nicht angegeben.";
+my $mdl_prefix = shift || ''; # could be null
 
 die "Choicegroup-ID darf nur ein ganzzahliger Wert sein. " unless ($groupregid =~ /\d+/);
-die "Moodle-Prefix darf nur ein alphanumerischer Wert sein. " unless ($mdl_prefix =~ /\w+/);
 
 # ----------------------------------------------------------------------------
 # Lese Daten von mdl_choicegroup, user choicegroup hat hier nur SELECT-Rechte!

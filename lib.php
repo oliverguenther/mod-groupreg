@@ -219,7 +219,7 @@ function groupreg_perform_assignment($groupreg) {
     $groupreg->assigned = 1;
     $DB->update_record("groupreg", $groupreg);
     
-    exec("/usr/bin/perl $script $CFG->prefix $groupreg->id $CFG->dbname $CFG->dbuser $CFG->dbpass 2>&1", $output);
+    exec("/usr/bin/perl $script $groupreg->id $CFG->dbname $CFG->dbuser $CFG->dbpass $CFG->prefix 2>&1", $output);
 	echo "<p>Ausgabe:<br/>" . implode("<br/>", $output) . "</p>";
     
     return true;
