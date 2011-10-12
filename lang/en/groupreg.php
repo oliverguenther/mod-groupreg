@@ -145,6 +145,7 @@ $string['error_double_blank'] = 'Sie dürfen keine Niete doppelt wählen.';
 $string['noguestchoose'] = 'Gäste können sich in keine Gruppen einwählen.';
 
 $string['show_group_details'] = 'Details anzeigen';
+$string['enrolled_with'] = 'Gemeinsame Anmeldung: ';
 $string['group_details'] = 'Details zur Gruppe \'{$a}\'';
 $string['group_assignments'] = 'Zuweisungen in der Gruppe \'{$a}\'';
 $string['user_details'] = 'Details zum Teilnehmer \'{$a}\'';

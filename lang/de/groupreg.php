@@ -96,6 +96,7 @@ $string['yourselection'] = 'Ihre Auswahl';
 $string['skipresultgraph'] = 'Ergebnissgraphen überspringen';
 $string['moveselectedusersto'] = 'Ausgewählte Benutzer verschieben...';
 $string['numberofuser'] = 'Nummer des Benutzers';
+$string['enrolled_with'] = 'Gemeinsame Anmeldung: ';
 
 $string['members/max'] = 'Eingewählt / Kapazität';
 $string['groupmembers'] = 'Gruppenteilnehmer';

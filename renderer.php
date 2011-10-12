@@ -360,10 +360,29 @@ class mod_groupreg_renderer extends plugin_renderer_base {
         return $html;
     }
     
-    function display_user_result($course, $cm, $user, $choices, $assignment) {
+	function display_user_result($course, $cm, $user, $choices, $assignment, $groupmembers) {
         global $CFG;
         $html = html_writer::tag('h2', get_string('user_details', 'groupreg', $user->firstname.' '.$user->lastname));
-        
+		
+        // each single answer counts as a group, so don't display these
+        if ($groupmembers && count($groupmembers) > 1) {
+                $html .= html_writer::tag('p', get_string('enrolled_with', 'groupreg'));
+                        $html .= html_writer::start_tag('table');        
+                        $html .= html_writer::start_tag('tr');
+                        
+                        $html .= html_writer::tag('th', get_string('groupmembers', 'groupreg'));
+                        $html .= html_writer::tag('th', 'ID');
+                        
+                        $html .= html_writer::end_tag('tr');
+                foreach($groupmembers as $member) {
+                        $html .= html_writer::start_tag('tr');
+                        $html .= html_writer::tag('td', $member->firstname . " " . $member->lastname);
+                        $html .= html_writer::tag('td', $member->userid);
+                        $html .= html_writer::end_tag('tr');                        
+                }
+                $html .= html_writer::end_tag('table');
+        }
+			
         if ($assignment) {
             $html .= get_string("assignment_result", "groupreg", $assignment->name)."<br><br>";
         }

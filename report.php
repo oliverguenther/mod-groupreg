@@ -161,10 +161,29 @@
                                             o.id = a.optionid AND
                                             g.id = o.text',
                                             array($choice->id, $userid));
-        echo $renderer->display_user_result($course, $cm, $user, $choices, $assignment);
+        // Get usergroup id
+        $usergroup = $DB->get_record_sql('SELECT DISTINCT
+                                    a.usergroup
+                                FROM
+                                    {groupreg_answers} a
+                                WHERE
+                                    a.groupregid = ? AND
+                                    a.userid = ?',
+                                    array($choice->id , $userid));
+        // get all member-ids of the belonging group (if any)
+        $members = $DB->get_records_sql('SELECT DISTINCT 
+                                    a.userid,
+                                    u.firstname,
+                                    u.lastname
+                                FROM 
+                                    {groupreg_answers} a,
+                                    {user} u
+                                WHERE 
+                                    a.groupregid = ? AND
+                                    a.usergroup = ? AND
+                                    u.id = a.userid',
+                                    array($choice->id, $usergroup->usergroup));
+        echo $renderer->display_user_result($course, $cm, $user, $choices, $assignment, $members);
     }
-    
-    
-    
     echo $OUTPUT->footer();
 
