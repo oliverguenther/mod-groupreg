@@ -91,6 +91,7 @@
         if ($users_without_assignment) {
             echo $renderer->display_missing_assignments($cm, $users_without_assignment);
         }
+        
     }
     
     // check additional report actions
@@ -172,7 +173,7 @@
                                     array($choice->id , $userid));
         // get all member-ids of the belonging group (if any)
         $members = $DB->get_records_sql('SELECT DISTINCT 
-                                    a.userid,
+                                    u.username,
                                     u.firstname,
                                     u.lastname
                                 FROM 
@@ -185,5 +186,23 @@
                                     array($choice->id, $usergroup->usergroup));
         echo $renderer->display_user_result($course, $cm, $user, $choices, $assignment, $members);
     }
+
+    // Show enrolled users that did not participate (yet)
+    $users_without_votes = $DB->get_records_sql('SELECT 
+                                u.id, 
+                                u.username, 
+                                u.firstname, 
+                                u.lastname
+                            FROM 
+                                {role_assignments} r, 
+                                {user} u,
+                                {groupreg_answers} a
+                            WHERE 
+                                u.id = r.userid AND
+                                r.contextid = ? AND NOT
+                                a.userid = u.id',
+                                array($context->id));
+    echo $renderer->display_missing_votes($course, $cm, $users_without_votes, $choice->assigned);
+    
     echo $OUTPUT->footer();
 

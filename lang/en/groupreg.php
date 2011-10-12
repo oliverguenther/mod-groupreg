@@ -157,3 +157,6 @@ $string['report_total_users'] = '{$a} Teilnehmer in der Umfrage:';
 $string['report_missing_assignments'] = 'Teilnehmer mit fehlenden Zuweisungen';
 $string['report_missing_assignments_text'] = 'Bei folgenden {$a} Teilnehmern in dieser Gruppenwahl sind keine Gruppen zugewiesen worden:';
 
+$string['report_missing_votes'] = 'Kursteilnehmer ohne Gruppenanmeldung';
+$string['report_missing_votes_text'] = '{$a} Teilnehmer in diesem Kurs haben noch nicht an dieser Anmeldung teilgenommen.';
+

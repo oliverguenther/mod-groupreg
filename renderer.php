@@ -319,7 +319,6 @@ class mod_groupreg_renderer extends plugin_renderer_base {
     
     function display_option_result($course, $cm, $group, $groupmembers, $groupassignments) {
         global $CFG;
-        $html = '';
         
         if ($groupassignments) {
             $html .= html_writer::tag('h2', get_string('group_assignments', 'groupreg', $group->name));
@@ -362,7 +361,9 @@ class mod_groupreg_renderer extends plugin_renderer_base {
     
 	function display_user_result($course, $cm, $user, $choices, $assignment, $groupmembers) {
         global $CFG;
-        $html = html_writer::tag('h2', get_string('user_details', 'groupreg', $user->firstname.' '.$user->lastname));
+        
+        $html = html_writer::start_tag('div', array('class' => 'groupreg-report-section'));
+        $html .= html_writer::tag('h2', get_string('user_details', 'groupreg', $user->firstname.' '.$user->lastname));
 		
         // each single answer counts as a group, so don't display these
         if ($groupmembers && count($groupmembers) > 1) {
@@ -371,13 +372,13 @@ class mod_groupreg_renderer extends plugin_renderer_base {
                         $html .= html_writer::start_tag('tr');
                         
                         $html .= html_writer::tag('th', get_string('groupmembers', 'groupreg'));
-                        $html .= html_writer::tag('th', 'ID');
+                        $html .= html_writer::tag('th', 'Username');
                         
                         $html .= html_writer::end_tag('tr');
                 foreach($groupmembers as $member) {
                         $html .= html_writer::start_tag('tr');
                         $html .= html_writer::tag('td', $member->firstname . " " . $member->lastname);
-                        $html .= html_writer::tag('td', $member->userid);
+                        $html .= html_writer::tag('td', $member->username);
                         $html .= html_writer::end_tag('tr');                        
                 }
                 $html .= html_writer::end_tag('table');
@@ -412,12 +413,14 @@ class mod_groupreg_renderer extends plugin_renderer_base {
         
         $url = new moodle_url($CFG->wwwroot.'/user/view.php', array('id'=>$user->id, 'course'=>$course->id));
         $html .= html_writer::link($url, get_string('view_profile', 'groupreg'));
+        $html .= html_writer::end_tag('div');
         
         return $html;
     }
     
     function display_user_list($course, $cm, $userlist) {
-        $html = html_writer::start_tag('form', array('action' => 'report.php', 'method' => 'GET'));
+        $html = html_writer::start_tag('div', array('class' => 'groupreg-report-section'));
+        $html .= html_writer::start_tag('form', array('action' => 'report.php', 'method' => 'GET'));
          
         $html .= html_writer::tag('p', get_string('report_total_users', 'groupreg', sizeof($userlist)));
         
@@ -431,6 +434,7 @@ class mod_groupreg_renderer extends plugin_renderer_base {
         $html .= html_writer::tag('input', '', array('type' => 'submit', 'value' => get_string('display_user_details', 'groupreg')));
         
         $html .= html_writer::end_tag('form');
+        $html .= html_writer::end_tag('div');
         
         return $html;
     }
@@ -438,7 +442,8 @@ class mod_groupreg_renderer extends plugin_renderer_base {
     function display_missing_assignments($cm, $users_without_assignment) {
         global $CFG;
         
-        $html = html_writer::tag('h2', get_string('report_missing_assignments', 'groupreg'));
+        $html = html_writer::start_tag('div', array('class' => 'groupreg-report-section'));
+        $html .= html_writer::tag('h2', get_string('report_missing_assignments', 'groupreg'));
         $html .= html_writer::tag('p', get_string('report_missing_assignments_text', 'groupreg', sizeof($users_without_assignment)));
         
         $html .= html_writer::start_tag('ul');
@@ -447,7 +452,36 @@ class mod_groupreg_renderer extends plugin_renderer_base {
             $html .= html_writer::tag('li', html_writer::link($url, $user->firstname.' '.$user->lastname.' ('.$user->username.')'));
         }
         $html .= html_writer::end_tag('ul');
+        $html .= html_writer::end_tag('div');
+
             
+        return $html;
+    }
+    
+    function display_missing_votes($course, $cm, $users_without_votes, $assignment_complete) {
+        global $CFG;
+        
+        $html = html_writer::start_tag('div', array('class' => 'groupreg-report-section'));
+        $html .= html_writer::tag('h2', get_string('report_missing_votes', 'groupreg'));
+        $html .= html_writer::tag('p', get_string('report_missing_votes_text', 'groupreg', sizeof($users_without_votes)));
+        
+        $html .= html_writer::start_tag('form', array('action' => 'report.php', 'method' => 'GET'));
+         
+        $html .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'id', 'value' => $cm->id));
+        $html .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'action', 'value' => 'assignuser'));
+        if ($users_without_votes) {
+        $html .= html_writer::start_tag('select', array('name' => 'userid'));
+            foreach($users_without_votes as $user) {
+                $html .= html_writer::tag('option', $user->firstname.' '.$user->lastname.' ('.$user->username.')', array('value' => $user->id));
+            }
+            $html .= html_writer::end_tag('select');
+        }
+        //$html .= html_writer::tag('input', '', array('type' => 'submit', 'value' => get_string('display_user_details', 'groupreg')));
+        
+        $html .= html_writer::end_tag('form');
+        $html .= html_writer::end_tag('div');
+
+        
         return $html;
     }
 

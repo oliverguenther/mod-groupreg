@@ -65,3 +65,12 @@
 
 .groupreg-favorite { font-weight: bold; color: darkgreen; }
 .groupreg-blank { font-weight: bold; color: darkred; }
+
+
+/**
+ * Spacer in report
+ */ 
+ 
+ .groupreg-report-section {
+     margin-top: 50px;
+ }
