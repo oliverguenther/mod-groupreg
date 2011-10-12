@@ -188,20 +188,32 @@
     }
 
     // Show enrolled users that did not participate (yet)
-    $users_without_votes = $DB->get_records_sql('SELECT 
-                                u.id, 
-                                u.username, 
-                                u.firstname, 
-                                u.lastname
-                            FROM 
-                                {role_assignments} r, 
-                                {user} u,
-                                {groupreg_answers} a
-                            WHERE 
-                                u.id = r.userid AND
-                                r.contextid = ? AND NOT
-                                a.userid = u.id',
-                                array($context->id));
+    $users_without_votes = $DB->get_records_sql("SELECT DISTINCT 
+                                    u.id, 
+                                    u.username, 
+                                    u.firstname, 
+                                    u.lastname
+                                FROM 
+                                    {user} u, 
+                                    (
+                                        SELECT * FROM
+                                        (
+                                                SELECT ra.userid
+                                                FROM {context} cx
+                                                LEFT OUTER JOIN {role_assignments} ra
+                                                ON cx.id = ra.contextid AND ra.roleid = '5'
+                                                WHERE cx.instanceid = ? AND cx.contextlevel = '50'
+                                        ) enr
+                                        WHERE enr.userid NOT IN
+                                        (
+                                            SELECT DISTINCT a.userid
+                                            FROM {groupreg_answers} a
+                                            WHERE a.groupregid = ?
+                                        )
+                                    ) nin
+                                    WHERE u.id = nin.userid",
+                                array($course->id, $choice->id));
+    
     echo $renderer->display_missing_votes($course, $cm, $users_without_votes, $choice->assigned);
     
     echo $OUTPUT->footer();
