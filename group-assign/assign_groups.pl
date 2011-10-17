@@ -31,9 +31,9 @@ my $db = DBI->connect("DBI:mysql:$dbname;host=localhost", $dbuser, $dbpass)
 # %groups: ID -> Größe
 my %groups;
 
-# Gruppierungen zwischen Gruppen
-# z.B. Gruppen mit äquivalenten Terminen
-# Als Niete wird zusätzlich jede Gruppe ausgegeben, die in dem jeweiligen Grouping enthalten ist
+# Gruppierungen zwischen äquivalenten Gruppen
+# (z.B. zwei Montagsgruppen zur selben Zeit, unterschiedlicher Tutor)
+# werden für Favoriten und Nieten zusammen ausgewählt
 
 # <grouping_id> -> @groupids
 my %groupings;
@@ -83,6 +83,9 @@ foreach my $group (@$result) {
 	} else {
 		# Nieten haben keine Präferenz
 		push(@{$nieten{$usergroupid}}, $optionid);
+		if ($assoc_grouping{$optionid}) {
+			push(@{$nieten{$usergroupid}}, $_) foreach (@{$groupings{$assoc_grouping{$optionid}}});
+		}
 	}
 }
 }
@@ -115,17 +118,30 @@ foreach my $usergroupid (keys %usergroups) {
 	}
 	print STUDENTS "\n";
 	
-	# Auswahl pro Gruppe
-	my $first = 0;
+	# Auswahl pro Gruppe ausgeben, inklusive aller Groupings
+	# Bereits ausgegebene Gruppen werden ignoriert (z.b. wenn zwei Gruppen als unterschiedliche Prefs gewählt werden, die in einem Grouping sind)
+	my %seen;
+	my %selected;
+	my @output;
 	foreach my $pref (sort keys %{$auswahl{$usergroupid}}) {
-		print STUDENTS " " if ($first++);	
-		print STUDENTS ${$auswahl{$usergroupid}}{$pref}; 
+		my $pref_group = ${$auswahl{$usergroupid}}{$pref}; 
+		if ($assoc_grouping{$pref_group}) {
+			# alle äquvialenten
+			my @equiv_groups = @{$groupings{$assoc_grouping{$pref_group}}};
+			foreach (@equiv_groups) {
+				(push(@output, $_) && $seen{$_}++) unless $seen{$_};
+			}
+		} else {
+			(push(@output, $pref_group) && $seen{$pref_group}++) unless $seen{$pref_group};
+		}
 	}
+	print STUDENTS join(" ", @output);
 	print STUDENTS "\n";
-	
+
 	# Nieten ausgeben (wenn existent)
 	if ($nieten{$usergroupid}) {
-		print STUDENTS join(" ", @{$nieten{$usergroupid}}) , "\n";
+		my @nieten = keys %{{ map { $_ => 1 } @{$nieten{$usergroupid}}}};
+		print STUDENTS join(" ", @nieten) , "\n";
 	} else {
 		print STUDENTS "\n";
 	}
