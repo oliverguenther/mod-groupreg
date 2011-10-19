@@ -126,6 +126,7 @@ $string['assignmentok'] = 'Zuweisung wurde erfolgreich beendet';
 $string['assignmentnotdone'] = 'Zuweisung wurde noch nicht ausgeführt, die Aktion kann nicht ausgeführt werden';
 $string['assignmentproblem'] = 'Zuweisung wurde mit einem Fehler beendet. Setzen Sie die Zuweisung zurück und probieren Sie nochmal.';
 $string['assignment_result'] = 'Sie wurden der Gruppe <b>{$a}</b> zugewiesen.';
+$string['assignment_no_result'] = 'Sie wurden keiner Gruppe zugewiesen. Bitte wenden Sie sich an einen Kursadministrator.';
 
 $string['settings_perlscript'] = 'Perl-Script';
 $string['settings_perlscript_desc'] = 'Voller Pfad zum Script, der die Zuweisung ausführt';
@@ -138,3 +139,25 @@ $string['deleteproblem'] = 'Keine Einträge wurden gelöscht';
 $string['user_not_found'] = 'Benutzer \'{$a}\' wurde nicht gefunden.';
 $string['user_not_enrolled'] = 'Benutzer \'{$a}\' ist nicht in dem Kurs oder in der korrekten Gruppe eingeschrieben.';
 $string['user_already_answered'] = 'Benutzer \'{$a}\' hat seine Wahl bereits getroffen und muss sie erst löschen, damit er in der Gruppe mit eingeschrieben werden kann.';
+$string['error_mustchooseone'] = 'Sie müssen mindestens einen Favoriten auswählen.';
+$string['error_double_favorite'] = 'Sie dürfen keinen Favoriten doppelt wählen.';
+$string['error_favorite_as_blank'] = 'Sie dürfen keinen Favoriten gleichzeitig als Niete wählen.';
+$string['error_invalid_value'] = 'In einem der Felder findet sich eine invalide Gruppen-ID. Entweder die Umfrage wurde geändert, während Sie geantwortet haben, oder Sie machen etwas komisches.';
+$string['error_double_blank'] = 'Sie dürfen keine Niete doppelt wählen.';
+$string['noguestchoose'] = 'Gäste können sich in keine Gruppen einwählen.';
+
+$string['show_group_details'] = 'Details anzeigen';
+$string['enrolled_with'] = 'Gemeinsame Anmeldung: ';
+$string['group_details'] = 'Details zur Gruppe \'{$a}\'';
+$string['group_assignments'] = 'Zuweisungen in der Gruppe \'{$a}\'';
+$string['user_details'] = 'Details zum Teilnehmer \'{$a}\'';
+$string['view_profile'] = 'Benutzerprofil aufrufen...';
+$string['preference'] = 'Präferenz';
+
+$string['display_user_details'] = 'Auswahl des Teilnehmers anzeigen';
+$string['report_total_users'] = '{$a} Teilnehmer in der Umfrage:';
+$string['report_missing_assignments'] = 'Teilnehmer mit fehlenden Zuweisungen';
+$string['report_missing_assignments_text'] = 'Bei folgenden {$a} Teilnehmern in dieser Gruppenwahl sind keine Gruppen zugewiesen worden:';
+
+$string['report_missing_votes'] = 'Kursteilnehmer ohne Gruppenanmeldung';
+$string['report_missing_votes_text'] = '{$a} Teilnehmer in diesem Kurs haben noch nicht an dieser Anmeldung teilgenommen.';

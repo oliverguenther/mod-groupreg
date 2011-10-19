@@ -136,7 +136,7 @@ $string['deleteproblem'] = 'No entries could be deleted';
 
 $string['error_user_not_found'] = 'User \'{$a}\' could not be found.';
 $string['error_user_not_enrolled'] = 'User \'{$a}\' is either not enrolled in this course or in a different group.';
-$string['error_user_already_answered'] = 'User \'{$a}\' has already registered for a different group. He or she would have to first delete the other choice in order to be enrolled in your group.'
+$string['error_user_already_answered'] = 'User \'{$a}\' has already registered for a different group. He or she would have to first delete the other choice in order to be enrolled in your group.';
 $string['error_mustchooseone'] = 'You have to choose at least one favorite group.';
 $string['error_double_favorite'] = 'You cannot select a favorite twice.';
 $string['error_favorite_as_blank'] = 'A favorite choice cannot be chosen as a "no-go" choice.';

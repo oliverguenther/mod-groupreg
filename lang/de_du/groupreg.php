@@ -31,9 +31,9 @@ $string['displayhorizontal'] = 'Horizontal anzeigen';
 $string['displaymode'] = 'Anzeigemodus';
 $string['displayvertical'] = 'Vertikal anzeigen';
 $string['expired'] = 'Diese Aktivität wurde am {$a} geschlossen und ist nicht mehr verfügbar.';
-$string['fillinatleastoneoption'] = 'Sie müssen mindestens eine Option auswählen.';
+$string['fillinatleastoneoption'] = 'Du musst mindestens eine Option auswählen.';
 $string['full'] = '(voll)';
-$string['havetologin'] = 'Sie müssen sich einloggen, bevor sie eine Wahl treffen können';
+$string['havetologin'] = 'Du musst Dich einloggen, bevor Du eine Wahl treffen kannst';
 $string['choice'] = 'Auswahl';
 $string['groupregclose'] = 'Bis';
 $string['groupreg:deleteresponses'] = 'Antworten löschen';
@@ -43,9 +43,9 @@ $string['groupreg:choose'] = 'Auswahl aufnehmen';
 $string['groupregname'] = 'Bezeichnung der Gruppenauswahl';
 $string['groupregopen'] = 'Offen';
 $string['groupregoptions'] = 'Auswahloptionen';
-$string['groupregoptions_help'] = 'Hier geben Sie die Optionen an, die von Teilnehmern angewählt werden können.
+$string['groupregoptions_help'] = 'Hier gibst Du die Optionen an, die von Teilnehmern angewählt werden können.
 
-Sie können so viele wie Sie brauchen davon ausfüllen. Die nicht ausgefüllten Felder werden nicht als Optionen in der Auswahl übernommen. Falls Sie mehr als 8 Optionen brauchen, benutzen Sie den "3 Felder hinzufügen"-Button.
+Du kannst so viele wie Du brauchst davon ausfüllen. Die nicht ausgefüllten Felder werden nicht als Optionen in der Auswahl übernommen. Falls Du mehr als 8 Optionen brauchst, benutze den "3 Felder hinzufügen"-Button.
 
 Beim Feld \'Äquivalenzgruppierung\' handelt es sich um eine optionale Angabe. Gruppen, die hier den gleichen Wert eingetragen bekommen, werden bei der Angabe einer davon als Niete alle zusammen als Nieten betrachtet. 
 Hier sollte primär die Uhrzeit des Gruppentermins eingetragen werden, sodass die Studenten keine Nieten mit Terminüberschneidungen zugewiesen bekommen.';
@@ -55,14 +55,14 @@ Falls die Einschränkung aus oder auf 0 eingestellt ist, können beliebig viele 
 $string['groupreg:readresponses'] = 'Antworten lesen';
 $string['groupregsaved'] = 'Ihre Auswahl wurde gespeichert';
 $string['choicetext'] = 'Auswahltext';
-$string['chooseaction'] = 'Wählen Sie eine Aktion ...';
-$string['choosegroup'] = 'Wählen Sie eine Gruppe';
+$string['chooseaction'] = 'Wähle Sie eine Aktion ...';
+$string['choosegroup'] = 'Wähle eine Gruppe';
 $string['limit'] = 'Beschränkung';
 $string['limitanswers'] = 'Gruppengröße einschränken';
 $string['modulename'] = 'Webreg-Gruppenwahl';
 $string['modulename_help'] = 'Der Gruppenwahlmodul erlaubt es, Kursteilnehmern eine Auswahl an möglichen Gruppen zur Selbsteinwahl als Aktivität zur Verfügung zu stellen.';
 $string['modulenameplural'] = 'Webreg-Gruppenwahlen';
-$string['mustchooseone'] = 'Sie müssen mindestens einen Favoriten auswählen, und es dürfen keine Gruppen doppelt gewählt werden. Es wurden keine Daten gespeichert.';
+$string['mustchooseone'] = 'Du musst mindestens einen Favoriten auswählen, und es dürfen keine Gruppen doppelt gewählt werden. Es wurden keine Daten gespeichert.';
 $string['noguestchoose'] = 'Gäste können sich in keine Gruppen einwählen.';
 $string['noresultsviewable'] = 'Die Ergebnisse können derzeit nicht eingesehen werden.';
 $string['notanswered'] = 'Noch nicht beantwortet';
@@ -105,12 +105,12 @@ $string['limitfavorites'] = 'Anzahl der w&auml;hlbaren Favoriten';
 $string['limitblanks'] = 'Anzahl der w&auml;hlbaren Nieten';
 
 $string['favorites'] = 'Favoriten';
-$string['favorites_desc'] = 'Wählen Sie hier Gruppen aus, zu den Sie zugeteilt werden möchten. Der erste Favorit hat die höchste Zuteilungspriorität. Sie müssen mindestens einen Favoriten wählen.';
+$string['favorites_desc'] = 'Wähle hier Gruppen aus, zu den Du zugeteilt werden möchtest. Der erste Favorit hat die höchste Zuteilungspriorität. Du musst mindestens einen Favoriten wählen.';
 $string['blanks'] = 'Nieten';
-$string['blanks_desc'] = 'Wählen Sie hier Gruppen aus, zu den Sie auf keinen Fall zugeteilt werden möchten, zum Beispiel aufgrund von Terminüberschneidungen mit anderen Veranstaltungen. Sie müssen nicht alle verfügbaren Nieten wählen.';
+$string['blanks_desc'] = 'Wähle hier Gruppen aus, zu den Du auf keinen Fall zugeteilt werden möchtest, zum Beispiel aufgrund von Terminüberschneidungen mit anderen Veranstaltungen. Du musst nicht alle verfügbaren Nieten wählen.';
 $string['groupmembers2'] = 'Gemeinsame Anmeldung';
-$string['groupmembers2_help'] = 'Tragen Sie hier die maximale Anzahl Teilnehmer ein, die sich gemeinsam anmelden können (sodass die Zuweisung für diese Gruppe möglichst gemeinsam geschieht). Tragen Sie 1 ein, um keine Gruppenanmeldung zu erlauben.';
-$string['groupmembers2_desc'] = 'Falls Sie sich in einer Gruppe mit anderen Teilnehmern anmelden möchten, tragen Sie hier die entsprechenden Benutzernamen ein. Alle Teilnehmer werden dann nach Möglichkeit gemeinsam einer Gruppe zugeordnet.';
+$string['groupmembers2_help'] = 'Trage hier die maximale Anzahl Teilnehmer ein, die sich gemeinsam anmelden können (sodass die Zuweisung für diese Gruppe möglichst gemeinsam geschieht). Trage 1 ein, um keine Gruppenanmeldung zu erlauben.';
+$string['groupmembers2_desc'] = 'Falls Du Dich in einer Gruppe mit anderen Teilnehmern anmelden möchten, trage hier die entsprechenden Benutzernamen ein. Alle Teilnehmer werden dann nach Möglichkeit gemeinsam einer Gruppe zugeordnet.';
 $string['favorite_n'] = '{$a}. Favorit';
 $string['blank_n'] = '{$a}. Niete';
 $string['no_choice'] = 'Keine Auswahl';
@@ -124,8 +124,9 @@ $string['finalizeassignmentok'] = 'Gruppeneintragung erfolgreich durchgeführt';
 $string['performingassignment'] = 'Zuweisung wird ausgeführt, bitte warten. Seite nicht schließen!';
 $string['assignmentok'] = 'Zuweisung wurde erfolgreich beendet';
 $string['assignmentnotdone'] = 'Zuweisung wurde noch nicht ausgeführt, die Aktion kann nicht ausgeführt werden';
-$string['assignmentproblem'] = 'Zuweisung wurde mit einem Fehler beendet. Setzen Sie die Zuweisung zurück und probieren Sie nochmal.';
-$string['assignment_result'] = 'Sie wurden der Gruppe <b>{$a}</b> zugewiesen.';
+$string['assignmentproblem'] = 'Zuweisung wurde mit einem Fehler beendet. Setze die Zuweisung zurück und probiere es nochmal.';
+$string['assignment_result'] = 'Du wurdest der Gruppe <b>{$a}</b> zugewiesen.';
+$string['assignment_no_result'] = 'Du wurdest keiner Gruppe zugewiesen. Bitte wende Dich an einen Kursadministrator.';
 
 $string['settings_perlscript'] = 'Perl-Script';
 $string['settings_perlscript_desc'] = 'Voller Pfad zum Script, der die Zuweisung ausführt';
@@ -138,3 +139,25 @@ $string['deleteproblem'] = 'Keine Einträge wurden gelöscht';
 $string['user_not_found'] = 'Benutzer \'{$a}\' wurde nicht gefunden.';
 $string['user_not_enrolled'] = 'Benutzer \'{$a}\' ist nicht in dem Kurs oder in der korrekten Gruppe eingeschrieben.';
 $string['user_already_answered'] = 'Benutzer \'{$a}\' hat seine Wahl bereits getroffen und muss sie erst löschen, damit er in der Gruppe mit eingeschrieben werden kann.';
+$string['error_mustchooseone'] = 'Du musst mindestens einen Favoriten auswählen.';
+$string['error_double_favorite'] = 'Du kannst keinen Favoriten doppelt wählen.';
+$string['error_favorite_as_blank'] = 'du kannst keinen keinen Favoriten gleichzeitig als Niete wählen.';
+$string['error_invalid_value'] = 'In einem der Felder findet sich eine invalide Gruppen-ID. Entweder die Umfrage wurde geändert, während Du geantwortet hast, oder Du machst etwas komisches.';
+$string['error_double_blank'] = 'Du kannst keine Niete doppelt wählen.';
+$string['noguestchoose'] = 'Gäste können sich in keine Gruppen einwählen.';
+
+$string['show_group_details'] = 'Details anzeigen';
+$string['enrolled_with'] = 'Gemeinsame Anmeldung: ';
+$string['group_details'] = 'Details zur Gruppe \'{$a}\'';
+$string['group_assignments'] = 'Zuweisungen in der Gruppe \'{$a}\'';
+$string['user_details'] = 'Details zum Teilnehmer \'{$a}\'';
+$string['view_profile'] = 'Benutzerprofil aufrufen...';
+$string['preference'] = 'Präferenz';
+
+$string['display_user_details'] = 'Auswahl des Teilnehmers anzeigen';
+$string['report_total_users'] = '{$a} Teilnehmer in der Umfrage:';
+$string['report_missing_assignments'] = 'Teilnehmer mit fehlenden Zuweisungen';
+$string['report_missing_assignments_text'] = 'Bei folgenden {$a} Teilnehmern in dieser Gruppenwahl sind keine Gruppen zugewiesen worden:';
+
+$string['report_missing_votes'] = 'Kursteilnehmer ohne Gruppenanmeldung';
+$string['report_missing_votes_text'] = '{$a} Teilnehmer in diesem Kurs haben noch nicht an dieser Anmeldung teilgenommen.';
