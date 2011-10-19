@@ -67,7 +67,7 @@
                                             {groupreg_answers} a
                                          WHERE
                                             u.id = a.userid AND
-                                            a.groupregid = ?', 
+                                            a.groupregid = ? ORDER BY u.lastname ASC', 
                                          array($choice->id));
     if ($userlist) {
         echo $renderer->display_user_list($course, $cm, $userlist);
@@ -86,7 +86,7 @@
                                             EXISTS 
                                                 (SELECT * FROM {groupreg_answers} WHERE groupregid = ? AND userid = u.id) AND
                                             NOT EXISTS 
-                                                (SELECT * FROM {groupreg_assigned} WHERE groupregid = ? AND userid = u.id)',
+                                                (SELECT * FROM {groupreg_assigned} WHERE groupregid = ? AND userid = u.id) ORDER BY u.lastname ASC',
                                         array($choice->id, $choice->id));
         if ($users_without_assignment) {
             echo $renderer->display_missing_assignments($cm, $users_without_assignment);
@@ -211,7 +211,7 @@
                                             WHERE a.groupregid = ?
                                         )
                                     ) nin
-                                    WHERE u.id = nin.userid",
+                                    WHERE u.id = nin.userid ORDER BY u.lastname ASC",
                                 array($course->id, $choice->id));
     
     echo $renderer->display_missing_votes($course, $cm, $users_without_votes, $choice->assigned);

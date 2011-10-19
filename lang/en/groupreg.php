@@ -23,140 +23,140 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['addmorechoices'] = 'Mehr Auswahlmöglichkeiten';
-$string['allowupdate'] = 'Nachänderung der Auswahl erlauben';
-$string['answered'] = 'Beantwortet';
-$string['completionsubmit'] = 'Als abgeschlossen anzeigen, sobald Benutzer eine Auswahl getroffen hat';
-$string['displayhorizontal'] = 'Horizontal anzeigen';
-$string['displaymode'] = 'Anzeigemodus';
-$string['displayvertical'] = 'Vertikal anzeigen';
-$string['expired'] = 'Diese Aktivität wurde am {$a} geschlossen und ist nicht mehr verfügbar.';
-$string['fillinatleastoneoption'] = 'Sie müssen mindestens eine Option auswählen.';
-$string['full'] = '(voll)';
-$string['havetologin'] = 'Sie müssen sich einloggen, bevor sie eine Wahl treffen können';
-$string['choice'] = 'Auswahl';
-$string['groupregclose'] = 'Bis';
-$string['groupreg:deleteresponses'] = 'Antworten löschen';
-$string['groupreg:downloadresponses'] = 'Antworten herunterladen';
-$string['choicefull'] = 'Diese Gruppe ist voll und kann nicht mehr ausgewählt werden.';
-$string['groupreg:choose'] = 'Auswahl aufnehmen';
-$string['groupregname'] = 'Bezeichnung der Gruppenauswahl';
-$string['groupregopen'] = 'Offen';
-$string['groupregoptions'] = 'Auswahloptionen';
-$string['groupregoptions_help'] = 'Hier geben Sie die Optionen an, die von Teilnehmern angewählt werden können.
+$string['addmorechoices'] = 'Add further choices';
+$string['allowupdate'] = 'Allow later selection changes';
+$string['answered'] = 'answered';
+$string['completionsubmit'] = 'Show as completed once user has submitted a choice';
+$string['displayhorizontal'] = 'Display horizontally';
+$string['displaymode'] = 'Display mode';
+$string['displayvertical'] = 'Display vertically';
+$string['expired'] = 'This activity expired on {$a} and is no longer available.';
+$string['fillinatleastoneoption'] = 'You need to choose at least one option.';
+$string['full'] = '(full)';
+$string['havetologin'] = 'You need to log in before making a choice';
+$string['choice'] = 'Choice';
+$string['groupregclose'] = 'Until';
+$string['groupreg:deleteresponses'] = 'Delete answers';
+$string['groupreg:downloadresponses'] = 'Download responses';
+$string['choicefull'] = 'This group is full and can no longer be chosen.';
+$string['groupreg:choose'] = 'Choose a selection';
+$string['groupregname'] = 'Name of the group choice';
+$string['groupregopen'] = 'Open';
+$string['groupregoptions'] = 'Available options';
+$string['groupregoptions_help'] = 'Please specify the options that users can choose from.
 
-Sie können so viele wie Sie brauchen davon ausfüllen. Die nicht ausgefüllten Felder werden nicht als Optionen in der Auswahl übernommen. Falls Sie mehr als 8 Optionen brauchen, benutzen Sie den "3 Felder hinzufügen"-Button.
+You can specify as many options as needed. Empty fields will not be shown as a choice option. If you need more options, please click on the "Add 3 choices" buttion.
 
-Beim Feld \'Äquivalenzgruppierung\' handelt es sich um eine optionale Angabe. Gruppen, die hier den gleichen Wert eingetragen bekommen, werden bei der Angabe einer davon als Niete alle zusammen als Nieten betrachtet. 
-Hier sollte primär die Uhrzeit des Gruppentermins eingetragen werden, sodass die Studenten keine Nieten mit Terminüberschneidungen zugewiesen bekommen.';
-$string['limitanswers_help'] = 'Diese Option erlaubt es Ihnen, die Gruppengröße einzuschränken. Sobald das Limit erreicht ist, können sich keine weiteren Teilnehmer für diese Gruppe entscheiden.
+The field \'Equivalence code\' is optional. Groups that receive the same value here will be treated as equivalent if the user marks one of them as a "no-go".
+Hint: you should primarily use the day and time of a group here to ensure that students do not receive no-go assignments with time overlaps';
+$string['limitanswers_help'] = 'This option allows you to limit the size of a group. Once the size limit has been reached, no further participants can choose this group.
 
-Falls die Einschränkung aus oder auf 0 eingestellt ist, können beliebig viele Teilnehmer sich in eine Gruppe eintragen.';
-$string['groupreg:readresponses'] = 'Antworten lesen';
-$string['groupregsaved'] = 'Ihre Auswahl wurde gespeichert';
-$string['choicetext'] = 'Auswahltext';
-$string['chooseaction'] = 'Wählen Sie eine Aktion ...';
-$string['choosegroup'] = 'Wählen Sie eine Gruppe';
-$string['limit'] = 'Maximale Gruppengröße';
-$string['limitanswers'] = 'Gruppengröße einschränken';
-$string['modulename'] = 'Webreg-Gruppenwahl';
-$string['modulename_help'] = 'Der Gruppenwahlmodul erlaubt es, Kursteilnehmern eine Auswahl an möglichen Gruppen zur Selbsteinwahl als Aktivität zur Verfügung zu stellen.';
-$string['modulenameplural'] = 'Webreg-Gruppenwahlen';
-$string['noresultsviewable'] = 'Die Ergebnisse können derzeit nicht eingesehen werden.';
-$string['notanswered'] = 'Noch nicht beantwortet';
-$string['notenrolledchoose'] = 'Nur eingeschriebene Benutzer können sich in Gruppen einwählen.';
-$string['notopenyet'] = 'Diese Aktivität ist bis {$a} nicht verfügbar.';
-$string['option'] = 'Gruppe';
-$string['grouping'] = 'Äquivalenzgruppierung';
-$string['pluginadministration'] = 'Steuerung der Gruppenwahl';
-$string['pluginname'] = 'Webreg-Gruppenwahl';
-$string['privacy'] = 'Privatsphäre';
-$string['publish'] = 'Ergebnisse veröffentlichen';
-$string['publishafteranswer'] = 'Ergebnisse den Teilnehmern anzeigen, sobald diese eine Antwort getroffen haben';
-$string['publishafterclose'] = 'Ergebnisse den Teilnehmern anzeigen, sobald die Umfrage abgeschlossen ist';
-$string['publishalways'] = 'Ergebnisse immer den Teilnehmern anzeigen.';
-$string['publishanonymous'] = 'Ergebnisse anonym veröffentlichen, keine Namen der Teilnehmer anzeigen';
-$string['publishnames'] = 'Ergebnisse vollständig mit Namen veröffentlichen';
-$string['publishnot'] = 'Ergebnisse nicht veröffentlichen';
-$string['removemygroupreg'] = 'Meine Auswahl entfernen';
-$string['removeresponses'] = 'Alle Antworten entfernen';
-$string['responses'] = 'Antworten';
-$string['responsesto'] = 'Antworten auf {$a}';
-$string['savemygroupreg'] = 'Meine Auswahl speichern';
-$string['showunanswered'] = 'Eine Spalte für unbeantwortete anzeigen';
-$string['spaceleft'] = 'Platz frei';
-$string['spacesleft'] = 'Plätze frei';
-$string['taken'] = 'Genommen';
-$string['timerestrict'] = 'Beantwortung der Umfrage auf diese Zeitspanne eingrenzen';
-$string['viewallresponses'] = 'Zeige alle Antworten';
-$string['withselected'] = 'Mit ausgewählten';
-$string['yourselection'] = 'Ihre Auswahl';
-$string['skipresultgraph'] = 'Ergebnissgraphen überspringen';
-$string['moveselectedusersto'] = 'Ausgewählte Benutzer verschieben...';
-$string['numberofuser'] = 'Nummer des Benutzers';
+If the limit is turned off or set to 0, an arbitrary number of users can join the given group.';
+$string['groupreg:readresponses'] = 'Read responses';
+$string['groupregsaved'] = 'Your registration was saved.';
+$string['choicetext'] = 'Choice text';
+$string['chooseaction'] = 'Choose an action ...';
+$string['choosegroup'] = 'Please choose an option';
+$string['limit'] = 'Answer size limit';
+$string['limitanswers'] = 'Limit the answer size';
+$string['modulename'] = 'Webreg Group Choice';
+$string['modulename_help'] = 'The group choice mode allows users to choose their group from a set of groups by indicating favourite and "no-go" choices.';
+$string['modulenameplural'] = 'Webreg Group Choices';
+$string['noresultsviewable'] = 'No results can currently be viewed.';
+$string['notanswered'] = 'Not yet answered';
+$string['notenrolledchoose'] = 'Only users enrolled in the course can choose a group.';
+$string['notopenyet'] = 'This activity will not be open until {$a}.';
+$string['option'] = 'Group';
+$string['grouping'] = 'Equivalence code';
+$string['pluginadministration'] = 'Group choice administration';
+$string['pluginname'] = 'Webreg Group Choice';
+$string['privacy'] = 'Privacy';
+$string['publish'] = 'Publish results';
+$string['publishafteranswer'] = 'Publish results to participants once they have chosen an option';
+$string['publishafterclose'] = 'Publish results to participants once the activity has been closed';
+$string['publishalways'] = 'Always publish the results to participants.';
+$string['publishanonymous'] = 'Publish results only anonymously - without showing the names of participants';
+$string['publishnames'] = 'Publish results together with names';
+$string['publishnot'] = 'Do not publish any results';
+$string['removemygroupreg'] = 'Remove my choice';
+$string['removeresponses'] = 'Remove all choices';
+$string['responses'] = 'Responses';
+$string['responsesto'] = 'Responses to {$a}';
+$string['savemygroupreg'] = 'Save my group registration';
+$string['showunanswered'] = 'Show non-participating users';
+$string['spaceleft'] = 'space left';
+$string['spacesleft'] = 'spaces left';
+$string['taken'] = 'taken';
+$string['timerestrict'] = 'Restrict the choice to this time interval';
+$string['viewallresponses'] = 'View all responses';
+$string['withselected'] = 'With selected';
+$string['yourselection'] = 'Your selection';
+$string['skipresultgraph'] = 'Skip result graph';
+$string['moveselectedusersto'] = 'Move selected users to...';
+$string['numberofuser'] = 'Number of the user';
 
-$string['members/max'] = 'Eingewählt / Kapazität';
-$string['groupmembers'] = 'Gruppenteilnehmer';
+$string['members/max'] = 'Members / Capacity';
+$string['groupmembers'] = 'Group members';
 
-$string['limitfavorites'] = 'Anzahl der w&auml;hlbaren Favoriten';
-$string['limitblanks'] = 'Anzahl der w&auml;hlbaren Nieten';
+$string['limitfavorites'] = 'Limit number of favorites';
+$string['limitblanks'] = 'Limit number of "no-go" groups';
 
-$string['favorites'] = 'Favoriten';
-$string['favorites_desc'] = 'Wählen Sie hier Gruppen aus, zu den Sie zugeteilt werden möchten. Der erste Favorit hat die höchste Zuteilungspriorität. Sie müssen mindestens einen Favoriten wählen.';
-$string['blanks'] = 'Nieten';
-$string['blanks_desc'] = 'Wählen Sie hier Gruppen aus, zu den Sie auf keinen Fall zugeteilt werden möchten, zum Beispiel aufgrund von Terminüberschneidungen mit anderen Veranstaltungen. Sie müssen nicht alle verfügbaren Nieten wählen.';
-$string['groupmembers2'] = 'Gemeinsame Anmeldung';
-$string['groupmembers2_help'] = 'Tragen Sie hier die maximale Anzahl Teilnehmer ein, die sich gemeinsam anmelden können (sodass die Zuweisung für diese Gruppe möglichst gemeinsam geschieht). Tragen Sie 1 ein, um keine Gruppenanmeldung zu erlauben.';
-$string['groupmembers2_desc'] = 'Falls Sie sich in einer Gruppe mit anderen Teilnehmern anmelden möchten, tragen Sie hier die entsprechenden Benutzernamen ein. Alle Teilnehmer werden dann nach Möglichkeit gemeinsam einer Gruppe zugeordnet.';
-$string['favorite_n'] = '{$a}. Favorit';
-$string['blank_n'] = '{$a}. Niete';
-$string['blank'] = 'Niete';
-$string['no_choice'] = 'Keine Auswahl';
-$string['groupmember_n'] = '{$a}. Gruppenmitglied';
+$string['favorites'] = 'Favorites';
+$string['favorites_desc'] = 'Please select the groups you would like to join here. The first choice has the highest priority. You have to choose at least one favorite.';
+$string['blanks'] = 'No-go groups';
+$string['blanks_desc'] = 'Please select the groups you cannot, or do not want to, join here, for example because of conflicting other appointments. You do not have to fill in all fields and can also skip specifying any no-go groups.';
+$string['groupmembers2'] = 'Group registration';
+$string['groupmembers2_help'] = 'Please enter the maximum number of users who can register together, ensuring that they will end up in the same group. Please enter 1 to prevent students from registering as a group.';
+$string['groupmembers2_desc'] = 'If you want to join a group with other participants, please enter their user (login - not family) name(s) here. All participants will then be assigned to the same group.';
+$string['favorite_n'] = '{$a}. favorite choice';
+$string['blank_n'] = '{$a}. no-go';
+$string['blank'] = 'no-go';
+$string['no_choice'] = 'No choice';
+$string['groupmember_n'] = '{$a}. group member';
 
-$string['performassignment'] = 'Zuweisung ausführen';
-$string['resetassignment'] = 'Zuweisung zurücksetzen';
-$string['resetassignmentok'] = 'Zuweisung erfolgreich zurückgesetzt';
-$string['finalizeassignment'] = 'Gruppeneintragung durchführen';
-$string['finalizeassignmentok'] = 'Gruppeneintragung erfolgreich durchgeführt';
-$string['performingassignment'] = 'Zuweisung wird ausgeführt, bitte warten. Seite nicht schließen!';
-$string['assignmentok'] = 'Zuweisung wurde erfolgreich beendet';
-$string['assignmentnotdone'] = 'Zuweisung wurde noch nicht ausgeführt, die Aktion kann nicht ausgeführt werden';
-$string['assignmentproblem'] = 'Zuweisung wurde mit einem Fehler beendet. Setzen Sie die Zuweisung zurück und probieren Sie nochmal.';
-$string['assignment_result'] = 'Sie wurden der Gruppe <b>{$a}</b> zugewiesen.';
-$string['assignment_no_result'] = 'Sie wurden keiner Gruppe zugewiesen. Bitte wenden Sie sich an einen Kursadministrator.';
+$string['performassignment'] = 'Perform assignment';
+$string['resetassignment'] = 'Reset assignment';
+$string['resetassignmentok'] = 'Assignment successfully reset';
+$string['finalizeassignment'] = 'Finalize group assignment';
+$string['finalizeassignmentok'] = 'Users were successfully assigned to groups';
+$string['performingassignment'] = 'Performing assignment - please be patient. Do NOT close or leave this page!';
+$string['assignmentok'] = 'Assignment successfully completed';
+$string['assignmentnotdone'] = 'The assignment was not yet performed, so that the chosen action cannot be performed';
+$string['assignmentproblem'] = 'The assignment endet with an error. Please reset the assignment and try again.';
+$string['assignment_result'] = 'You were assigned to group <b>{$a}</b>.';
+$string['assignment_no_result'] = 'You were not assigned to any group. Please contact your teacher(s).';
 
-$string['settings_perlscript'] = 'Perl-Script';
-$string['settings_perlscript_desc'] = 'Voller Pfad zum Script, der die Zuweisung ausführt';
-$string['settings_perltime'] = 'Perl Laufzeit';
-$string['settings_perltime_desc'] = 'Maximale PHP-Laufzeit auf diese Anzahl Sekunden verlängern, wenn die Zuweisung mit dem Perl-Script ausgeführt wird';
+$string['settings_perlscript'] = 'Perl script';
+$string['settings_perlscript_desc'] = 'Complete path to the script doing the assignment';
+$string['settings_perltime'] = 'Perl runtime limit';
+$string['settings_perltime_desc'] = 'Maximum time assigned to the PHP execution while performing the assignment using the Perl script';
 
-$string['deleteok'] = 'Einträge wurden erfolgreich gelöscht';
-$string['deleteproblem'] = 'Keine Einträge wurden gelöscht';
+$string['deleteok'] = 'Entries were successfully deleted';
+$string['deleteproblem'] = 'No entries could be deleted';
 
-$string['error_user_not_found'] = 'Benutzer \'{$a}\' wurde nicht gefunden.';
-$string['error_user_not_enrolled'] = 'Benutzer \'{$a}\' ist nicht in dem Kurs oder in der korrekten Gruppe eingeschrieben.';
-$string['error_user_already_answered'] = 'Benutzer \'{$a}\' wurde bereits mit einer anderer Gruppe angemeldet und muss sie erst löschen, damit er in der Gruppe mit eingeschrieben werden kann.';
-$string['error_mustchooseone'] = 'Sie müssen mindestens einen Favoriten auswählen.';
-$string['error_double_favorite'] = 'Sie dürfen keinen Favoriten doppelt wählen.';
-$string['error_favorite_as_blank'] = 'Sie dürfen keinen Favoriten gleichzeitig als Niete wählen.';
-$string['error_invalid_value'] = 'In einem der Felder findet sich eine invalide Gruppen-ID. Entweder die Umfrage wurde geändert, während Sie geantwortet haben, oder Sie machen etwas komisches.';
-$string['error_double_blank'] = 'Sie dürfen keine Niete doppelt wählen.';
-$string['noguestchoose'] = 'Gäste können sich in keine Gruppen einwählen.';
+$string['error_user_not_found'] = 'User \'{$a}\' could not be found.';
+$string['error_user_not_enrolled'] = 'User \'{$a}\' is either not enrolled in this course or in a different group.';
+$string['error_user_already_answered'] = 'User \'{$a}\' has already registered for a different group. He or she would have to first delete the other choice in order to be enrolled in your group.'
+$string['error_mustchooseone'] = 'You have to choose at least one favorite group.';
+$string['error_double_favorite'] = 'You cannot select a favorite twice.';
+$string['error_favorite_as_blank'] = 'A favorite choice cannot be chosen as a "no-go" choice.';
+$string['error_invalid_value'] = 'One of the fields contains an invalid group ID. Either the teacher has modified the groups since you opened this page, or you are trying to do something strange.';
+$string['error_double_blank'] = 'You cannot select a "no-go" value twice.';
+$string['noguestchoose'] = 'Guests are not able to selet a group; please log in first!';
 
-$string['show_group_details'] = 'Details anzeigen';
-$string['enrolled_with'] = 'Gemeinsame Anmeldung: ';
-$string['group_details'] = 'Details zur Gruppe \'{$a}\'';
-$string['group_assignments'] = 'Zuweisungen in der Gruppe \'{$a}\'';
-$string['user_details'] = 'Details zum Teilnehmer \'{$a}\'';
-$string['view_profile'] = 'Benutzerprofil aufrufen...';
-$string['preference'] = 'Präferenz';
+$string['show_group_details'] = 'Show group details';
+$string['enrolled_with'] = 'Enrolled with: ';
+$string['group_details'] = 'Details for group \'{$a}\'';
+$string['group_assignments'] = 'Assignments in group \'{$a}\'';
+$string['user_details'] = 'Details for user \'{$a}\'';
+$string['view_profile'] = 'View user profiled...';
+$string['preference'] = 'Preference';
 
-$string['display_user_details'] = 'Auswahl des Teilnehmers anzeigen';
-$string['report_total_users'] = '{$a} Teilnehmer in der Umfrage:';
-$string['report_missing_assignments'] = 'Teilnehmer mit fehlenden Zuweisungen';
-$string['report_missing_assignments_text'] = 'Bei folgenden {$a} Teilnehmern in dieser Gruppenwahl sind keine Gruppen zugewiesen worden:';
+$string['display_user_details'] = 'Display choices for user';
+$string['report_total_users'] = '{$a} total users in this activity:';
+$string['report_missing_assignments'] = 'Participants without an assignment';
+$string['report_missing_assignments_text'] = 'The following {$a} participants in this activity have not been assigned to a group:';
 
-$string['report_missing_votes'] = 'Kursteilnehmer ohne Gruppenanmeldung';
-$string['report_missing_votes_text'] = '{$a} Teilnehmer in diesem Kurs haben noch nicht an dieser Anmeldung teilgenommen.';
+$string['report_missing_votes'] = 'Course members without a group choice';
+$string['report_missing_votes_text'] = '{$a} participants in this course have not yet participated in this activity.';
 
