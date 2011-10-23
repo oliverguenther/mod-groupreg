@@ -311,7 +311,7 @@ function groupreg_prepare_options($groupreg, $user, $coursemodule, $favorites, $
             if ($otheruser && !in_array($otheruser->username, $cdisplay['groupmembers']))
                 $cdisplay['groupmembers'][] = $otheruser->username;
         }
-    } else {
+    } else if ($groupmembers != null) {
         foreach ($groupmembers as $member)
             if (trim($member) != '')
                 $cdisplay['groupmembers'][] = htmlspecialchars($member); // XSS sanitation
@@ -410,26 +410,27 @@ function groupreg_user_validate_response($favorites, $blanks, $groupmembers, $gr
         $usergroup = 0;
         
     // check all entered usernames and generate an array of userIDs to enter the data for
-    foreach($groupmembers as $username) {
-        if ($username == '') continue;
-        
-        $username = mysql_escape_string($username); // sql injection security, since moodle can't sanitize array variables
-        $us = $DB->get_record('user', array('username' => $username));
-        if ($us) {
-            // check the user is enrolled in this course
-            if (isset($users[$us->id])) {
-                // check that user has no answers in this choice or his usergroup is same as current user's
-                $records = $DB->get_records('groupreg_answers', array('groupregid' => $groupreg->id, 'userid' => $us->id));
-                if ($records && array_pop($records)->usergroup != $usergroup) {
-                    $errors[] = get_string('error_user_already_answered', 'groupreg', $username);
-                }
-            } else {
-                $errors[] = get_string('error_user_not_enrolled', 'groupreg', $username);
-            }
-        } else {
-            $errors[] = get_string('error_user_not_found', 'groupreg', $username);
-        }
-    }
+    if ($groupmembers) 
+		foreach($groupmembers as $username) {
+			if ($username == '') continue;
+			
+			$username = mysql_escape_string($username); // sql injection security, since moodle can't sanitize array variables
+			$us = $DB->get_record('user', array('username' => $username));
+			if ($us) {
+				// check the user is enrolled in this course
+				if (isset($users[$us->id])) {
+					// check that user has no answers in this choice or his usergroup is same as current user's
+					$records = $DB->get_records('groupreg_answers', array('groupregid' => $groupreg->id, 'userid' => $us->id));
+					if ($records && array_pop($records)->usergroup != $usergroup) {
+						$errors[] = get_string('error_user_already_answered', 'groupreg', $username);
+					}
+				} else {
+					$errors[] = get_string('error_user_not_enrolled', 'groupreg', $username);
+				}
+			} else {
+				$errors[] = get_string('error_user_not_found', 'groupreg', $username);
+			}
+		}
     if (sizeof($errors) > 0)
         return $errors;
         
@@ -454,14 +455,15 @@ function groupreg_user_submit_response($favorites, $blanks, $groupmembers, $grou
     
     // generate an array of userIDs to enter the data for
     $userids = array($user_id);
-    foreach($groupmembers as $username) {
-        if ($username == '') continue;
-        
-        $username = mysql_escape_string($username); // sql injection security, since moodle can't sanitize array variables
-        $us = $DB->get_record('user', array('username' => $username));
-        if (!in_array($us->id, $userids)) // handle potential double entries as one
-            $userids[] = $us->id;
-    }
+    if ($groupmembers)
+		foreach($groupmembers as $username) {
+			if ($username == '') continue;
+			
+			$username = mysql_escape_string($username); // sql injection security, since moodle can't sanitize array variables
+			$us = $DB->get_record('user', array('username' => $username));
+			if (!in_array($us->id, $userids)) // handle potential double entries as one
+				$userids[] = $us->id;
+		}
     
     // find a new random usergroup id not yet in use
     $usergroup = time();
@@ -746,7 +748,7 @@ function groupreg_get_response_data($groupreg, $cm, $groupmode) {
     $users = get_enrolled_users($context, 'mod/groupreg:choose', $currentgroup, user_picture::fields('u', array('idnumber')), 'u.lastname ASC,u.firstname ASC');
         
 /// Get all the recorded responses for this groupreg
-    $rawresponses = $DB->get_records('groupreg_answers', array('groupregid' => $groupreg->id));
+    $rawresponses = $DB->get_records('groupreg_answers', array('groupregid' => $groupreg->id), 'optionid');
 
 /// Use the responses to move users into the correct column
 
@@ -763,9 +765,7 @@ function groupreg_get_response_data($groupreg, $cm, $groupmode) {
             }
         }
     }
-    /*echo('<pre>');
-    print_r($allresponses);
-    echo('</pre>');*/
+
     return $allresponses;
 }
 
