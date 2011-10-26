@@ -72,7 +72,7 @@
 										o.id = a.optionid AND
 										g.id = o.text AND
 										u.id = a.userid
-									ORDER BY u.lastname ASC, u.firstname ASC, u.id ASC, a.preference ASC', array($choice->id));
+									ORDER BY u.lastname ASC, u.firstname ASC, u.id ASC, a.preference DESC', array($choice->id));
 									
 		$userdata = array();
 		$c= -1;
@@ -196,9 +196,9 @@
 			
 			$csv .= implode(';', $row)."\n";
 			
-			echo iconv("UTF-8", "ISO-8859-1", $csv);		
-			
 		}
+		
+		echo iconv("UTF-8", "ISO-8859-1", $csv);		
 		
 	} else {
 	
