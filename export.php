@@ -111,8 +111,8 @@
 												ORDER BY a.userid ASC', array($choice->id));
 			foreach ($assigned as $assignment) {
 				$userassigned[$assignment->userid] = new stdClass;
-				$userassigned[$assignment->userid]->name = $assignment.name;
-				$userassigned[$assignment->userid]->grouping = $assignment.grouping;
+				$userassigned[$assignment->userid]->name = $assignment->name;
+				$userassigned[$assignment->userid]->grouping = $assignment->grouping;
 			}
 		}
 		
