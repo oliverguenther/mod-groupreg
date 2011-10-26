@@ -48,6 +48,7 @@
 		header("Content-Type: application/download\n");
 		header("Content-Disposition: attachment; filename=\"$filename\"");
     
+		$csv = '';
 		
 		//
 		// fetch data from DB
@@ -137,7 +138,7 @@
 		$headerRow[] = get_string('export_header_name', 'groupreg');
 		
 		$headerRow[] = get_string('export_header_groupsize', 'groupreg');
-		for ($i = 1; $i <= $choice->groupmembers; $i++)
+		for ($i = 1; $i < $choice->groupmembers; $i++)
 			$headerRow[] = get_string('export_header_groupmember_n', 'groupreg', $i);
 			
 		foreach($eq_classes as $class)
@@ -147,7 +148,7 @@
 			$headerRow[] = get_string('export_header_assigned_group', 'groupreg');
 		}
 		
-		echo implode(';', $headerRow)."\n";
+		$csv .= implode(';', $headerRow)."\n";
 		
 		//
 		// Build and output data rows
@@ -170,7 +171,7 @@
 					$displayedgroupmembers++;
 				}
 				
-			for ($i = $displayedgroupmembers; $i < $choice->groupmembers; $i++)
+			for ($i = $displayedgroupmembers; $i < $choice->groupmembers-1; $i++)
 				$row[] = '';
 					
 			// preferences for groupings
@@ -193,7 +194,9 @@
 					$row[] = '-';
 			}
 			
-			echo implode(';', $row)."\n";
+			$csv .= implode(';', $row)."\n";
+			
+			echo iconv("UTF-8", "ISO-8859-1", $csv);		
 			
 		}
 		
