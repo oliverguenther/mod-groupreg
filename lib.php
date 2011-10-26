@@ -256,6 +256,11 @@ function groupreg_finalize_assignment($groupreg) {
     
 }
 
+
+function groupreg_export_assignment($groupreg) {
+	global $CFG, $DB;
+}
+
 /**
  * @global object
  * @param object $groupreg
@@ -822,6 +827,7 @@ function groupreg_extend_settings_navigation(settings_navigation $settings, navi
         $groupregnode->add(get_string("performassignment", "groupreg"), new moodle_url('/mod/groupreg/view.php', array('id'=>$PAGE->cm->id, 'action'=>'assign', 'sesskey'=>sesskey())));
         $groupregnode->add(get_string("resetassignment", "groupreg"), new moodle_url('/mod/groupreg/view.php', array('id'=>$PAGE->cm->id, 'action'=>'resetassign', 'sesskey'=>sesskey())));
         $groupregnode->add(get_string("finalizeassignment", "groupreg"), new moodle_url('/mod/groupreg/view.php', array('id'=>$PAGE->cm->id, 'action'=>'finalize', 'sesskey'=>sesskey())));
+        $groupregnode->add(get_string("exportassignment", "groupreg"), new moodle_url('/mod/groupreg/export.php', array('id'=>$PAGE->cm->id, 'sesskey'=>sesskey())));
     }
 }
 

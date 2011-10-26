@@ -116,6 +116,11 @@ $string['groupmember_n'] = '{$a}. group member';
 
 $string['performassignment'] = 'Perform assignment';
 $string['resetassignment'] = 'Reset assignment';
+$string['exportassignment'] = 'Export assignments to CSV';
+$string['exporteassignmentnotok'] = 'The Assignment has not yet been performed. You need to perform the assignment before exporting them.';
+$string['exportassignment_confirm'] = 'Click on the button below to export the assignments to CSV';
+
+
 $string['resetassignmentok'] = 'Assignment successfully reset';
 $string['finalizeassignment'] = 'Finalize group assignment';
 $string['finalizeassignmentok'] = 'Users were successfully assigned to groups';
