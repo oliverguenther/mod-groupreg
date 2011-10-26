@@ -163,9 +163,15 @@
 			
 			// usergroup size and members
 			$row[] = sizeof($usergroups[$user->usergroup]);
+			$displayedgroupmembers = 0;
 			for ($i = 0; $i < $choice->groupmembers; $i++)
-				if (isset($usergroups[$user->usergroup][$i]) && $fullname != $usergroups[$user->usergroup][$i])
-					$row[] = '"'.$usergroups[$user->usergroup][$i].'"';
+				if (isset($usergroups[$user->usergroup][$i]) && $fullname != $usergroups[$user->usergroup][$i]) {
+					$row[] = '"'.$usergroups[$user->usergroup][$i].'"';	
+					$displayedgroupmembers++;
+				}
+				
+			for ($i = $displayedgroupmembers; $i <= $choice->groupmembers; $i++)
+				$row[] = '';
 					
 			// preferences for groupings
 			foreach($eq_classes as $class) {
