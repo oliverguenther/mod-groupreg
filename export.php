@@ -181,7 +181,10 @@
 				
 			// assigned group
 			if ($choice->assigned) {
-				$row[] = '"'.$userassigned[$user->id]->name.'"';
+				if ($userassigned[$user->id])
+					$row[] = '"'.$userassigned[$user->id]->name.'"';
+				else
+					$row[] = '-';
 			}
 			
 			echo implode(';', $row)."\n";
