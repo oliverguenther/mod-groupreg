@@ -36,7 +36,7 @@
 		$filename = clean_filename("$course->shortname ".strip_tags(format_string($choice->name,true))).'.csv';
 
 		/// Print header to force download
-		/*if (strpos($CFG->wwwroot, 'https://') === 0) { //https sites - watch out for IE! KB812935 and KB316431
+		if (strpos($CFG->wwwroot, 'https://') === 0) { //https sites - watch out for IE! KB812935 and KB316431
 			@header('Cache-Control: max-age=10');
 			@header('Expires: '. gmdate('D, d M Y H:i:s', 0) .' GMT');
 			@header('Pragma: ');
@@ -46,7 +46,7 @@
 			@header('Pragma: no-cache');
 		}
 		header("Content-Type: application/download\n");
-		header("Content-Disposition: attachment; filename=\"$filename\"");*/
+		header("Content-Disposition: attachment; filename=\"$filename\"");
     
 		
 		//
@@ -165,7 +165,7 @@
 			$row[] = sizeof($usergroups[$user->usergroup]);
 			for ($i = 0; $i < $choice->groupmembers; $i++)
 				if (isset($usergroups[$user->usergroup][$i]) && $fullname != $usergroups[$user->usergroup][$i])
-					$row[] = $usergroups[$user->usergroup][$i];
+					$row[] = '"'.$usergroups[$user->usergroup][$i].'"';
 					
 			// preferences for groupings
 			foreach($eq_classes as $class) {
