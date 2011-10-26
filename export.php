@@ -137,7 +137,7 @@
 		$headerRow[] = get_string('export_header_name', 'groupreg');
 		
 		$headerRow[] = get_string('export_header_groupsize', 'groupreg');
-		for ($i = 1; $i < $choice->groupmembers; $i++)
+		for ($i = 1; $i <= $choice->groupmembers; $i++)
 			$headerRow[] = get_string('export_header_groupmember_n', 'groupreg', $i);
 			
 		foreach($eq_classes as $class)
@@ -170,7 +170,7 @@
 					$displayedgroupmembers++;
 				}
 				
-			for ($i = $displayedgroupmembers; $i <= $choice->groupmembers; $i++)
+			for ($i = $displayedgroupmembers; $i < $choice->groupmembers; $i++)
 				$row[] = '';
 					
 			// preferences for groupings
