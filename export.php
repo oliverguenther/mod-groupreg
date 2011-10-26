@@ -142,7 +142,7 @@
 			$headerRow[] = get_string('export_header_groupmember_n', 'groupreg', $i);
 			
 		foreach($eq_classes as $class)
-			$headerRow[] = '"'.$class->grouping.'"';
+			$headerRow[] = '"'.get_string('export_header_grouping', 'groupreg', $class->grouping).'"';
 			
 		if ($choice->assigned) {
 			$headerRow[] = get_string('export_header_assigned_group', 'groupreg');

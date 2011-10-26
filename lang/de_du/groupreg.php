@@ -164,3 +164,9 @@ $string['report_missing_assignments_text'] = 'Bei folgenden {$a} Teilnehmern in 
 
 $string['report_missing_votes'] = 'Kursteilnehmer ohne Gruppenanmeldung';
 $string['report_missing_votes_text'] = '{$a} Teilnehmer in diesem Kurs haben noch nicht an dieser Anmeldung teilgenommen.';
+
+$string['export_header_name'] = 'Name';
+$string['export_header_groupsize'] = 'Gruppengröße';
+$string['export_header_grouping'] = 'Gruppierung {$a}';
+$string['export_header_groupmember_n'] = '{$a}. Gruppenmitglied';
+$string['export_header_assigned_group'] = 'Erfolgte Zuweisung';
