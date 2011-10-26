@@ -165,3 +165,8 @@ $string['report_missing_assignments_text'] = 'The following {$a} participants in
 $string['report_missing_votes'] = 'Course members without a group choice';
 $string['report_missing_votes_text'] = '{$a} participants in this course have not yet participated in this activity.';
 
+$string['export_header_name'] = 'Name';
+$string['export_header_groupsize'] = 'Group size';
+$string['export_header_groupmember_n'] = 'Group member #{$a}';
+
+

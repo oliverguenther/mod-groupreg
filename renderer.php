@@ -485,7 +485,7 @@ class mod_groupreg_renderer extends plugin_renderer_base {
         return $html;
     }
 
-	function display_export_assignment_form($cm, $choice) {
+	function display_export_assignment_form($cm) {
 		global $CFG;
 		
 		$html = html_writer::start_tag('div', array('class' => 'groupreg-export-confirmation'));
@@ -495,8 +495,8 @@ class mod_groupreg_renderer extends plugin_renderer_base {
         $html .= html_writer::start_tag('form', array('action' => 'export.php', 'method' => 'POST'));
         
         $html .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'id', 'value' => $cm->id));
-        $html .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'choice_id', 'value' => $choice->id));
-        $html .= html_writer::tag('input', '', array('type' => 'submit', 'value' => get_string('exportassignment', 'groupreg')));
+        $html .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'action', 'value' => 'download-csv'));
+		$html .= html_writer::tag('input', '', array('type' => 'submit', 'value' => get_string('exportassignment', 'groupreg')));
         
         $html .= html_writer::end_tag('form');
         $html .= html_writer::end_tag('div');

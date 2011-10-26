@@ -658,7 +658,7 @@ function groupreg_get_groupreg($groupregid) {
  * @return array
  */
 function groupreg_get_view_actions() {
-    return array('view','view all','report');
+    return array('view','view all','report','report download');
 }
 
 /**

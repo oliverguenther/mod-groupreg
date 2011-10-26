@@ -20,7 +20,7 @@
  *
  * @package    mod
  * @subpackage groupreg
- * @copyright  2010 Petr Skoda (http://skodak.org)
+ * @copyright  2011 Olexandr Savchuk
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -34,6 +34,7 @@ $logs = array(
     array('module'=>'groupreg', 'action'=>'resetassign', 'mtable'=>'groupreg', 'field'=>'name'),
     array('module'=>'groupreg', 'action'=>'finalize', 'mtable'=>'groupreg', 'field'=>'name'),
     array('module'=>'groupreg', 'action'=>'report', 'mtable'=>'groupreg', 'field'=>'name'),
+	array('module'=>'groupreg', 'action'=>'report download', 'mtable'=>'groupreg', 'field'=>'name'),
     array('module'=>'groupreg', 'action'=>'choose', 'mtable'=>'groupreg', 'field'=>'name'),
     array('module'=>'groupreg', 'action'=>'choose again', 'mtable'=>'groupreg', 'field'=>'name'),
 );
