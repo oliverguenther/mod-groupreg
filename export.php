@@ -172,7 +172,7 @@
 				if (isset($user->answers[''.$class->grouping])) {
 					$pref = $user->answers[''.$class->grouping];
 					$output = $pref > 0 ? $pref : 'N';
-					if ($choice->assigned && $userassigned[$user->id]->grouping == $class->grouping)
+					if ($choice->assigned && isset($userassigned[$user->id]) && $userassigned[$user->id]->grouping == $class->grouping)
 						$output .= 'X';
 					$row[] = $output;
 				} else
