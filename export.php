@@ -181,7 +181,7 @@
 				
 			// assigned group
 			if ($choice->assigned) {
-				if ($userassigned[$user->id])
+				if (isset($userassigned[$user->id]))
 					$row[] = '"'.$userassigned[$user->id]->name.'"';
 				else
 					$row[] = '-';
