@@ -168,6 +168,6 @@ $string['report_missing_votes_text'] = '{$a} participants in this course have no
 $string['export_header_name'] = 'Name';
 $string['export_header_groupsize'] = 'Group size';
 $string['export_header_groupmember_n'] = 'Group member #{$a}';
-$string['export_header_assigned_group'] = 'Assigned to group'
+$string['export_header_assigned_group'] = 'Assigned to group';
 
 
