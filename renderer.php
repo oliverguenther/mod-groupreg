@@ -496,6 +496,9 @@ class mod_groupreg_renderer extends plugin_renderer_base {
         
         $html .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'id', 'value' => $cm->id));
         $html .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'action', 'value' => 'download-csv'));
+		$html .= html_writer::empty_tag('input', array('type' => 'checkbox', 'name' => 'unique-user', 'value' => 'true'));
+		$html .= get_string('export_show_user_once', 'groupreg');
+		$html .= html_writer::empty_tag('br');
 		$html .= html_writer::tag('input', '', array('type' => 'submit', 'value' => get_string('exportassignment', 'groupreg')));
         
         $html .= html_writer::end_tag('form');
