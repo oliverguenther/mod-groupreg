@@ -64,7 +64,7 @@ function verifyCSV($csv, $action) {
         
 }
 
-function display_csv_contents($cm, $file, $action) {
+function display_csv_contents($groupreg, $file, $action) {
     $csv = readCSV($file);
     $html = html_writer::start_tag('div', array('class' => 'groupreg-display-csv'));
     
@@ -97,7 +97,7 @@ function display_csv_contents($cm, $file, $action) {
 
 
     $html .= html_writer::start_tag('form', array('action' => 'import.php', 'method' => 'POST'));
-    $html .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'id', 'value' => $cm->id));
+    $html .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'id', 'value' => $groupreg->id));
     $html .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'action', 'value' => $action));
     $html .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'file', 'value' => $file));
     $html .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'doimport', 'value' => 1));
@@ -109,38 +109,50 @@ function display_csv_contents($cm, $file, $action) {
     return $html;
 }
 
-function import_groups_from_csv($courseid, $file) {
+function import_groups_from_csv($groupreg, $courseid, $file) {
+    global $DB;
     $csv = readCSV($file);
-    $error = array();
+    
+    // We need to clear all options and assignments
+    groupreg_reset_assignment($groupreg);
+    groupreg_reset_options($groupreg);
+    
     // Create groups in course, unless they exist already
     foreach ($csv as $row) {
         $group = new stdClass();
         $group->courseid = $courseid;
-        $group->name = trim(format_text($row['name']));
-        $group->maxanswers = intval($row['maxanswers']);
+        $group->name = trim(filter_var($row['name']));
         $group->timemodified = time();
+        if (isset ($row['maxanswers']))
+            $group->maxanswers = intval($row['maxanswers']);
         
-
+        if (isset ($row['grouping']))
+            $group->maxanswers = trim(filter_var($row['grouping']));
+        
         if (($id = groups_get_group_by_name($courseid, $group->name)) != false) {
-            echo "Group " . $group->name. " already exists, ignoring";
+            echo "Group " . $group->name. " already exists, ignoring<br/>";
             $group->id = $id;
         } else {
             if (($id = groups_create_group($group)) != false) {
                 $group->id = $id;
-            } else {
-                push($error, "Could not create group " . $group->name);
-            }
+            } else return "Could not create group " . $group->name;
+        }
+        if (isset($group)) {
+            // Create option-record from $group (remove text)
+            $group->text = $group->id;
+            $group->groupregid = $groupreg->id;
+            unset($group->name);
+            
+            $DB->insert_record("groupreg_options", $group);
+            
         }
     }
-    
-    
-    return (count($error) > 0) ? $error : null;
     
     
     
 }
 
-function import_assignments_from_csv($cm, $file) {
+function import_assignments_from_csv($groupreg, $file) {
     
 }
 

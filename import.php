@@ -20,6 +20,10 @@ if (!$course = $DB->get_record("course", array("id" => $cm->course))) {
     print_error("coursemisconf");
 }
 
+if (!$choice = groupreg_get_groupreg($cm->instance)) {
+    print_error('invalidcoursemodule');
+}
+
 require_login($course->id, false, $cm);
 $context = get_context_instance(CONTEXT_MODULE, $cm->id);
 require_capability('mod/groupreg:performassignment', $context);
@@ -38,9 +42,9 @@ $renderer = $PAGE->get_renderer('mod_groupreg');
 if (isset($confirmed) && isset($csvfile)) {
     // Returned from confirmation page, import actual file
     if ($action == 'importgroups')
-        $error = import_groups_from_csv($course->id , $csvfile);
+        $error = import_groups_from_csv($choice, $course->id , $csvfile);
     else if ($action == 'importassignments')
-        $error = import_assignments_from_csv($course->id, $csvfile);
+        $error = import_assignments_from_csv($choice, $course->id, $csvfile);
     else {
         echo $OUTPUT->notification("Error: Unknown action!");
         exit;

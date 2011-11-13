@@ -236,6 +236,17 @@ function groupreg_reset_assignment($groupreg) {
     $DB->delete_records('groupreg_assigned', array('groupregid' => $groupreg->id));
 }
 
+function groupreg_reset_options($groupreg) {
+    global $DB;
+    
+    $groupreg->timeclose = 0;
+    $groupreg->timemodified = time();
+    $groupreg->assigned = 0;
+    $DB->update_record("groupreg", $groupreg);
+    
+    $DB->delete_records('groupreg_options', array('groupregid' => $groupreg->id));
+}
+
 function groupreg_finalize_assignment($groupreg) {
     global $CFG, $DB;
     
