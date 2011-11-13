@@ -29,6 +29,8 @@
 	
 	if ($action && $action == 'download-csv') {
 		
+		$unique_user = optional_param('unique-user', 'false', PARAM_ALPHA);
+		
 		//
 		// Prepare CSV output
 		//
@@ -154,6 +156,8 @@
 		// Build and output data rows
 		//
 		
+		$usersShown = array();
+		
 		foreach ($userdata as $user) {
 			
 			$row = array();
@@ -162,6 +166,11 @@
 			$fullname = $user->lastname.', '.$user->firstname;
 			$row[] = '"'.$fullname.'"';
 			
+			if ($unique_user == 'true' && in_array($fullname, $usersShown))
+				continue;
+				
+			$usersShown[] = $fullname;
+						
 			// usergroup size and members
 			$row[] = sizeof($usergroups[$user->usergroup]);
 			$displayedgroupmembers = 0;
@@ -169,6 +178,7 @@
 				if (isset($usergroups[$user->usergroup][$i]) && $fullname != $usergroups[$user->usergroup][$i]) {
 					$row[] = '"'.$usergroups[$user->usergroup][$i].'"';	
 					$displayedgroupmembers++;
+					$usersShown[] = $usergroups[$user->usergroup][$i];
 				}
 				
 			for ($i = $displayedgroupmembers; $i < $choice->groupmembers-1; $i++)

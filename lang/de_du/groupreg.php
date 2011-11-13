@@ -173,3 +173,4 @@ $string['export_header_groupsize'] = 'Gruppengröße';
 $string['export_header_grouping'] = 'Gruppierung {$a}';
 $string['export_header_groupmember_n'] = '{$a}. Gruppenmitglied';
 $string['export_header_assigned_group'] = 'Erfolgte Zuweisung';
+$string['export_show_user_once'] = 'Teilnehmer nur einmal anzeigen (entweder in eigener Zeile, oder als Gruppenmitglied)';

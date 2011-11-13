@@ -173,5 +173,5 @@ $string['export_header_groupsize'] = 'Group size';
 $string['export_header_grouping'] = 'Grouping {$a}';
 $string['export_header_groupmember_n'] = 'Group member #{$a}';
 $string['export_header_assigned_group'] = 'Assigned to group';
-
+$string['export_show_user_once'] = 'Show each user only once (either in a row of hiw own, or as a group member in another row)';
 
