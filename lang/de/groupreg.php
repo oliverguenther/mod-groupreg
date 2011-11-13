@@ -119,6 +119,11 @@ $string['groupmember_n'] = '{$a}. Gruppenmitglied';
 $string['performassignment'] = 'Zuweisung ausführen';
 $string['resetassignment'] = 'Zuweisung zurücksetzen';
 $string['resetassignmentok'] = 'Zuweisung erfolgreich zurückgesetzt';
+$string['importgroups'] = 'Einstellung aus CSV importieren';
+$string['importassignments'] = 'Zuweisung aus CSV importieren';
+$string['importgroups-confirm'] = 'Über dieses Formular können Sie die Konfiguration dieses Gruppenanmeldung über eine CSV-Datei importieren. Die importierten Gruppen werden im Kurs automatisch angelegt und innerhalb des Moduls mit den Kapazitäten erzeugt.';
+$string['doimport'] = 'Importieren';
+
 $string['exportassignment'] = 'Zuweisung als CSV exportieren';
 $string['exportassignmentconfirm'] = 'Klicken Sie auf den Button, um die Zuweisungen per CSV exportieren.';
 $string['exporteassignmentnotok'] = 'Die Zuweisung ist noch nicht erfolgt. Bitte führen Sie die Zuweisung durch und starten Sie dann den Exportvorgang erneut!';

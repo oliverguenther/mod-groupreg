@@ -119,7 +119,10 @@ $string['resetassignment'] = 'Reset assignment';
 $string['exportassignment'] = 'Export assignments to CSV';
 $string['exporteassignmentnotok'] = 'The Assignment has not yet been performed. You need to perform the assignment before exporting them.';
 $string['exportassignment_confirm'] = 'Click on the button below to export the assignments to CSV';
-
+$string['importgroups'] = 'Import settings from CSV';
+$string['importgroups-confirm'] = 'Using this form, you can import the configuration of this module from a CSV file. All groups from this file will be imported to the course and referenced in the module.';
+$string['doimport'] = 'Import';
+$string['importassignments'] = 'Import assignments from CSV';
 
 $string['resetassignmentok'] = 'Assignment successfully reset';
 $string['finalizeassignment'] = 'Finalize group assignment';
