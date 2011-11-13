@@ -68,6 +68,12 @@ class mod_groupreg_mod_form extends moodleform_mod {
         } else {
             $repeatno = 5;
         }
+//-------------------------------------------------------------------------------
+        $mform->addElement('header', 'importfromcsv', get_string('importfromcsv', 'groupreg'));
+        $mform->addElement('html', '<p>' . get_string('csvimport', 'groupreg') . '</p>');
+        $mform->addElement('filepicker', 'csvfile', get_string('csvfile', 'groupreg'), null, array('accepted_types' => 'text/csv'));
+        $mform->addHelpButton('csvfile', 'csvfile', 'groupreg');
+        
 
         $repeateloptions = array();
         $repeateloptions['limit']['default'] = 1;
@@ -131,8 +137,10 @@ class mod_groupreg_mod_form extends moodleform_mod {
 
     function validation($data, $files) {
         $errors = parent::validation($data, $files);
+        
+        // TODO check if CSV file uploaded
 
-		// ensure at least one choice is made
+        // ensure at least one choice is made
         $choices = 0;
         foreach ($data['option'] as $option){
             if (trim($option) != ''){
