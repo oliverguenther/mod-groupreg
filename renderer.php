@@ -521,7 +521,7 @@ class mod_groupreg_renderer extends plugin_renderer_base {
         $html .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'id', 'value' => $cm->id));
         $html .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'action', 'value' => $action));
         $html .= html_writer::tag('input', '', array('type' => 'file', 'name' => "csvupload"));
-	$html .= html_writer::tag('input', '', array('type' => 'submit', 'value' => get_string("doimport", 'groupreg')));
+	$html .= html_writer::tag('input', '', array('type' => 'submit'));
         
         $html .= html_writer::end_tag('form');
         $html .= html_writer::end_tag('div');

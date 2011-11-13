@@ -122,6 +122,8 @@ $string['resetassignmentok'] = 'Zuweisung erfolgreich zurückgesetzt';
 $string['importgroups'] = 'Einstellung aus CSV importieren';
 $string['importassignments'] = 'Zuweisung aus CSV importieren';
 $string['importgroups-confirm'] = 'Über dieses Formular kannst du die Konfiguration dieses Gruppenanmeldung über eine CSV-Datei importieren. Die importierten Gruppen werden im Kurs automatisch angelegt und innerhalb des Moduls mit den Kapazitäten erzeugt.';
+$string['importcsv-wrongtype'] = 'Dateityp entspricht nicht "text/csv". Nur CSV-Dateien können hochgeladen werden';
+
 $string['exportassignment'] = 'Zuweisung als CSV exportieren';
 $string['exportassignmentconfirm'] = 'Klicke auf den Button, um die Zuweisungen per CSV exportieren.';
 $string['exporteassignmentnotok'] = 'Die Zuweisung ist noch nicht erfolgt. Bitte führe die Zuweisung durch und starte den Exportvorgang erneut!';

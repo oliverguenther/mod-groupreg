@@ -859,3 +859,4 @@ function groupreg_get_completion_state($course, $cm, $userid, $type) {
         return $type;
     }
 }
+

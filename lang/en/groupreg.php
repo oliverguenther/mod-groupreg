@@ -123,6 +123,8 @@ $string['importgroups'] = 'Import settings from CSV';
 $string['importgroups-confirm'] = 'Using this form, you can import the configuration of this module from a CSV file. All groups from this file will be imported to the course and referenced in the module.';
 $string['doimport'] = 'Import';
 $string['importassignments'] = 'Import assignments from CSV';
+$string['importcsv-wrongtype'] = 'Input type is not text/csv. Only CSV-Files are allowed';
+
 
 $string['resetassignmentok'] = 'Assignment successfully reset';
 $string['finalizeassignment'] = 'Finalize group assignment';
