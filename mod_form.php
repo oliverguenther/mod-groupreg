@@ -71,12 +71,15 @@ class mod_groupreg_mod_form extends moodleform_mod {
             $repeatno = 5;
         }
 //-------------------------------------------------------------------------------
-        $mform->addElement('header', 'importfromcsv', get_string('importgroups', 'groupreg'));
-        $mform->addElement('html', get_string('importgroups-confirm', 'groupreg', csv_importgroups_columns()));
-        // Hack for validation, remove if can validate whether a file was selected / uploaded
-        $mform->addElement('checkbox', 'usecsvimport', get_string('doimport', 'groupreg'));
-        $mform->addElement('filepicker', 'csvfile', get_string('csvfile', 'groupreg'), null, array('accepted_types' => array('*.txt', '*.csv')));
-        $mform->addHelpButton('csvfile', 'csvfile', 'groupreg');
+        // Only allow CSV import on create
+        if (empty($this->_instance)) {
+            $mform->addElement('header', 'importfromcsv', get_string('importgroups', 'groupreg'));
+            $mform->addElement('html', get_string('importgroups-confirm', 'groupreg', csv_importgroups_columns()));
+            // Hack for validation, remove if can validate whether a file was selected / uploaded
+            $mform->addElement('checkbox', 'usecsvimport', get_string('doimport', 'groupreg'));
+            $mform->addElement('filepicker', 'csvfile', get_string('csvfile', 'groupreg'), null, array('accepted_types' => array('*.txt', '*.csv')));
+            $mform->addHelpButton('csvfile', 'csvfile', 'groupreg');
+        }
 
 
         $repeateloptions = array();
@@ -115,6 +118,7 @@ class mod_groupreg_mod_form extends moodleform_mod {
 
     function data_preprocessing(&$default_values) {
         global $DB;
+        // Determine whether this groupreg has already been created [if it has options]
         if (!empty($this->_instance)
                 && ($options = $DB->get_records_menu('groupreg_options', array('groupregid' => $this->_instance), 'id', 'id,text'))
                 && ($options3 = $DB->get_records_menu('groupreg_options', array('groupregid' => $this->_instance), 'id', 'id,grouping'))
