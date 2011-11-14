@@ -5,64 +5,65 @@
  * @copyright 2011 onwards Oliver Günther
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-global $groupreg_IMPORTGROUPS_COLUMN;
-global $groupreg_IMPORTASSIGNMENTS_COLUMN;
+global $groupreg_csvcols_importgroups;
+global $groupreg_csvcols_importassignments;
 
 require_once($CFG->dirroot.'/group/lib.php');
 require_once($CFG->dirroot.'/lib/grouplib.php');
 
 
 
-$groupreg_IMPORTGROUPS_COLUMN = array("name", "maxanswers");
-$groupreg_IMPORTASSIGNMENTS_COLUMN = array("userid", "optionid", "preference", "usergroup");
+$groupreg_csvcols_importgroups = array('name', 'maxanswers');
+$groupreg_csvcols_importassignments = array('userid', 'optionid', 'preference', 'usergroup');
 
-function readCSV($file) {
-    if (!file_exists($file) || !is_readable($file))
+function readCSV($file, $ishandle = false) {
+    $handle = $file;
+    if (!$ishandle) {               
+        if (!file_exists($file) || !is_readable($file))
+            return false;
+        if (($handle = fopen($file, 'r')) === FALSE)
+            return false;
+    }
+    if (!is_resource($handle))
         return false;
 
+    
     $header = null;
     $data = array();
-    if (($handle = fopen($file, 'r')) !== FALSE) {
-        // Read line, delimiter is ',' 
-        while (($row = fgetcsv($handle)) !== FALSE) {
-            if (!$header)
-                $header = $row;
-            else
-                $data[] = array_combine($header, $row);
-        }
-        fclose($handle);
+    // Read line, delimiter is ',' 
+    while (($row = fgetcsv($handle)) !== FALSE) {
+        if (!$header)
+            $header = $row;
+        else
+            $data[] = array_combine($header, $row);
     }
+    fclose($handle);
     return $data;
 }
 
-
-function verifyCSV($csv, $action) {
-    global $groupreg_IMPORTGROUPS_COLUMN, $groupreg_IMPORTASSIGNMENTS_COLUMN;  
+function verifycsv_importgroups($csv, $is_maxanswers) {
+    global $groupreg_csvcols_importgroups;
+    
     $error = array();
     
     if (!isset($csv) || gettype($csv[0]) != 'array') {
-        array_push($error, 'Could not read CSV file');
-        return $error;
+       array_push($error, 'Could not read CSV file');
+       return $error;
     }
     
-    // Simple check: Check columns in first row
-    // TODO check all lines (?)
+    // TODO: Check all rows [?]
     $columns = $csv[0];
     
-    $to_check = $groupreg_IMPORTGROUPS_COLUMN;
-    if ($action == 'importassignments')
-        $to_check = $groupreg_IMPORTASSIGNMENTS_COLUMN;
-    
-    foreach ($to_check as $key) {
+    foreach ($groupreg_csvcols_importgroups as $key) {
         if (!array_key_exists($key, $columns)) {
-            array_push($error, "Required column " . $key . " is missing");
+            array_push($error, "Required column " . $key . " is missing"); // TODO translate
         }
     }
     
     
-    return (count($error) > 0) ? $error : null;
-        
+    return (count($error) > 0) ? $error : null;    
 }
+
 
 function display_csv_contents($groupreg, $file, $action) {
     $csv = readCSV($file);
@@ -109,51 +110,77 @@ function display_csv_contents($groupreg, $file, $action) {
     return $html;
 }
 
-function import_groups_from_csv($groupreg, $courseid, $file) {
-    global $DB;
-    $csv = readCSV($file);
-    
-    // We need to clear all options and assignments
-    groupreg_reset_assignment($groupreg);
-    groupreg_reset_options($groupreg);
-    
-    // Create groups in course, unless they exist already
+/** Call this during the upload process, so the user is presented with errors, if returned */
+function generate_groups_from_csv($csv, $courseid) {
+    $errors = array();
+    // Keep record of created groups to rollback in case of errors
+    $groups = array();
     foreach ($csv as $row) {
         $group = new stdClass();
-        $group->courseid = $courseid;
         $group->name = trim(filter_var($row['name']));
+        $group->courseid = $courseid;
         $group->timemodified = time();
-        if (isset ($row['maxanswers']))
-            $group->maxanswers = intval($row['maxanswers']);
-        
+        $group->maxanswers = intval($row['maxanswers']);
+        // Optional column: grouping
         if (isset ($row['grouping']))
             $group->maxanswers = trim(filter_var($row['grouping']));
-        
         if (($id = groups_get_group_by_name($courseid, $group->name)) != false) {
-            echo "Group " . $group->name. " already exists, ignoring<br/>";
+            // Group already exists in course, ignoring
             $group->id = $id;
         } else {
             if (($id = groups_create_group($group)) != false) {
                 $group->id = $id;
-            } else return "Could not create group " . $group->name;
-        }
-        if (isset($group)) {
-            // Create option-record from $group (remove text)
-            $group->text = $group->id;
-            $group->groupregid = $groupreg->id;
-            unset($group->name);
-            
-            $DB->insert_record("groupreg_options", $group);
-            
+                array_push($groups, $group);
+            } else array_push($errors, "Could not create group " . $group->name); // TODO 18
         }
     }
     
+    if (count($errors) > 0) {
+        // Rollback all groups we have created thus far
+        foreach ($groups as $group) {
+            if (!groups_delete_group($group->id)) {
+                array_push($errors, "Tried to rollback group named " . $group->name . " (id : " . $group->id . ") which was created during the process. Delete manually!"); // TODO 18
+            }
+        }
+        return $errors;
+    } else {
+        return null;
+    }
+}
+function options_from_csv($groupreg, $courseid, $csv) {
+    // Set new option_repeats as count(csv-lines)
+    $option_repeats = count($csv);
     
     
+    // Initialize settings
+    $groupreg->option = array();
+    $groupreg->limit = array();
+    $groupreg->grouping = array();
+    $groupreg->optionid = array();
+    $groupreg->option_repeats = $option_repeats;
+    foreach ($csv as $row) {
+        // get group id
+        $groupname = trim(filter_var($row['name']));
+        // TODO attention: Duplicate group names will lead to unexpected behavior!
+        $option = groups_get_group_by_name($courseid, $groupname);
+        // maxanswer
+        $limit = intval($row['maxanswers']);
+        // grouping
+        $grouping = (isset($row['grouping'])) ? filter_var($row['grouping']) : '';
+        // default optionid = 0
+        $optionid = 0;
+        
+        array_push($groupreg->option, $option);
+        array_push($groupreg->limit, $limit);
+        array_push($groupreg->grouping, $grouping);
+        array_push($groupreg->optionid, $optionid);
+        
+    }
+    return $groupreg;
 }
 
 function import_assignments_from_csv($groupreg, $file) {
-    
+    // TODO
 }
 
 

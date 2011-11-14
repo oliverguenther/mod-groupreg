@@ -57,7 +57,6 @@ $groupreg_DISPLAY = array(groupreg_DISPLAY_HORIZONTAL => get_string('displayhori
     groupreg_DISPLAY_VERTICAL => get_string('displayvertical', 'groupreg'));
 
 require_once($CFG->dirroot . '/group/lib.php');
-require_once('csvlib.php');
 
 /// Standard functions /////////////////////////////////////////////////////////
 
@@ -124,37 +123,21 @@ function groupreg_add_instance($groupreg) {
     if ($groupreg->groupmembers <= 0)
         $groupreg->groupmembers = 1;
 
-    
-    if (isset($groupreg->usecsvimport) && isset($groupreg->csvpath)) {
-        // Import options from CSV
-        $csv = readCSV($groupreg->csvpath);
-        $errors = verifyCSV($csv, 'importgroups');
-        if (isset($errors)) {
-            print_container("Could not verify CSV file:<br/>" . implode("<br/>", $errors));
-            return null;
-        }
-        
-        $groupreg->id = $DB->insert_record("groupreg", $groupreg);
-
-        
-    } else {
-        // manually entered options
-        $groupreg->id = $DB->insert_record("groupreg", $groupreg);
-        foreach ($groupreg->option as $key => $value) {
-            $value = trim($value);
-            if (isset($value) && $value <> '') {
-                $option = new stdClass();
-                $option->text = $value;
-                $option->groupregid = $groupreg->id;
-                if (isset($groupreg->limit[$key])) {
-                    $option->maxanswers = $groupreg->limit[$key];
-                }
-                if (isset($groupreg->grouping[$key])) {
-                    $option->grouping = $groupreg->grouping[$key] != '' ? $groupreg->grouping[$key] : null;
-                }
-                $option->timemodified = time();
-                $DB->insert_record("groupreg_options", $option);
+    $groupreg->id = $DB->insert_record("groupreg", $groupreg);
+    foreach ($groupreg->option as $key => $value) {
+        $value = trim($value);
+        if (isset($value) && $value <> '') {
+            $option = new stdClass();
+            $option->text = $value;
+            $option->groupregid = $groupreg->id;
+            if (isset($groupreg->limit[$key])) {
+                $option->maxanswers = $groupreg->limit[$key];
             }
+            if (isset($groupreg->grouping[$key])) {
+                $option->grouping = $groupreg->grouping[$key] != '' ? $groupreg->grouping[$key] : null;
+            }
+            $option->timemodified = time();
+            $DB->insert_record("groupreg_options", $option);
         }
     }
 
@@ -856,8 +839,7 @@ function groupreg_extend_settings_navigation(settings_navigation $settings, navi
         $groupregnode->add(get_string("performassignment", "groupreg"), new moodle_url('/mod/groupreg/view.php', array('id' => $PAGE->cm->id, 'action' => 'assign', 'sesskey' => sesskey())));
         $groupregnode->add(get_string("resetassignment", "groupreg"), new moodle_url('/mod/groupreg/view.php', array('id' => $PAGE->cm->id, 'action' => 'resetassign', 'sesskey' => sesskey())));
         $groupregnode->add(get_string("finalizeassignment", "groupreg"), new moodle_url('/mod/groupreg/view.php', array('id' => $PAGE->cm->id, 'action' => 'finalize', 'sesskey' => sesskey())));
-        $groupregnode->add(get_string("importgroups", "groupreg"), new moodle_url('/mod/groupreg/import.php', array('id' => $PAGE->cm->id, 'action' => 'importgroups', 'sesskey' => sesskey())));
-        $groupregnode->add(get_string("importassignments", "groupreg"), new moodle_url('/mod/groupreg/import.php', array('id' => $PAGE->cm->id, 'action' => 'importassignments', 'sesskey' => sesskey())));
+        $groupregnode->add(get_string("importassignments", "groupreg"), new moodle_url('/mod/groupreg/import.php', array('id' => $PAGE->cm->id, 'sesskey' => sesskey())));
         $groupregnode->add(get_string("exportassignment", "groupreg"), new moodle_url('/mod/groupreg/export.php', array('id' => $PAGE->cm->id, 'sesskey' => sesskey())));
     }
 }

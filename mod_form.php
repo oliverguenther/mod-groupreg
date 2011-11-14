@@ -141,15 +141,47 @@ class mod_groupreg_mod_form extends moodleform_mod {
     }
 
     function validation($data, $files) {
+        global $USER, $COURSE;
         $errors = parent::validation($data, $files);
         if (isset($data['usecsvimport'])) {
             // User wanted to upload file
             $csvfile = $this->get_draft_files('csvfile');
             if (!isset($csvfile)) {
-                $errors['csvfile'] = get_string('missingcsvfile', 'groupreg');
+                $errors['csvfile'] = get_string('required');
             }
-
-            // Using CSV import, ignore groups
+            
+            // Validate csv contents
+            $usercontext = get_context_instance(CONTEXT_USER, $USER->id);
+            $fs = get_file_storage();
+            if (!$files = $fs->get_area_files($usercontext->id, 'user', 'draft', $data['csvfile'], 'sortorder, id', false)) {
+                $errors['csvfile'] = get_string('required');
+                return $errors;
+            }
+            if (count($files) != 1) {
+                $errors['csvfile'] = get_string('onlyonecsv', 'groupreg'); // TODO translate
+                return $errors;
+            }
+            // get_area_files might return multiple files, although we only use one here
+            // This could be fixed by properly using get_file, but doesn't seem to return anything
+            $csvfile = reset($files);
+            $csv = readCSV($csvfile->get_content_file_handle(), true);
+            
+            // Verify CSV
+            $csverrors = verifycsv_importgroups($csv, $data['limitanswers']);
+            if (isset($csverrors)) {
+                $errors['csvfile'] = implode("<br/>", $csverrors);
+                return $errors;
+            }
+            
+            // Generate groups from csv, report back errors [groups are being rolled back in case of error]
+            $grouperrors = generate_groups_from_csv($csv, $COURSE->id);
+            if (isset($grouperrors)) {
+                $errors['csvfile'] = implode("<br/>", $grouperrors);
+                return $errors;
+            }
+            
+            
+            // Using CSV import, manual groups can be ignored
             return $errors;
         }
 
@@ -185,24 +217,27 @@ class mod_groupreg_mod_form extends moodleform_mod {
     }
 
     function get_data() {
-        global $CFG;
+        global $CFG, $COURSE, $USER;
         $data = parent::get_data();
         if (!$data) {
             return false;
         }
         if (isset($data->usecsvimport)) {
-            // Check for file
-            $filename = $this->get_new_filename('csvfile');
-            if (!isset($filename)) {
+            // Set options from csv
+            $usercontext = get_context_instance(CONTEXT_USER, $USER->id);
+            $fs = get_file_storage();
+            if (!$files = $fs->get_area_files($usercontext->id, 'user', 'draft', $data->csvfile, 'sortorder, id', false)) {
                 return false;
             }
-            $destpath = "{$CFG->dataroot}/temp/groupreg/" . time() . "{$filename}";
-            make_upload_directory('temp/groupreg');
-            if (!$result = $this->save_file('csvfile', $destpath, true)) {
+            if (count($files) != 1) {
                 return false;
             }
-
-            $data->csvpath = $destpath;
+            $csvfile = reset($files);
+            $csv = readCSV($csvfile->get_content_file_handle(), true);
+            
+            // Manipulate $data to reflect form content (options, limit, grouping, optionid)
+            $data = options_from_csv($data, $COURSE->id, $csv);
+            
         }
 
         // Set up completion section even if checkbox is not ticked
