@@ -16,6 +16,16 @@ require_once($CFG->dirroot.'/lib/grouplib.php');
 $groupreg_csvcols_importgroups = array('name', 'maxanswers');
 $groupreg_csvcols_importassignments = array('userid', 'optionid', 'preference', 'usergroup');
 
+function csv_importgroups_columns() {
+    global $groupreg_csvcols_importgroups;
+    // Only used for get_string, in order to output required and optional columns
+    $columns = new stdClass();
+    $columns->req = implode(", ", $groupreg_csvcols_importgroups);
+    $columns->opt = "grouping";
+    
+    return $columns;
+}
+
 function readCSV($file, $ishandle = false) {
     $handle = $file;
     if (!$ishandle) {               

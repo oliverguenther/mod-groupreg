@@ -10,7 +10,7 @@ require_once ('csvlib.php');
 class mod_groupreg_mod_form extends moodleform_mod {
 
     function definition() {
-        global $CFG, $groupreg_SHOWRESULTS, $groupreg_PUBLISH, $groupreg_DISPLAY, $DB, $COURSE;
+        global $CFG, $groupreg_SHOWRESULTS, $groupreg_PUBLISH, $groupreg_DISPLAY, $DB, $COURSE, $groupreg_csvcols_importgroups;
 
         $mform = & $this->_form;
 
@@ -71,10 +71,10 @@ class mod_groupreg_mod_form extends moodleform_mod {
             $repeatno = 5;
         }
 //-------------------------------------------------------------------------------
-        $mform->addElement('header', 'importfromcsv', get_string('importfromcsv', 'groupreg'));
-        $mform->addElement('html', '<p>' . get_string('csvimport', 'groupreg') . '</p>');
+        $mform->addElement('header', 'importfromcsv', get_string('importgroups', 'groupreg'));
+        $mform->addElement('html', get_string('importgroups-confirm', 'groupreg', csv_importgroups_columns()));
         // Hack for validation, remove if can validate whether a file was selected / uploaded
-        $mform->addElement('checkbox', 'usecsvimport', get_string('usecsvimport', 'groupreg'));
+        $mform->addElement('checkbox', 'usecsvimport', get_string('doimport', 'groupreg'));
         $mform->addElement('filepicker', 'csvfile', get_string('csvfile', 'groupreg'), null, array('accepted_types' => array('*.txt', '*.csv')));
         $mform->addHelpButton('csvfile', 'csvfile', 'groupreg');
 
