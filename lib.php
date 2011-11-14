@@ -20,7 +20,6 @@
  * @copyright 2011 onwards Olexandr Savchuk
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 /** @global int $groupreg_COLUMN_HEIGHT */
 global $groupreg_COLUMN_HEIGHT;
 $groupreg_COLUMN_HEIGHT = 300;
@@ -30,34 +29,35 @@ global $groupreg_COLUMN_WIDTH;
 $groupreg_COLUMN_WIDTH = 300;
 
 define('groupreg_PUBLISH_ANONYMOUS', '0');
-define('groupreg_PUBLISH_NAMES',     '1');
+define('groupreg_PUBLISH_NAMES', '1');
 
-define('groupreg_SHOWRESULTS_NOT',          '0');
+define('groupreg_SHOWRESULTS_NOT', '0');
 define('groupreg_SHOWRESULTS_AFTER_ANSWER', '1');
-define('groupreg_SHOWRESULTS_AFTER_CLOSE',  '2');
-define('groupreg_SHOWRESULTS_ALWAYS',       '3');
+define('groupreg_SHOWRESULTS_AFTER_CLOSE', '2');
+define('groupreg_SHOWRESULTS_ALWAYS', '3');
 
-define('groupreg_DISPLAY_HORIZONTAL',  '0');
-define('groupreg_DISPLAY_VERTICAL',    '1');
+define('groupreg_DISPLAY_HORIZONTAL', '0');
+define('groupreg_DISPLAY_VERTICAL', '1');
 
 /** @global array $groupreg_PUBLISH */
 global $groupreg_PUBLISH;
-$groupreg_PUBLISH = array (groupreg_PUBLISH_ANONYMOUS  => get_string('publishanonymous', 'groupreg'),
-                         groupreg_PUBLISH_NAMES      => get_string('publishnames', 'groupreg'));
+$groupreg_PUBLISH = array(groupreg_PUBLISH_ANONYMOUS => get_string('publishanonymous', 'groupreg'),
+    groupreg_PUBLISH_NAMES => get_string('publishnames', 'groupreg'));
 
 /** @global array $groupreg_SHOWRESULTS */
 global $groupreg_SHOWRESULTS;
-$groupreg_SHOWRESULTS = array (groupreg_SHOWRESULTS_NOT          => get_string('publishnot', 'groupreg'),
-                         groupreg_SHOWRESULTS_AFTER_ANSWER => get_string('publishafteranswer', 'groupreg'),
-                         groupreg_SHOWRESULTS_AFTER_CLOSE  => get_string('publishafterclose', 'groupreg'),
-                         groupreg_SHOWRESULTS_ALWAYS       => get_string('publishalways', 'groupreg'));
+$groupreg_SHOWRESULTS = array(groupreg_SHOWRESULTS_NOT => get_string('publishnot', 'groupreg'),
+    groupreg_SHOWRESULTS_AFTER_ANSWER => get_string('publishafteranswer', 'groupreg'),
+    groupreg_SHOWRESULTS_AFTER_CLOSE => get_string('publishafterclose', 'groupreg'),
+    groupreg_SHOWRESULTS_ALWAYS => get_string('publishalways', 'groupreg'));
 
 /** @global array $groupreg_DISPLAY */
 global $groupreg_DISPLAY;
-$groupreg_DISPLAY = array (groupreg_DISPLAY_HORIZONTAL   => get_string('displayhorizontal', 'groupreg'),
-                         groupreg_DISPLAY_VERTICAL     => get_string('displayvertical','groupreg'));
+$groupreg_DISPLAY = array(groupreg_DISPLAY_HORIZONTAL => get_string('displayhorizontal', 'groupreg'),
+    groupreg_DISPLAY_VERTICAL => get_string('displayvertical', 'groupreg'));
 
-require_once($CFG->dirroot.'/group/lib.php');
+require_once($CFG->dirroot . '/group/lib.php');
+require_once('csvlib.php');
 
 /// Standard functions /////////////////////////////////////////////////////////
 
@@ -73,7 +73,7 @@ function groupreg_user_outline($course, $user, $mod, $groupreg) {
     global $DB;
     if ($answer = $DB->get_record('groupreg_answers', array('groupregid' => $groupreg->id, 'userid' => $user->id))) {
         $result = new stdClass();
-        $result->info = "'".format_string(groupreg_get_option_text($groupreg, $answer->optionid))."'";
+        $result->info = "'" . format_string(groupreg_get_option_text($groupreg, $answer->optionid)) . "'";
         $result->time = $answer->timemodified;
         return $result;
     }
@@ -92,9 +92,9 @@ function groupreg_user_complete($course, $user, $mod, $groupreg) {
     global $DB;
     if ($answer = $DB->get_record('groupreg_answers', array("groupregid" => $groupreg->id, "userid" => $user->id))) {
         $result = new stdClass();
-        $result->info = "'".format_string(groupreg_get_option_text($groupreg, $answer->optionid))."'";
+        $result->info = "'" . format_string(groupreg_get_option_text($groupreg, $answer->optionid)) . "'";
         $result->time = $answer->timemodified;
-        echo get_string("answered", "groupreg").": $result->info. ".get_string("updated", '', userdate($result->time));
+        echo get_string("answered", "groupreg") . ": $result->info. " . get_string("updated", '', userdate($result->time));
     } else {
         print_string("notanswered", "groupreg");
     }
@@ -119,27 +119,42 @@ function groupreg_add_instance($groupreg) {
         $groupreg->timeopen = 0;
         $groupreg->timeclose = 0;
     }
-    
+
     $groupreg->groupmembers = intval($groupreg->groupmembers);
     if ($groupreg->groupmembers <= 0)
         $groupreg->groupmembers = 1;
 
-    //insert answers
-    $groupreg->id = $DB->insert_record("groupreg", $groupreg);
-    foreach ($groupreg->option as $key => $value) {
-        $value = trim($value);
-        if (isset($value) && $value <> '') {
-            $option = new stdClass();
-            $option->text = $value;
-            $option->groupregid = $groupreg->id;
-            if (isset($groupreg->limit[$key])) {
-                $option->maxanswers = $groupreg->limit[$key];
+    
+    if (isset($groupreg->usecsvimport) && isset($groupreg->csvpath)) {
+        // Import options from CSV
+        $csv = readCSV($groupreg->csvpath);
+        $errors = verifyCSV($csv, 'importgroups');
+        if (isset($errors)) {
+            print_container("Could not verify CSV file:<br/>" . implode("<br/>", $errors));
+            return null;
+        }
+        
+        $groupreg->id = $DB->insert_record("groupreg", $groupreg);
+
+        
+    } else {
+        // manually entered options
+        $groupreg->id = $DB->insert_record("groupreg", $groupreg);
+        foreach ($groupreg->option as $key => $value) {
+            $value = trim($value);
+            if (isset($value) && $value <> '') {
+                $option = new stdClass();
+                $option->text = $value;
+                $option->groupregid = $groupreg->id;
+                if (isset($groupreg->limit[$key])) {
+                    $option->maxanswers = $groupreg->limit[$key];
+                }
+                if (isset($groupreg->grouping[$key])) {
+                    $option->grouping = $groupreg->grouping[$key] != '' ? $groupreg->grouping[$key] : null;
+                }
+                $option->timemodified = time();
+                $DB->insert_record("groupreg_options", $option);
             }
-            if (isset($groupreg->grouping[$key])) {
-                $option->grouping = $groupreg->grouping[$key] != '' ? $groupreg->grouping[$key] : null;
-            }
-            $option->timemodified = time();
-            $DB->insert_record("groupreg_options", $option);
         }
     }
 
@@ -184,12 +199,12 @@ function groupreg_update_instance($groupreg) {
             $option->grouping = $groupreg->grouping[$key] != '' ? $groupreg->grouping[$key] : null;
         }
         $option->timemodified = time();
-        if (isset($groupreg->optionid[$key]) && !empty($groupreg->optionid[$key])){//existing groupreg record
-            $option->id=$groupreg->optionid[$key];
+        if (isset($groupreg->optionid[$key]) && !empty($groupreg->optionid[$key])) {//existing groupreg record
+            $option->id = $groupreg->optionid[$key];
             if (isset($value) && $value <> '') {
                 $DB->update_record("groupreg_options", $option);
             } else { //empty old option - needs to be deleted.
-                $DB->delete_records("groupreg_options", array("id"=>$option->id));
+                $DB->delete_records("groupreg_options", array("id" => $option->id));
             }
         } else {
             if (isset($value) && $value <> '') {
@@ -199,77 +214,74 @@ function groupreg_update_instance($groupreg) {
     }
 
     return $DB->update_record('groupreg', $groupreg);
-
 }
 
 function groupreg_perform_assignment($groupreg) {
     global $CFG, $DB;
-    
+
     $script = 'group-assign/assign_groups.pl';
     if ($script == '' || !file_exists($script)) {
         return false;
     }
     if (isset($CFG->groupreg_perltime) && $CFG->groupreg_perltime > 30)
         set_time_limit($CFG->groupreg_perltime);
-    
+
     // preparations
     $groupreg->timeclose = time();
     $groupreg->timemodified = time();
     $groupreg->allowupdate = 0;
     $groupreg->assigned = 1;
     $DB->update_record("groupreg", $groupreg);
-    
+
     exec("/usr/bin/perl $script $groupreg->id $CFG->dbname $CFG->dbuser $CFG->dbpass $CFG->prefix 2>&1", $output);
-	echo "<p>Ausgabe:<br/>" . implode("<br/>", $output) . "</p>";
-    
+    echo "<p>Ausgabe:<br/>" . implode("<br/>", $output) . "</p>";
+
     return true;
 }
 
 function groupreg_reset_assignment($groupreg) {
     global $DB;
-    
+
     $groupreg->timeclose = 0;
     $groupreg->timemodified = time();
     $groupreg->assigned = 0;
     $DB->update_record("groupreg", $groupreg);
-    
+
     $DB->delete_records('groupreg_assigned', array('groupregid' => $groupreg->id));
 }
 
 function groupreg_reset_options($groupreg) {
     global $DB;
-    
+
     $groupreg->timeclose = 0;
     $groupreg->timemodified = time();
     $groupreg->assigned = 0;
     $DB->update_record("groupreg", $groupreg);
-    
+
     $DB->delete_records('groupreg_options', array('groupregid' => $groupreg->id));
 }
 
 function groupreg_finalize_assignment($groupreg) {
     global $CFG, $DB;
-    
+
     // fetch options and map option IDs to group IDs
     $groupids = array();
     $db_options = $DB->get_records('groupreg_options', array('groupregid' => $groupreg->id));
-    foreach($db_options as $option)
+    foreach ($db_options as $option)
         $groupids[$option->id] = intval($option->text);
-    
+
     // process data from assignment table
     $option_assignments = $DB->get_records('groupreg_assigned', array('groupregid' => $groupreg->id));
-    foreach($option_assignments as $option_assignment) {
+    foreach ($option_assignments as $option_assignment) {
         // assign user to the appropriate group
         $group = $groupids[$option_assignment->optionid];
         echo("assigning user $option_assignment->userid to group $group<br>");
         groups_add_member($group, $option_assignment->userid);
     }
-    
 }
 
-
 function groupreg_export_assignment($groupreg) {
-	global $CFG, $DB;
+    global $CFG, $DB;
 }
 
 /**
@@ -282,21 +294,21 @@ function groupreg_export_assignment($groupreg) {
 function groupreg_prepare_options($groupreg, $user, $coursemodule, $favorites, $blanks, $groupmembers) {
     global $DB;
 
-    $cdisplay = array('options'=>array());
+    $cdisplay = array('options' => array());
 
     $cdisplay['limitanswers'] = true;
     $context = get_context_instance(CONTEXT_MODULE, $coursemodule->id);
-    
+
     $cdisplay['usergroup'] = 0;
     $cdisplay['groupmembers'] = array();
-    
+
     $optionPreferences = array();
     // if given, use answers chosen in form but not saved due to errors
     if ($favorites != null) {
-        for ($i = sizeof($favorites)-1; $i >= 0; $i--) {
+        for ($i = sizeof($favorites) - 1; $i >= 0; $i--) {
             $id = intval($favorites[$i]);
             if ($id > 0)
-                $optionPreferences[$id] = $i+1;
+                $optionPreferences[$id] = $i + 1;
         }
     }
     if ($blanks != null) {
@@ -309,30 +321,32 @@ function groupreg_prepare_options($groupreg, $user, $coursemodule, $favorites, $
     // else fetch answers given by this user
     if ($favorites == null && $blanks == null) {
         $dbAnswers = $DB->get_records('groupreg_answers', array('groupregid' => $groupreg->id, 'userid' => $user->id));
-        foreach($dbAnswers as $answer) {
+        foreach ($dbAnswers as $answer) {
             $optionPreferences[$answer->optionid] = $answer->preference;
             $cdisplay['usergroup'] = $answer->usergroup;
         }
     }
-    
+
     // add chosen group members, if any
     if ($groupmembers == null && $cdisplay['usergroup'] != 0) {
         // get group members from the DB
         $dbanswers = $DB->get_records('groupreg_answers', array('usergroup' => $cdisplay['usergroup']));
-        if ($dbanswers) foreach($dbanswers as $answer) {
-            if ($answer->userid == $user->id)
-                continue;
-                
-            $otheruser = $DB->get_record('user', array('id' => $answer->userid));
-            if ($otheruser && !in_array($otheruser->username, $cdisplay['groupmembers']))
-                $cdisplay['groupmembers'][] = $otheruser->username;
-        }
+        if ($dbanswers)
+            foreach ($dbanswers as $answer) {
+                if ($answer->userid == $user->id)
+                    continue;
+
+                $otheruser = $DB->get_record('user', array('id' => $answer->userid));
+                if ($otheruser && !in_array($otheruser->username, $cdisplay['groupmembers']))
+                    $cdisplay['groupmembers'][] = $otheruser->username;
+            }
     } else if ($groupmembers != null) {
         foreach ($groupmembers as $member)
             if (trim($member) != '')
                 $cdisplay['groupmembers'][] = htmlspecialchars($member); // XSS sanitation
+                
     }
-    
+
     foreach ($groupreg->option as $optionid => $text) {
         if (isset($text)) { //make sure there are no dud entries in the db with blank text values.
             $option = new stdClass;
@@ -346,17 +360,17 @@ function groupreg_prepare_options($groupreg, $user, $coursemodule, $favorites, $
             if (isset($optionPreferences[$optionid])) {
                 $option->checked = true;
                 $option->preference = $optionPreferences[$optionid];
-				$option->displayed = false;
+                $option->displayed = false;
             } else {
-				$option->checked = false;
-			}
+                $option->checked = false;
+            }
             $cdisplay['options'][] = $option;
         }
     }
 
     $cdisplay['hascapability'] = is_enrolled($context, NULL, 'mod/groupreg:choose'); //only enrolled users are allowed to make a choice
 
-    if ($groupreg->allowupdate && $DB->record_exists('groupreg_answers', array('groupregid'=> $groupreg->id, 'userid'=> $user->id))) {
+    if ($groupreg->allowupdate && $DB->record_exists('groupreg_answers', array('groupregid' => $groupreg->id, 'userid' => $user->id))) {
         $cdisplay['allowupdate'] = true;
     }
 
@@ -367,15 +381,16 @@ function groupreg_user_validate_response($favorites, $blanks, $groupmembers, $gr
     global $DB;
 
     $errors = array();
-    
+
     // check that at least one favorite is chosen
     if ($favorites[0] <= 0) {
         $errors[] = get_string('error_mustchooseone', 'groupreg');
     }
-        
+
     // check that no entries repeat
     foreach ($favorites as $no => $fav) {
-        if ($fav == 0) continue;
+        if ($fav == 0)
+            continue;
         foreach ($favorites as $no2 => $fav2)
             if ($no != $no2 && $fav == $fav2)
                 if (!in_array(get_string('error_double_favorite', 'groupreg'), $errors))
@@ -383,31 +398,34 @@ function groupreg_user_validate_response($favorites, $blanks, $groupmembers, $gr
         foreach ($blanks as $blank)
             if ($fav == $blank)
                 $errors[] = get_string('error_favorite_as_blank', 'groupreg');
-    }   
+    }
     foreach ($blanks as $no => $blank) {
-        if ($blank == 0) continue;
+        if ($blank == 0)
+            continue;
         foreach ($blanks as $no2 => $blank2)
             if ($no != $no2 && $blank == $blank2)
                 if (!in_array(get_string('error_double_blank', 'groupreg'), $errors))
                     $errors[] = get_string('error_double_blank', 'groupreg');
     }
-    
+
     // check that all option IDs are valid
-    foreach($favorites as $fav) {
-        if ($fav == 0) continue;
+    foreach ($favorites as $fav) {
+        if ($fav == 0)
+            continue;
         $optid = intval($fav);
         if ($optid == 0 || $DB->count_records('groupreg_options', array('id' => $optid, 'groupregid' => $groupreg->id)) == 0)
             $errors[] = get_string('error_invalid_value', 'groupreg');
     }
-    foreach($blanks as $blank) {
-        if ($blank == 0) continue;
+    foreach ($blanks as $blank) {
+        if ($blank == 0)
+            continue;
         $optid = intval($blank);
         if ($optid == 0 || $DB->count_records('groupreg_options', array('id' => $optid, 'groupregid' => $groupreg->id)) == 0)
             $errors[] = get_string('error_invalid_value', 'groupreg');
     }
-    
+
     $context = get_context_instance(CONTEXT_MODULE, $cm->id);
-    
+
     /// Get the current group and users enrolled
     $groupmode = groups_get_activity_groupmode($cm);
     if ($groupmode > 0) {
@@ -417,39 +435,40 @@ function groupreg_user_validate_response($favorites, $blanks, $groupmembers, $gr
     }
     // check entered usernames
     $users = get_enrolled_users($context, 'mod/groupreg:choose', $currentgroup, user_picture::fields('u', array('idnumber')), 'u.lastname ASC,u.firstname ASC');
-        
+
     // get user's current usergroup ID, if any
     $records = $DB->get_records('groupreg_answers', array('groupregid' => $groupreg->id, 'userid' => $user_id));
     if ($records)
         $usergroup = array_pop($records)->usergroup;
     else
         $usergroup = 0;
-        
+
     // check all entered usernames and generate an array of userIDs to enter the data for
-    if ($groupmembers) 
-		foreach($groupmembers as $username) {
-			if ($username == '') continue;
-			
-			$username = mysql_escape_string($username); // sql injection security, since moodle can't sanitize array variables
-			$us = $DB->get_record('user', array('username' => $username));
-			if ($us) {
-				// check the user is enrolled in this course
-				if (isset($users[$us->id])) {
-					// check that user has no answers in this choice or his usergroup is same as current user's
-					$records = $DB->get_records('groupreg_answers', array('groupregid' => $groupreg->id, 'userid' => $us->id));
-					if ($records && array_pop($records)->usergroup != $usergroup) {
-						$errors[] = get_string('error_user_already_answered', 'groupreg', $username);
-					}
-				} else {
-					$errors[] = get_string('error_user_not_enrolled', 'groupreg', $username);
-				}
-			} else {
-				$errors[] = get_string('error_user_not_found', 'groupreg', $username);
-			}
-		}
+    if ($groupmembers)
+        foreach ($groupmembers as $username) {
+            if ($username == '')
+                continue;
+
+            $username = mysql_escape_string($username); // sql injection security, since moodle can't sanitize array variables
+            $us = $DB->get_record('user', array('username' => $username));
+            if ($us) {
+                // check the user is enrolled in this course
+                if (isset($users[$us->id])) {
+                    // check that user has no answers in this choice or his usergroup is same as current user's
+                    $records = $DB->get_records('groupreg_answers', array('groupregid' => $groupreg->id, 'userid' => $us->id));
+                    if ($records && array_pop($records)->usergroup != $usergroup) {
+                        $errors[] = get_string('error_user_already_answered', 'groupreg', $username);
+                    }
+                } else {
+                    $errors[] = get_string('error_user_not_enrolled', 'groupreg', $username);
+                }
+            } else {
+                $errors[] = get_string('error_user_not_found', 'groupreg', $username);
+            }
+        }
     if (sizeof($errors) > 0)
         return $errors;
-        
+
     return true;
 }
 
@@ -463,24 +482,25 @@ function groupreg_user_validate_response($favorites, $blanks, $groupmembers, $gr
  * @param object $cm
  */
 function groupreg_user_submit_response($favorites, $blanks, $groupmembers, $groupreg, $course, $cm, $user_id) {
-    
+
     global $DB, $CFG;
-    require_once($CFG->libdir.'/completionlib.php');
-         
+    require_once($CFG->libdir . '/completionlib.php');
+
     $errors = array();
-    
+
     // generate an array of userIDs to enter the data for
     $userids = array($user_id);
     if ($groupmembers)
-		foreach($groupmembers as $username) {
-			if ($username == '') continue;
-			
-			$username = mysql_escape_string($username); // sql injection security, since moodle can't sanitize array variables
-			$us = $DB->get_record('user', array('username' => $username));
-			if (!in_array($us->id, $userids)) // handle potential double entries as one
-				$userids[] = $us->id;
-		}
-    
+        foreach ($groupmembers as $username) {
+            if ($username == '')
+                continue;
+
+            $username = mysql_escape_string($username); // sql injection security, since moodle can't sanitize array variables
+            $us = $DB->get_record('user', array('username' => $username));
+            if (!in_array($us->id, $userids)) // handle potential double entries as one
+                $userids[] = $us->id;
+        }
+
     // find a new random usergroup id not yet in use
     $usergroup = time();
     while (true) {
@@ -489,11 +509,11 @@ function groupreg_user_submit_response($favorites, $blanks, $groupmembers, $grou
         else
             break;
     }
-    
+
     // remove current user answers from the database
     foreach ($userids as $userid) {
         $DB->delete_records('groupreg_answers', array('groupregid' => $groupreg->id, 'userid' => $userid));
-    
+
         // add the new answers
         for ($fav = 0; $fav <= $groupreg->limitfavorites; $fav++) {
             $favorite = new stdClass();
@@ -504,11 +524,11 @@ function groupreg_user_submit_response($favorites, $blanks, $groupmembers, $grou
             $favorite->usergroup = $usergroup;
             $favorite->groupregid = $groupreg->id;
             $favorite->timemodified = time();
-            $favorite->preference = $fav+1;
-            
+            $favorite->preference = $fav + 1;
+
             $DB->insert_record('groupreg_answers', $favorite);
         }
-        
+
         for ($b = 0; $b <= $groupreg->limitblanks; $b++) {
             $blank = new stdClass();
             $blank->optionid = intval($blanks[$b]);
@@ -519,11 +539,11 @@ function groupreg_user_submit_response($favorites, $blanks, $groupmembers, $grou
             $blank->groupregid = $groupreg->id;
             $blank->timemodified = time();
             $blank->preference = 0;
-            
+
             $DB->insert_record('groupreg_answers', $blank);
         }
     }
-    
+
     return $errors;
 }
 
@@ -534,7 +554,7 @@ function groupreg_user_submit_response($favorites, $blanks, $groupmembers, $grou
  */
 function groupreg_show_reportlink($cm) {
     echo '<div class="reportlink">';
-    echo "<a href=\"report.php?id=$cm->id\">".get_string("viewallresponses", "groupreg")."</a>";
+    echo "<a href=\"report.php?id=$cm->id\">" . get_string("viewallresponses", "groupreg") . "</a>";
     echo '</div>';
 }
 
@@ -550,7 +570,7 @@ function groupreg_show_reportlink($cm) {
  */
 function groupreg_delete_responses($userid, $groupreg, $cm, $course) {
     global $DB, $CFG;
-    require_once($CFG->libdir.'/completionlib.php');
+    require_once($CFG->libdir . '/completionlib.php');
 
     $completion = new completion_info($course);
     if ($DB->count_records('groupreg_answers', array('groupregid' => $groupreg->id, 'userid' => $userid)) > 0) {
@@ -561,10 +581,9 @@ function groupreg_delete_responses($userid, $groupreg, $cm, $course) {
         }
         return true;
     }
-    
+
     return false;
 }
-
 
 /**
  * Given an ID of an instance of this module,
@@ -578,25 +597,25 @@ function groupreg_delete_responses($userid, $groupreg, $cm, $course) {
 function groupreg_delete_instance($id) {
     global $DB;
 
-    if (! $groupreg = $DB->get_record("groupreg", array("id"=>"$id"))) {
+    if (!$groupreg = $DB->get_record("groupreg", array("id" => "$id"))) {
         return false;
     }
 
     $result = true;
 
-    if (! $DB->delete_records("groupreg_answers", array("groupregid"=>"$groupreg->id"))) {
-        $result = false;
-    }
-    
-    if (! $DB->delete_records("groupreg_assigned", array("groupregid"=>"$groupreg->id"))) {
+    if (!$DB->delete_records("groupreg_answers", array("groupregid" => "$groupreg->id"))) {
         $result = false;
     }
 
-    if (! $DB->delete_records("groupreg_options", array("groupregid"=>"$groupreg->id"))) {
+    if (!$DB->delete_records("groupreg_assigned", array("groupregid" => "$groupreg->id"))) {
         $result = false;
     }
 
-    if (! $DB->delete_records("groupreg", array("id"=>"$groupreg->id"))) {
+    if (!$DB->delete_records("groupreg_options", array("groupregid" => "$groupreg->id"))) {
+        $result = false;
+    }
+
+    if (!$DB->delete_records("groupreg", array("id" => "$groupreg->id"))) {
         $result = false;
     }
 
@@ -669,16 +688,15 @@ function groupreg_get_groupreg($groupregid) {
  * @return array
  */
 function groupreg_get_view_actions() {
-    return array('view','view all','report','report download');
+    return array('view', 'view all', 'report', 'report download');
 }
 
 /**
  * @return array
  */
 function groupreg_get_post_actions() {
-    return array('choose','choose again','assign','resetassign','finalize');
+    return array('choose', 'choose again', 'assign', 'resetassign', 'finalize');
 }
-
 
 /**
  * Implementation of the function for printing the form elements that control
@@ -688,7 +706,7 @@ function groupreg_get_post_actions() {
  */
 function groupreg_reset_course_form_definition(&$mform) {
     $mform->addElement('header', 'groupregheader', get_string('modulenameplural', 'groupreg'));
-    $mform->addElement('advcheckbox', 'reset_groupreg', get_string('removeresponses','groupreg'));
+    $mform->addElement('advcheckbox', 'reset_groupreg', get_string('removeresponses', 'groupreg'));
 }
 
 /**
@@ -697,7 +715,7 @@ function groupreg_reset_course_form_definition(&$mform) {
  * @return array
  */
 function groupreg_reset_course_form_defaults($course) {
-    return array('reset_groupreg'=>1);
+    return array('reset_groupreg' => 1);
 }
 
 /**
@@ -722,13 +740,13 @@ function groupreg_reset_userdata($data) {
 
         $DB->delete_records_select('groupreg_answers', "groupregid IN ($groupregssql)", array($data->courseid));
         $DB->delete_records_select('groupreg_assigned', "groupregid IN ($groupregssql)", array($data->courseid));
-        $status[] = array('component'=>$componentstr, 'item'=>get_string('removeresponses', 'groupreg'), 'error'=>false);
+        $status[] = array('component' => $componentstr, 'item' => get_string('removeresponses', 'groupreg'), 'error' => false);
     }
 
     /// updating dates - shift may be negative too
     if ($data->timeshift) {
         shift_course_mod_dates('groupreg', array('timeopen', 'timeclose'), $data->timeshift, $data->courseid);
-        $status[] = array('component'=>$componentstr, 'item'=>get_string('datechanged'), 'error'=>false);
+        $status[] = array('component' => $componentstr, 'item' => get_string('datechanged'), 'error' => false);
     }
 
     return $status;
@@ -762,7 +780,7 @@ function groupreg_get_response_data($groupreg, $cm, $groupmode) {
 /// First get all the users who have access here
 /// To start with we assume they are all "unanswered" then move them later
     $users = get_enrolled_users($context, 'mod/groupreg:choose', $currentgroup, user_picture::fields('u', array('idnumber')), 'u.lastname ASC,u.firstname ASC');
-        
+
 /// Get all the recorded responses for this groupreg
     $rawresponses = $DB->get_records('groupreg_answers', array('groupregid' => $groupreg->id), 'optionid');
 
@@ -773,10 +791,10 @@ function groupreg_get_response_data($groupreg, $cm, $groupmode) {
             if (isset($users[$response->userid])) {   // This person is enrolled and in correct group
                 if (!isset($allresponses[$response->optionid]))
                     $allresponses[$response->optionid] = array();
-                    
+
                 if (!isset($allresponses[$response->optionid][$response->preference]))
                     $allresponses[$response->optionid][$response->preference] = 0;
-                
+
                 $allresponses[$response->optionid][$response->preference]++;
             }
         }
@@ -806,16 +824,16 @@ function groupreg_get_extra_capabilities() {
  * @return mixed True if module supports feature, null if doesn't know
  */
 function groupreg_supports($feature) {
-    switch($feature) {
-        case FEATURE_GROUPS:                  return true;
-        case FEATURE_GROUPINGS:               return true;
-        case FEATURE_GROUPMEMBERSONLY:        return true;
-        case FEATURE_MOD_INTRO:               return true;
+    switch ($feature) {
+        case FEATURE_GROUPS: return true;
+        case FEATURE_GROUPINGS: return true;
+        case FEATURE_GROUPMEMBERSONLY: return true;
+        case FEATURE_MOD_INTRO: return true;
         case FEATURE_COMPLETION_TRACKS_VIEWS: return true;
-        case FEATURE_COMPLETION_HAS_RULES:    return true;
-        case FEATURE_GRADE_HAS_GRADE:         return false;
-        case FEATURE_GRADE_OUTCOMES:          return false;
-        case FEATURE_BACKUP_MOODLE2:          return true;
+        case FEATURE_COMPLETION_HAS_RULES: return true;
+        case FEATURE_GRADE_HAS_GRADE: return false;
+        case FEATURE_GRADE_OUTCOMES: return false;
+        case FEATURE_BACKUP_MOODLE2: return true;
 
         default: return null;
     }
@@ -829,18 +847,18 @@ function groupreg_supports($feature) {
  */
 function groupreg_extend_settings_navigation(settings_navigation $settings, navigation_node $groupregnode) {
     global $PAGE;
-    
+
     if (has_capability('mod/groupreg:readresponses', $PAGE->cm->context)) {
-        $groupregnode->add(get_string("viewallresponses", "groupreg"), new moodle_url('/mod/groupreg/report.php', array('id'=>$PAGE->cm->id)));
+        $groupregnode->add(get_string("viewallresponses", "groupreg"), new moodle_url('/mod/groupreg/report.php', array('id' => $PAGE->cm->id)));
     }
-    
+
     if (has_capability('mod/groupreg:performassignment', $PAGE->cm->context)) {
-        $groupregnode->add(get_string("performassignment", "groupreg"), new moodle_url('/mod/groupreg/view.php', array('id'=>$PAGE->cm->id, 'action'=>'assign', 'sesskey'=>sesskey())));
-        $groupregnode->add(get_string("resetassignment", "groupreg"), new moodle_url('/mod/groupreg/view.php', array('id'=>$PAGE->cm->id, 'action'=>'resetassign', 'sesskey'=>sesskey())));
-        $groupregnode->add(get_string("finalizeassignment", "groupreg"), new moodle_url('/mod/groupreg/view.php', array('id'=>$PAGE->cm->id, 'action'=>'finalize', 'sesskey'=>sesskey())));
-        $groupregnode->add(get_string("importgroups", "groupreg"), new moodle_url('/mod/groupreg/import.php', array('id'=>$PAGE->cm->id, 'action'=>'importgroups', 'sesskey'=>sesskey())));
-        $groupregnode->add(get_string("importassignments", "groupreg"), new moodle_url('/mod/groupreg/import.php', array('id'=>$PAGE->cm->id, 'action'=>'importassignments', 'sesskey'=>sesskey())));
-        $groupregnode->add(get_string("exportassignment", "groupreg"), new moodle_url('/mod/groupreg/export.php', array('id'=>$PAGE->cm->id, 'sesskey'=>sesskey())));
+        $groupregnode->add(get_string("performassignment", "groupreg"), new moodle_url('/mod/groupreg/view.php', array('id' => $PAGE->cm->id, 'action' => 'assign', 'sesskey' => sesskey())));
+        $groupregnode->add(get_string("resetassignment", "groupreg"), new moodle_url('/mod/groupreg/view.php', array('id' => $PAGE->cm->id, 'action' => 'resetassign', 'sesskey' => sesskey())));
+        $groupregnode->add(get_string("finalizeassignment", "groupreg"), new moodle_url('/mod/groupreg/view.php', array('id' => $PAGE->cm->id, 'action' => 'finalize', 'sesskey' => sesskey())));
+        $groupregnode->add(get_string("importgroups", "groupreg"), new moodle_url('/mod/groupreg/import.php', array('id' => $PAGE->cm->id, 'action' => 'importgroups', 'sesskey' => sesskey())));
+        $groupregnode->add(get_string("importassignments", "groupreg"), new moodle_url('/mod/groupreg/import.php', array('id' => $PAGE->cm->id, 'action' => 'importassignments', 'sesskey' => sesskey())));
+        $groupregnode->add(get_string("exportassignment", "groupreg"), new moodle_url('/mod/groupreg/export.php', array('id' => $PAGE->cm->id, 'sesskey' => sesskey())));
     }
 }
 
@@ -855,16 +873,15 @@ function groupreg_extend_settings_navigation(settings_navigation $settings, navi
  * @return bool True if completed, false if not, $type if conditions not set.
  */
 function groupreg_get_completion_state($course, $cm, $userid, $type) {
-    global $CFG,$DB;
+    global $CFG, $DB;
 
     // Get groupreg details
-    $groupreg = $DB->get_record('groupreg', array('id'=>$cm->instance), '*',
-            MUST_EXIST);
+    $groupreg = $DB->get_record('groupreg', array('id' => $cm->instance), '*', MUST_EXIST);
 
     // If completion option is enabled, evaluate it and return true/false
-    if($groupreg->completionsubmit) {
+    if ($groupreg->completionsubmit) {
         return $DB->record_exists('groupreg_answers', array(
-                'groupregid'=>$groupreg->id, 'userid'=>$userid));
+            'groupregid' => $groupreg->id, 'userid' => $userid));
     } else {
         // Completion option is not enabled so just return $type
         return $type;
