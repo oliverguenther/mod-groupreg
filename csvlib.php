@@ -26,7 +26,7 @@ function csv_importgroups_columns() {
     return $columns;
 }
 
-function readCSV($file, $ishandle = false) {
+function readCSV($file, $ishandle = false, $delimiter = ',') {
     $handle = $file;
     if (!$ishandle) {               
         if (!file_exists($file) || !is_readable($file))
@@ -41,7 +41,7 @@ function readCSV($file, $ishandle = false) {
     $header = null;
     $data = array();
     // Read line, delimiter is ',' 
-    while (($row = fgetcsv($handle)) !== FALSE) {
+    while (($row = fgetcsv($handle, 10000, $delimiter)) !== FALSE) {
         if (!$header)
             $header = $row;
         else
@@ -75,8 +75,8 @@ function verifycsv_importgroups($csv, $is_maxanswers) {
 }
 
 
-function display_csv_contents($groupreg, $file, $action) {
-    $csv = readCSV($file);
+function display_csv_contents($groupreg, $file, $action, $delimiter = ',') {
+    $csv = readCSV($file, false, $delimiter);
     $html = html_writer::start_tag('div', array('class' => 'groupreg-display-csv'));
     
 
@@ -189,8 +189,143 @@ function options_from_csv($groupreg, $courseid, $csv) {
     return $groupreg;
 }
 
-function import_assignments_from_csv($groupreg, $file) {
-    // TODO
+/**
+ * Verifies group assignment import CSV data.
+ */
+function verifyCSV($csv, $action, $choice, $cm) {
+	if ($action = 'importassignments') {
+		$data = parse_assignment_csv($csv, $choice, $cm);
+		$errors = $data->errors;		
+		return $errors;
+	} else
+		return array('Not implemented!');
+}
+
+function parse_assignment_csv($csv, $choice, $cm) {
+	global $CFG, $DB;
+	$data = new stdClass;
+	$data->errors = array();
+	
+	// pre-fetch users and groups in the course
+	$context = get_context_instance(CONTEXT_MODULE, $cm->id);
+	$users_db = get_enrolled_users($context, 'mod/groupreg:choose', 0, user_picture::fields('u', array('idnumber')), 'u.lastname ASC,u.firstname ASC');
+	$users = array();
+	foreach($users_db as $user)
+		$users[$user->lastname.', '.$user->firstname][] = $user->id;
+		
+	if (sizeof($users) == 0) {
+		$data->errors[] = 'csvimport-error-nousers';
+		return $data;
+	}
+	
+	$groups_db = $DB->get_records_sql('SELECT g.id, g.name, o.id as optionid 
+										FROM {groups} g, {groupreg_options} o
+										WHERE o.groupregid = ? AND
+											  g.id = o.text', array($choice->id));
+	$groups = array();
+	foreach ($groups_db as $group)
+		$groups[$group->name] = $group->optionid;
+	
+	if (sizeof($groups) == 0) {
+		$data->errors[] = 'csvimport-error-nogroups';
+		return $data;
+	}
+	
+	// prepare header names to extract data with
+	$h_name = get_string('export_header_name', 'groupreg');
+	$h_groupmember = array();
+	for ($i = 1; $i < $choice->groupmembers; $i++)
+		$h_groupmember[] = get_string('export_header_groupmember_n', 'groupreg', $i);	
+	$h_group = get_string('export_header_assigned_group', 'groupreg');
+		
+	// go through all csv lines. ensure all users and groups are validated, and all users are unique
+	$data->assignments = array();
+	foreach ($csv as $line) {
+		if (!isset($line[$h_name])) {
+			continue;
+		}
+		
+		if (!isset($line[$h_group])) {
+			$data->errors[] = 'csvimport-error-no-assigned-column';
+			break;
+		}
+	
+		if (trim($line[$h_name]) == $h_name)
+			continue; // that's the header line, skip
+		
+		$line_users = array();
+		$line_users[] = trim($line[$h_name]);
+		for ($i = 1; $i < $choice->groupmembers; $i++)
+			if (trim($line[$h_groupmember[$i-1]]) != '')
+				$line_users[] = $line[$h_groupmember[$i-1]];
+		
+		$group = $line[$h_group];
+		
+		// check group
+		if (!isset($groups[$group])) {
+			$data->errors[] = 'csvimport-error-unknown-group::'.$group;
+			continue;
+		}	
+		
+		// check users
+		foreach ($line_users as $user) {
+			// for handling passing user id, split by |
+			$user_chunks = explode('|', $user);
+			$user = $user_chunks[0];
+			$userid = sizeof($user_chunks) > 1 ? $user_chunks[1] : -1;
+		
+			// check for possible errors
+			if (!isset($users[$user]) || sizeof($users[$user]) == 0)
+				$data->errors[] = 'csvimport-error-unknown-user::'.$user;
+			else if (sizeof($users[$user]) > 1) {
+				// handle multiple users with same name: provide user ID in csv behind a "|"
+				if ($userid == -1)
+					$data->errors[] = "csvimport-error-non-unique-user::$user";
+				else if (!in_array($userid, $users[$user]))
+					$data->errors[] = "csvimport-error-unknown-user::$user ($userid)";
+			}	
+			
+			// write assignment into output data
+			$assignment = new stdClass;
+			$assignment->groupregid = $choice->id;
+			$assignment->userid = $userid > -1 ? $userid : $users[$user][0];
+			$assignment->optionid = $groups[$group];
+			$assignment->timeassigned = 0;
+			
+			$data->assignments[] = $assignment;
+		}
+		
+		if (sizeof($data->assignments) == 0)
+			$data->errors[] = 'csvimport-error-no-data';
+	}	
+	
+	return $data;
+}
+
+function import_assignments_from_csv($groupreg, $file, $cm) {
+	global $DB;
+
+    $csv = readCSV($file, false, ';');
+	if (!$csv)
+		return array('csvimport-error-file-not-there::'.$file);
+	
+	$data = parse_assignment_csv($csv, $groupreg, $cm);
+	
+	if (sizeof($data->errors) > 0)
+		return; // cancel importing if there are errors.
+		
+	// reset existing assignments
+	groupreg_reset_assignment($groupreg);
+	
+	// import new assignments into database
+	foreach ($data->assignments as $asgn)
+		$DB->insert_record('groupreg_assigned', $asgn);
+		
+	$groupreg->timeclose = time();
+    $groupreg->timemodified = time();
+    $groupreg->allowupdate = 0;
+    $groupreg->assigned = 1;
+    $DB->update_record("groupreg", $groupreg);
 }
 
 

@@ -486,9 +486,7 @@ class mod_groupreg_renderer extends plugin_renderer_base {
     }
 
 	function display_export_assignment_form($cm) {
-	global $CFG;
-		
-	$html = html_writer::start_tag('div', array('class' => 'groupreg-export-confirmation'));
+		$html = html_writer::start_tag('div', array('class' => 'groupreg-export-confirmation'));
 
         $html .= html_writer::tag('h2', get_string('exportassignment', 'groupreg'));
         $html .= html_writer::tag('p', get_string('exportassignment_confirm', 'groupreg'));
@@ -508,27 +506,23 @@ class mod_groupreg_renderer extends plugin_renderer_base {
 	}
         
         
-        function display_import_assignment_form($cm, $action) {
-        global $CFG;
-		
-	$html = html_writer::start_tag('div', array('class' => 'groupreg-import-csv'));
+    function display_import_assignment_form($cm, $action) {
+        $html = html_writer::start_tag('div', array('class' => 'groupreg-import-csv'));
         $html .= html_writer::start_tag('form', array('action' => 'import.php', 'method' => 'POST', 'enctype' => 'multipart/form-data'));
         
         $html .= html_writer::tag('h2', get_string($action, 'groupreg'));
         $html .= html_writer::tag('p', get_string("$action-confirm", 'groupreg'));
 
-                
         $html .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'id', 'value' => $cm->id));
         $html .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'action', 'value' => $action));
         $html .= html_writer::tag('input', '', array('type' => 'file', 'name' => "csvupload"));
-	$html .= html_writer::tag('input', '', array('type' => 'submit'));
+		$html .= html_writer::tag('input', '', array('type' => 'submit'));
         
         $html .= html_writer::end_tag('form');
         $html .= html_writer::end_tag('div');
         
         return $html;
-            
-        }
+    }
 
 }
 
