@@ -126,7 +126,7 @@ $string['doimport'] = 'Import from CSV';
 $string['csvfile'] = 'CSV file';
 
 $string['importassignments'] = 'Import assignments from CSV';
-
+$string['importassignments-confirm'] = 'Provide a CSV file below to import data from. Structure should be the same as from an exported CSV file, with an "Assigned to group" column containing exact group names assigned.';
 
 $string['resetassignmentok'] = 'Assignment successfully reset';
 $string['finalizeassignment'] = 'Finalize group assignment';
@@ -179,3 +179,12 @@ $string['export_header_groupmember_n'] = 'Group member #{$a}';
 $string['export_header_assigned_group'] = 'Assigned to group';
 $string['export_show_user_once'] = 'Show each user only once (either in a row of hiw own, or as a group member in another row)';
 
+$string['csvimport-error-nousers'] = 'No users enrolled in the cource; import impossible.';
+$string['csvimport-error-nogroups'] = 'No groups created in the course; create the groups before importing an assignment';
+$string['csvimport-error-no-assigned-column'] = 'The CSV file is missing the "Assigned to group" column.';
+$string['csvimport-error-unknown-group'] = 'Unknown group: "{$a}". Check the exact spelling.';
+$string['csvimport-error-unknown-user'] = 'Unknown user: "{$a}". Check the exact name and the correct "lastname, firstname" order.';
+$string['csvimport-error-non-unique-user'] = 'Multiple users have the same name {$a}. Please provide a unique user ID as follows: "Lastname, Firstname|ID" to identify the user (you can find the ID in the user profile URL)';
+$string['csvimport-error-no-data'] = 'No lines containing data have been imported from the file. Aborting.';
+$string['csvimport-error-file-not-there'] = 'Temporary file is not available. Please upload your file again.';
+$string['csv-import-success'] = 'CSV assignment import successful. You can now see the assignment in the overview page.';

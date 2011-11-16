@@ -81,10 +81,8 @@ function display_csv_contents($groupreg, $file, $action, $delimiter = ',') {
     
 
     $html .= html_writer::tag('h2', get_string($action, 'groupreg'));
-    $html .= html_writer::tag('p', get_string("$action-display", 'groupreg'));
-    
-    
-    
+    //$html .= html_writer::tag('p', get_string("$action-display", 'groupreg'));
+       
     $html .= html_writer::start_tag("table", array('class' => 'groupreg-csv-table'));
     
     // Output CSV Columns first

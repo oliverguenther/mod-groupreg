@@ -35,6 +35,24 @@ $PAGE->set_title(format_string($choice->name) . ': ' . get_string($action, 'grou
 $PAGE->set_heading($course->fullname);
 echo $OUTPUT->header();
 
+function show_errors($errors) {
+	global $OUTPUT;
+
+	$display_errors = array();
+	foreach($errors as $error) {
+		$chunks = explode('::', $error);
+		
+		if (sizeof($chunks) == 1)
+			$text = get_string($chunks[0], 'groupreg');
+		else
+			$text = get_string($chunks[0], 'groupreg', $chunks[1]);
+		
+		$display_errors[] = $text;
+	}
+	
+	echo $OUTPUT->notification(implode("<br/>", $display_errors));
+}
+
 // Get Groupreg renderer
 $renderer = $PAGE->get_renderer('mod_groupreg');
 if (isset($confirmed) && isset($csvfile)) {
@@ -47,11 +65,11 @@ if (isset($confirmed) && isset($csvfile)) {
     }
     
     if (isset($error)) {
-        echo $OUTPUT->notification(implode("<br/>", $error));
+        show_errors($error);
     } else {
         // successful
         // TODO translate
-        echo "Import successful";
+        echo $OUTPUT->notification(get_string('csv-import-success', 'groupreg'));
     }
     
 } else if (!isset($_FILES['csvupload']) || $_FILES['csvupload']['size'] == 0) {
@@ -70,7 +88,8 @@ if (isset($confirmed) && isset($csvfile)) {
         $csv = readCSV($filedest, false, ';');
         $errors = verifyCSV($csv, $action, $choice, $cm);
         if (isset($errors) && is_array($errors) && sizeof($errors) > 0) {
-            echo $OUTPUT->notification(implode("<br/>", $errors));
+            //echo $OUTPUT->notification(implode("<br/>", $errors));
+			show_errors($errors);
 			echo $renderer->display_import_assignment_form($cm, $action);
         } else {
             // Verified, print table and continue

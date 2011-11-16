@@ -126,6 +126,9 @@ $string['importassignments'] = 'Zuweisung aus CSV importieren';
 $string['csvfile_help'] = 'Über dieses Formular können Sie die Konfiguration dieses Gruppenanmeldung über eine CSV-Datei importieren. Die importierten Gruppen werden im Kurs automatisch angelegt und innerhalb des Moduls mit den Kapazitäten erzeugt.';
 $string['importgroups-confirm'] = 'Über dieses Formular kannst du die Konfiguration dieses Gruppenanmeldung über eine CSV-Datei importieren. Die importierten Gruppen werden im Kurs automatisch angelegt und innerhalb des Moduls mit den Kapazitäten erzeugt.<br/><strong>Erforderliche Spalten</strong>: {$a->req}<br/><strong>Optionale Spalten</strong>: {$a->opt}';
 
+$string['importassignments'] = 'Zuweisung aus CSV importieren';
+$string['importassignments-confirm'] = 'Die CSV-Struktur soll der Struktur des CSV-Export entsprechen. Die genauen Gruppennamen für die Zuweisung werden in die Spalte "Erfolgte Zuweisung" eingetragen.';
+
 $string['exportassignment'] = 'Zuweisung als CSV exportieren';
 $string['exportassignmentconfirm'] = 'Klicke auf den Button, um die Zuweisungen per CSV exportieren.';
 $string['exporteassignmentnotok'] = 'Die Zuweisung ist noch nicht erfolgt. Bitte führe die Zuweisung durch und starte den Exportvorgang erneut!';
@@ -178,3 +181,13 @@ $string['export_header_grouping'] = 'Gruppierung {$a}';
 $string['export_header_groupmember_n'] = '{$a}. Gruppenmitglied';
 $string['export_header_assigned_group'] = 'Erfolgte Zuweisung';
 $string['export_show_user_once'] = 'Teilnehmer nur einmal anzeigen (entweder in eigener Zeile, oder als Gruppenmitglied)';
+
+$string['csvimport-error-nousers'] = 'Keine Benutzer im Kurs';
+$string['csvimport-error-nogroups'] = 'Keine Gruppen im Kurs';
+$string['csvimport-error-no-assigned-column'] = 'Die Spalte "Erfolgte Zuweisung" fehlt in der CSV-Datei';
+$string['csvimport-error-unknown-group'] = 'Unbekannte Gruppe: "{$a}". Überprüfen Sie die korrekte Schreibweise.';
+$string['csvimport-error-unknown-user'] = 'Unbekannter Nutzer: "{$a}". Genaue Schreibweise in der Reihenfolge "Nachname, Vorname" überprüfen.';
+$string['csvimport-error-non-unique-user'] = 'Mehrere Benutzer haben den selben Namen: {$a}. Geben Sie Benutzer-IDs für sie an: "Nachname, Vorname|User-ID" (die IDs können der Benutzerprofil-URL entnommen werden)';
+$string['csvimport-error-no-data'] = 'Keine Datenzeilen in der Datei. Abbruch.';
+$string['csvimport-error-file-not-there'] = 'Temporäre Datei ist nicht verfügbar. Bitte neu hochladen.';
+$string['csv-import-success'] = 'CSV-Import erfolgreich. Sie können die Zuweisung nun unter "Zeige alle Antworten" einsehen.';

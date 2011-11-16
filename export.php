@@ -208,7 +208,8 @@
 			
 		}
 		
-		echo iconv("UTF-8", "ISO-8859-1", $csv);		
+		//echo iconv("UTF-8", "ISO-8859-1", $csv);		
+		echo $csv;
 		
 	} else {
 	
