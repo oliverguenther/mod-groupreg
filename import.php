@@ -68,8 +68,7 @@ if (isset($confirmed) && isset($csvfile)) {
         show_errors($error);
     } else {
         // successful
-        // TODO translate
-        echo $OUTPUT->notification(get_string('csv-import-success', 'groupreg'));
+        echo $OUTPUT->notification(get_string('csv-import-success', 'groupreg'), 'notifysuccess');
     }
     
 } else if (!isset($_FILES['csvupload']) || $_FILES['csvupload']['size'] == 0) {
