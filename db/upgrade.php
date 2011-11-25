@@ -34,6 +34,17 @@ function xmldb_groupreg_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
     }
+	
+	if ($oldversion < 2011112601) {
+		// Adding DB field: boolean (int-1) "finalized", telling whether the students have already been put in their groups.
+		$table = new xmldb_table('groupreg');
+        $field = new xmldb_field('finalized');
+        $field->set_attributes(XMLDB_TYPE_INTEGER, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', 'groupmembers');
+
+        if(!$dbman->field_exists($table,$field)) {
+            $dbman->add_field($table, $field);
+        }
+	}
     
     return true;
 }

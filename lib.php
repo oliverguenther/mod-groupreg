@@ -261,6 +261,11 @@ function groupreg_finalize_assignment($groupreg) {
         echo("assigning user $option_assignment->userid to group $group<br>");
         groups_add_member($group, $option_assignment->userid);
     }
+	
+	// update groupreg DB entry
+	$groupreg->finalized = 1;
+	$DB->update_record("groupreg", $groupreg);
+	
 }
 
 function groupreg_export_assignment($groupreg) {
