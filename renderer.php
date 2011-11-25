@@ -62,7 +62,7 @@ class mod_groupreg_renderer extends plugin_renderer_base {
 		}
 		
         // display final results, if available
-        if ($groupreg->assigned == 1) {
+        if ($groupreg->assigned == 1 && $groupreg->finalized == 1) {
             if ($result = $DB->get_record('groupreg_assigned', array('groupregid' => $groupreg->id, 'userid' => $USER->id))) {
                 $groupname = $groupnames[$groupids[$result->optionid]];
                 $html .= get_string("assignment_result", "groupreg", $groupname)."<br><br>";
