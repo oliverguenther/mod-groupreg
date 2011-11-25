@@ -63,9 +63,13 @@ class mod_groupreg_renderer extends plugin_renderer_base {
 		
         // display final results, if available
         if ($groupreg->assigned == 1 && $groupreg->finalized == 1) {
-            if ($result = $DB->get_record('groupreg_assigned', array('groupregid' => $groupreg->id, 'userid' => $USER->id))) {
-                $groupname = $groupnames[$groupids[$result->optionid]];
-                $html .= get_string("assignment_result", "groupreg", $groupname)."<br><br>";
+			/*if ($result = $DB->get_record('groupreg_assigned', array('groupregid' => $groupreg->id, 'userid' => $USER->id))) {*/
+				//$groupname = $groupnames[$groupids[$result->optionid]];
+			if ($result = $DB->get_record_sql('SELECT g.name FROM {groups} g, {groups_members} gm
+												WHERE gm.userid = ? AND g.id = gm.groupid AND
+												EXISTS (SELECT * FROM {groupreg_options} WHERE groupregid = ? AND text = g.id)', 
+												array($USER->id, $groupreg->id))) {
+                $html .= get_string("assignment_result", "groupreg", $result->name)."<br><br>";
             } else {
                 // assignment complete, but no result available
                 $html .= get_string("assignment_no_result", "groupreg")."<br><br>";
@@ -320,6 +324,8 @@ class mod_groupreg_renderer extends plugin_renderer_base {
     function display_option_result($course, $cm, $group, $groupmembers, $groupassignments) {
         global $CFG;
         
+		$html = "";
+		
         if ($groupassignments) {
             $html .= html_writer::tag('h2', get_string('group_assignments', 'groupreg', $group->name));
             $html .= html_writer::start_tag('ul');
