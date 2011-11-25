@@ -55,6 +55,7 @@
 		//
 		// fetch data from DB
 		//
+		$single_groups = array(); // groups with no grouping, to be listed separately
 		$alldata = $DB->get_records_sql('SELECT
 										a.id,
 										u.id as userid,
@@ -102,8 +103,13 @@
 				$usergroups[$data->usergroup][] = $data->lastname.', '.$data->firstname;
 			}
 			
-			// write data about the current group choice
-			$userdata[$c]->answers[''.$data->grouping] = $data->preference;
+			// write data about the current group and grouping choices
+			$userdata[$c]->answers['grouping: '.$data->grouping] = $data->preference;
+			$userdata[$c]->answers['group: '.$data->name] = $data->preference;
+			
+			// if the current group has no grouping associated, remember
+			if ($data->grouping == '' && !in_array($data->name, $single_groups))
+				$single_groups[] = $data->name;
 		}
 		
 		if ($choice->assigned) {
@@ -129,7 +135,8 @@
 												{groups} g
 											WHERE
 												o.groupregid = ? AND
-												g.id = o.text
+												g.id = o.text AND
+												o.grouping <> \'\'
 											ORDER BY g.id', array($choice->id));
 		
 		//
@@ -145,6 +152,8 @@
 			
 		foreach($eq_classes as $class)
 			$headerRow[] = '"'.get_string('export_header_grouping', 'groupreg', $class->grouping).'"';
+		foreach($single_groups as $group)
+			$headerRow[] = '"'.$group.'"';
 			
 		if ($choice->assigned) {
 			$headerRow[] = get_string('export_header_assigned_group', 'groupreg');
@@ -186,10 +195,20 @@
 					
 			// preferences for groupings
 			foreach($eq_classes as $class) {
-				if (isset($user->answers[''.$class->grouping])) {
-					$pref = $user->answers[''.$class->grouping];
+				if (isset($user->answers['grouping: '.$class->grouping])) {
+					$pref = $user->answers['grouping: '.$class->grouping];
 					$output = $pref > 0 ? $pref : 'N';
 					if ($choice->assigned && isset($userassigned[$user->id]) && $userassigned[$user->id]->grouping == $class->grouping)
+						$output .= 'X';
+					$row[] = $output;
+				} else
+					$row[] = '';
+			}
+			foreach($single_groups as $group) {
+				if (isset($user->answers['group: '.$group])) {
+					$pref = $user->answers['group: '.$group];
+					$output = $pref > 0 ? $pref : 'N';
+					if ($choice->assigned && isset($userassigned[$user->id]) && $userassigned[$user->id]->name == $group)
 						$output .= 'X';
 					$row[] = $output;
 				} else
