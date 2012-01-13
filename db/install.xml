@@ -1,8 +1,5 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/groupreg/db" VERSION="20111002" COMMENT="XMLDB file for Moodle mod/groupreg"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
->
+<?xml version="1.0" encoding="UTF-8"?>
+<XMLDB xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" PATH="mod/groupreg/db" VERSION="20111002" COMMENT="XMLDB file for Moodle mod/groupreg" xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd">
   <TABLES>
     <TABLE NAME="groupreg" COMMENT="Available choices are stored here" NEXT="groupreg_options">
       <FIELDS>
@@ -24,8 +21,8 @@
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="timeclose" NEXT="completionsubmit"/>
         <FIELD NAME="completionsubmit" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="false" DEFAULT="0" SEQUENCE="false" COMMENT="If this field is set to 1, then the activity will be automatically marked as 'complete' once the user submits their groupreg." PREVIOUS="timemodified" NEXT="assigned"/>
         <FIELD NAME="assigned" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="If this is set to 1, group assignment was already performed and cannot be done again in this activity instance." PREVIOUS="completionsubmit" NEXT="groupmembers"/>
-        <FIELD NAME="groupmembers" TYPE="int" LENGTH="5" NOTNULL="true" UNSIGNED="true" DEFAULT="4" SEQUENCE="false" PREVIOUS="assigned" BEXT="finalized"/>
-		<FIELD NAME="finalized" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="groupmembers"/>
+        <FIELD NAME="groupmembers" TYPE="int" LENGTH="5" NOTNULL="true" UNSIGNED="true" DEFAULT="4" SEQUENCE="false" PREVIOUS="assigned" NEXT="finalized"/>
+        <FIELD NAME="finalized" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="groupmembers"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
